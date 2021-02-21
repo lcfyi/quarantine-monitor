@@ -8,21 +8,19 @@ const userSchema = new mongoose.Schema({
     password: { 
         type: String,
     },
-	station: { 
+    salt: {
+        type: String
+    },
+    deviceToken: {
+        type: String
+    },
+	stationid: { 
         type: String,
     },
-    lastLocation: {
-        type: {
-            type: String
-        },
-        coordinates: [Number]
-    },
+    lastCoords: [Number],
     locationMap: [{
         time: {
-            type: Date
-        },
-        type: {
-            type: String
+            type: Number
         },
         coordinates: [Number]
     }]
