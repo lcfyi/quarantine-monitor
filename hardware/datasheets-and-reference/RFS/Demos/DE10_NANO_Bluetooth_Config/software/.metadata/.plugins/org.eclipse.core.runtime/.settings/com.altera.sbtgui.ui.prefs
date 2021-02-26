@@ -1,0 +1,4 @@
+eclipse.preferences.version=1
+newSoftwareExampleWizardPage.defaultLocation=K\:\\RTS\\test\\nick\\SystemBuilder\\CodeGenerated\\DE10_NANO\\DE10_NANO_Bluetooth_Config\\software\\HC05_Config
+newSoftwareExampleWizardPage.sopcinfoFile=K\:\\RTS\\test\\nick\\SystemBuilder\\CodeGenerated\\DE10_NANO\\DE10_NANO_Bluetooth_Config\\Qsys.sopcinfo
+newSoftwareExampleWizardPage2.newBspLocation=K\:\\RTS\\test\\nick\\SystemBuilder\\CodeGenerated\\DE10_NANO\\DE10_NANO_Bluetooth_Config\\software\\HC05_Config_bsp

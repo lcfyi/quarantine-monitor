@@ -1,0 +1,11 @@
+	component Qsys is
+		port (
+			clk_clk                                 : in  std_logic := 'X'; -- clk
+			hc_05_uart_external_connection_rxd      : in  std_logic := 'X'; -- rxd
+			hc_05_uart_external_connection_txd      : out std_logic;        -- txd
+			mode_control_external_connection_export : out std_logic;        -- export
+			pio_key_external_connection_export      : in  std_logic := 'X'; -- export
+			reset_reset_n                           : in  std_logic := 'X'  -- reset_n
+		);
+	end component Qsys;
+

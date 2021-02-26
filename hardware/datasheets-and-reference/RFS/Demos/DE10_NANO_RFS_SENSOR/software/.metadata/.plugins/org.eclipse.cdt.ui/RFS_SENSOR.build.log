@@ -1,0 +1,20 @@
+16:05:38 **** Incremental Build of configuration Nios II for project RFS_SENSOR ****
+make all 
+Info: Building ../RFS_SENSOR_bsp/
+D:/intelFPGA/16.1/nios2eds/bin/gnu/H-x86_64-mingw32/bin/make --no-print-directory -C ../RFS_SENSOR_bsp/
+[BSP build complete]
+Info: Compiling main.c to obj/default/main.o
+nios2-elf-gcc -xc -MP -MMD -c -I../RFS_SENSOR_bsp//HAL/inc -I../RFS_SENSOR_bsp/ -I../RFS_SENSOR_bsp//drivers/inc  -pipe -D__hal__ -DALT_NO_INSTRUCTION_EMULATION -DALT_SINGLE_THREADED    -O0 -g -Wall   -mno-hw-div -mhw-mul -mno-hw-mulx -mgpopt=global  -o obj/default/main.o main.c
+Info: Compiling rh_temp.c to obj/default/rh_temp.o
+nios2-elf-gcc -xc -MP -MMD -c -I../RFS_SENSOR_bsp//HAL/inc -I../RFS_SENSOR_bsp/ -I../RFS_SENSOR_bsp//drivers/inc  -pipe -D__hal__ -DALT_NO_INSTRUCTION_EMULATION -DALT_SINGLE_THREADED    -O0 -g -Wall   -mno-hw-div -mhw-mul -mno-hw-mulx -mgpopt=global  -o obj/default/rh_temp.o rh_temp.c
+Info: Linking RFS_SENSOR.elf
+nios2-elf-g++  -T'../RFS_SENSOR_bsp//linker.x' -msys-crt0='../RFS_SENSOR_bsp//obj/HAL/src/crt0.o' -msys-lib=hal_bsp -L../RFS_SENSOR_bsp/   -Wl,-Map=RFS_SENSOR.map   -O0 -g -Wall   -mno-hw-div -mhw-mul -mno-hw-mulx -mgpopt=global  -o RFS_SENSOR.elf obj/default/I2C_core.o obj/default/light_sensor.o obj/default/main.o obj/default/mpu9250.o obj/default/rh_temp.o -lm -msys-lib=m
+nios2-elf-insert RFS_SENSOR.elf --thread_model hal --cpu_name nios2_gen2 --qsys true --simulation_enabled false --id 0 --sidp 0x410b0 --timestamp 1496302799 --stderr_dev jtag_uart --stdin_dev jtag_uart --stdout_dev jtag_uart --sopc_system_name nios_qsys --quartus_project_dir "F:/SVN/de10_nano/trunk/cd/daughter_card/DE10_Nano_RFS_CD/DE10_NANO_RFS_SENSOR" --jdi ../..//output_files/DE10_NANO_RFS_SENSOR.jdi --sopcinfo F:/SVN/de10_nano/trunk/cd/daughter_card/DE10_Nano_RFS_CD/DE10_NANO_RFS_SENSOR/software/RFS_SENSOR_bsp/../../nios_qsys.sopcinfo
+Info: (RFS_SENSOR.elf) 90 KBytes program size (code + initialized data).
+Info:                  28 KBytes free for stack + heap.
+Info: Creating RFS_SENSOR.objdump
+nios2-elf-objdump --disassemble --syms --all-header --source RFS_SENSOR.elf >RFS_SENSOR.objdump
+[RFS_SENSOR build complete]
+
+16:05:42 Build Finished (took 4s.40ms)
+

@@ -1,0 +1,4 @@
+eclipse.preferences.version=1
+newSoftwareExampleWizardPage.defaultLocation=F\:\\SVN\\de10_nano\\trunk\\cd\\daughter_card\\DE10_Nano_RFS_CD\\DE10_NANO_RFS_SENSOR\\software\\RFS_SENSOR
+newSoftwareExampleWizardPage.sopcinfoFile=F\:\\SVN\\de10_nano\\trunk\\cd\\daughter_card\\DE10_Nano_RFS_CD\\DE10_NANO_RFS_SENSOR\\nios_qsys.sopcinfo
+newSoftwareExampleWizardPage2.newBspLocation=F\:\\SVN\\de10_nano\\trunk\\cd\\daughter_card\\DE10_Nano_RFS_CD\\DE10_NANO_RFS_SENSOR\\software\\RFS_SENSOR_bsp

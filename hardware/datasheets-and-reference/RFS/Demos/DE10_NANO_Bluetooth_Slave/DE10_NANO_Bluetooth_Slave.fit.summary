@@ -1,0 +1,20 @@
+Fitter Status : Successful - Wed May 31 10:52:33 2017
+Quartus Prime Version : 16.1.2 Build 203 01/18/2017 SJ Standard Edition
+Revision Name : DE10_NANO_Bluetooth_Slave
+Top-level Entity Name : DE10_NANO_Bluetooth_Slave
+Family : Cyclone V
+Device : 5CSEBA6U23I7
+Timing Models : Final
+Logic utilization (in ALMs) : 104 / 41,910 ( < 1 % )
+Total registers : 265
+Total pins : 107 / 314 ( 34 % )
+Total virtual pins : 0
+Total block memory bits : 4,096 / 5,662,720 ( < 1 % )
+Total RAM Blocks : 2 / 553 ( < 1 % )
+Total DSP Blocks : 0 / 112 ( 0 % )
+Total HSSI RX PCSs : 0
+Total HSSI PMA RX Deserializers : 0
+Total HSSI TX PCSs : 0
+Total HSSI PMA TX Serializers : 0
+Total PLLs : 0 / 6 ( 0 % )
+Total DLLs : 0 / 4 ( 0 % )

@@ -1,0 +1,6 @@
+DATE = "10:03:30 May 31, 2017"
+QUARTUS_VERSION = "16.0.2"
+
+# Revisions
+
+PROJECT_REVISION = "DE10_NANO_Bluetooth_Config"

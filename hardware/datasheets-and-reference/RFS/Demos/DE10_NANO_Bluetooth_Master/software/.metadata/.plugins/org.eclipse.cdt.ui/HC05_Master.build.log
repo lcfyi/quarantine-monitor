@@ -1,0 +1,9 @@
+10:41:12 **** Incremental Build of configuration Nios II for project HC05_Master ****
+make all 
+Info: Building ../HC05_Master_bsp/
+E:/intelFPGA/16.1/nios2eds/bin/gnu/H-x86_64-mingw32/bin/make --no-print-directory -C ../HC05_Master_bsp/
+[BSP build complete]
+[HC05_Master build complete]
+
+10:41:13 Build Finished (took 585ms)
+

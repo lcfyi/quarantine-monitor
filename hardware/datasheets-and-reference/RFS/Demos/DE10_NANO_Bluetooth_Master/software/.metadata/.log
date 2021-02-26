@@ -1,0 +1,55 @@
+!SESSION 2017-05-31 10:27:09.603 -----------------------------------------------
+eclipse.buildId=4.3.2.M20140221-1700
+java.version=1.8.0_05
+java.vendor=Oracle Corporation
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=zh_TW
+Framework arguments:  -product org.eclipse.epp.package.cpp.product -pluginCustomization E:/intelfpga/16.1/nios2eds/bin/eclipse_nios2/plugin_customization.ini
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -product org.eclipse.epp.package.cpp.product -pluginCustomization E:/intelfpga/16.1/nios2eds/bin/eclipse_nios2/plugin_customization.ini
+
+!ENTRY org.eclipse.egit.ui 2 0 2017-05-31 10:27:17.165
+!MESSAGE Warning: EGit couldn't detect the installation path "gitPrefix" of native Git. Hence EGit can't respect system level
+Git settings which might be configured in ${gitPrefix}/etc/gitconfig under the native Git installation directory.
+The most important of these settings is core.autocrlf. Git for Windows by default sets this parameter to true in
+this system level configuration. The Git installation location can be configured on the
+Team > Git > Configuration preference page's 'System Settings' tab.
+This warning can be switched off on the Team > Git > Confirmations and Warnings preference page.
+
+!ENTRY org.eclipse.egit.ui 2 0 2017-05-31 10:27:17.166
+!MESSAGE Warning: The environment variable HOME is not set. The following directory will be used to store the Git
+user global configuration and to define the default location to store repositories: 'C:\Users\User'. If this is
+not correct please set the HOME environment variable and restart Eclipse. Otherwise Git for Windows and
+EGit might behave differently since they see different configuration options.
+This warning can be switched off on the Team > Git > Confirmations and Warnings preference page.
+
+!ENTRY org.eclipse.cdt.core 1 0 2017-05-31 10:28:01.229
+!MESSAGE Indexed 'HC05_Master_bsp' (87 sources, 155 headers) in 1.66 sec: 5,536 declarations; 9,064 references; 46 unresolved inclusions; 3 syntax errors; 96 unresolved names (0.65%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2017-05-31 10:28:02.187
+!MESSAGE Indexed 'HC05_Master' (1 sources, 21 headers) in 0.07 sec: 983 declarations; 1,599 references; 0 unresolved inclusions; 0 syntax errors; 0 unresolved names (0.00%)
+
+!ENTRY com.altera.sbtgui.launch 1 0 2017-05-31 10:34:46.558
+!MESSAGE Executing: [E:/intelfpga/16.1/quartus\bin64\cygwin\bin\bash.exe, -c, nios2-download '--cable=DE-SoC on localhost [USB-1]' --device=2 --instance=0 --stop]
+
+!ENTRY com.altera.sbtgui.launch 1 0 2017-05-31 10:34:48.112
+!MESSAGE Executing: [E:/intelfpga/16.1/quartus\bin64\cygwin\bin\bash.exe, -c, nios2-download '--cable=DE-SoC on localhost [USB-1]' --device=2 --instance=0 --go /cygdrive/k/RTS/test/nick/SystemBuilder/CodeGenerated/DE10_NANO/DE10_NANO_Bluetooth_Master/software/HC05_Master/HC05_Master.elf]
+
+!ENTRY com.altera.sbtgui.launch 1 0 2017-05-31 10:39:38.972
+!MESSAGE Executing: [E:/intelfpga/16.1/quartus\bin64\cygwin\bin\bash.exe, -c, nios2-download '--cable=DE-SoC on localhost [USB-1]' --device=2 --instance=0 --stop]
+
+!ENTRY com.altera.sbtgui.launch 4 0 2017-05-31 10:39:40.537
+!MESSAGE Failed Executing: [nios2-download, '--cable=DE-SoC on localhost [USB-1]', --device=2, --instance=0, --stop] return code: 2, no processors found
+
+!ENTRY com.altera.sbtgui.launch 1 0 2017-05-31 10:39:40.636
+!MESSAGE Executing: [E:/intelfpga/16.1/quartus\bin64\cygwin\bin\bash.exe, -c, nios2-download '--cable=DE-SoC on localhost [USB-1]' --device=2 --instance=0 --go /cygdrive/k/RTS/test/nick/SystemBuilder/CodeGenerated/DE10_NANO/DE10_NANO_Bluetooth_Master/software/HC05_Master/HC05_Master.elf]
+
+!ENTRY com.altera.sbtgui.launch 4 0 2017-05-31 10:39:42.481
+!MESSAGE Failed Executing: [nios2-download, '--cable=DE-SoC on localhost [USB-1]', --device=2, --instance=0, --go, /cygdrive/k/RTS/test/nick/SystemBuilder/CodeGenerated/DE10_NANO/DE10_NANO_Bluetooth_Master/software/HC05_Master/HC05_Master.elf] return code: 2, no processors found
+
+!ENTRY com.altera.sbtgui.launch 4 0 2017-05-31 10:39:42.483
+!MESSAGE Downloading ELF Process failed
+
+!ENTRY com.altera.sbtgui.launch 1 0 2017-05-31 10:41:13.629
+!MESSAGE Executing: [E:/intelfpga/16.1/quartus\bin64\cygwin\bin\bash.exe, -c, nios2-download '--cable=DE-SoC on localhost [USB-1]' --device=2 --instance=0 --stop]
+
+!ENTRY com.altera.sbtgui.launch 1 0 2017-05-31 10:41:15.260
+!MESSAGE Executing: [E:/intelfpga/16.1/quartus\bin64\cygwin\bin\bash.exe, -c, nios2-download '--cable=DE-SoC on localhost [USB-1]' --device=2 --instance=0 --go /cygdrive/k/RTS/test/nick/SystemBuilder/CodeGenerated/DE10_NANO/DE10_NANO_Bluetooth_Master/software/HC05_Master/HC05_Master.elf]
