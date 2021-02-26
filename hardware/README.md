@@ -33,7 +33,7 @@ It works in AT mode (38400), but not in the regular mode (I swear I got it to wo
 - Fix the behaviour with the reset switch being required at startup
   - This behaviour is due to CTS being driven to a float (I haven't been able to verify which one since I don't have access to a scope); once the FPGA firmware is flashed and the module reset, the WiFi module works
 - Write a library to wrap the AT commands 
-
+  - Or alternatively, install nodeMCU and use Lua to wrap the functions we need?
 ## General
 
 ### TODO
