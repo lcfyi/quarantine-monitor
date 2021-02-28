@@ -33,7 +33,7 @@ router.post("/", async (req, res) => {
 			} else {
 				await user.save();
 				logger("User created");
-				res.status(201).json(user);
+				res.status(201).json(`${user._id}`);
 			}
 
 		});

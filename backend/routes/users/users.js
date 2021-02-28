@@ -3,6 +3,7 @@ const logger = debug("app:error");
 const express = require("express");
 const router = express.Router();
 const User = require("../../models/user");
+const Station = require("../../models/station");
 
 // Routers for Register/Login functionality
 const userRegisterRouter = require("./userRegister");
@@ -18,6 +19,9 @@ async function getUser(req, res, next) {
 	try {
 		user = await User.findById(req.params.userid)
         .select('username deviceToken stationid lastCoords locationMap');
+
+        if (user == null)
+            throw "Not Found";
 	} catch (err) {
 		return res.status(404).send("Error 404: " + err.message);
 	}
@@ -30,6 +34,25 @@ async function getUser(req, res, next) {
  */
 router.get("/:userid", getUser, (req, res) => {
 	res.json(res.user);
+});
+
+/*
+ *	GET request for user location data.
+ */
+router.get("/:userid/plotmap", getUser, (req, res) => {
+	res.json(res.user.locationMap);
+});
+
+/*
+ *	GET request for user station. Returns the JSON object for the station.
+ */
+router.get("/:userid/station", getUser, async (req, res) => {
+    try {
+		let station = await Station.find({"stationid": res.user.stationid});
+		res.status(200).json(station);
+	} catch (err) {
+		res.status(404).send("Station not found.");
+	}
 });
 
 /*

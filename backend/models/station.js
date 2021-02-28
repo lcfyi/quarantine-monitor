@@ -2,19 +2,9 @@ const mongoose = require("mongoose");
 
 //Defines the schema for a station
 const stationSchema = new mongoose.Schema({
-	stationid: { 
-        type: String,
-    },
+    _id: String,
     users: [],
-	station: { 
-        type: String,
-    },
-    baseLocation: {
-        type: {
-            type: String
-        },
-        coordinates: [Number]
-    }
+    baseCoords: [Number]
 }, { collection: "stationDB" });
 
 module.exports = mongoose.model("Station", stationSchema);
