@@ -4,6 +4,7 @@ const express = require("express");
 const router = express.Router();
 const User = require("../../models/user");
 const Station = require("../../models/station");
+const sendPushNotification = require("../../pushnotification");
 
 // Routers for Register/Login functionality
 const userRegisterRouter = require("./userRegister");
@@ -34,6 +35,14 @@ async function getUser(req, res, next) {
  */
 router.get("/:userid", getUser, (req, res) => {
 	res.json(res.user);
+});
+
+/*
+ *	GET request for a specific user.
+ */
+router.get("/:userid/requestlocation", getUser, (req, res) => {
+	sendPushNotification(res.user.deviceToken, {"key": "Requesting location"}, true);
+	res.send("Submitted silent push notification!");
 });
 
 /*

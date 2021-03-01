@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "803052562993",
+    "project_id": "qmonitor-306302",
+    "storage_bucket": "qmonitor-306302.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:803052562993:android:604a4d73b16bb462aa4310",
+        "android_client_info": {
+          "package_name": "com.example.quarantine_monitor"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "803052562993-bmfbpdnjo9dkl3ggo14hlspi864kp260.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBVGB6GkjqXpHBBNjF7Zosj_eQ7X2VLRNM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "803052562993-bmfbpdnjo9dkl3ggo14hlspi864kp260.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
