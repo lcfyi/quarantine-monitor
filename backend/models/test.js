@@ -9,7 +9,7 @@ const testSchema = new mongoose.Schema({
         type: String,
     } ,
 	time: { 
-        type: Date,
+        type: Number,
     },
     status: {
         type: Number

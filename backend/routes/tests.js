@@ -5,9 +5,26 @@ const Test = require("../models/test");
 
 // /*
 //  *	GET request for a specific station.
+//  *  Can be queried by userids, stationids starttime, endtime, or status
 //  */
-// router.get("/", (req, res) => {
-// 	res.json(res.station);
+// router.get("/", async (req, res) => {
+
+// 	try {
+
+//         req.query.userid;
+
+// 		test = Test.find({}, async function(err, tests) {
+
+//         });
+
+//         if (tests == null)
+//             throw "Not Found";
+// 	} catch (err) {
+// 		return res.status(404).send("Error 404: " + err.message);
+// 	}
+
+
+// 	res.json(tests);
 // });
 
 // /*
