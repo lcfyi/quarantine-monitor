@@ -15,23 +15,34 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import static android.location.LocationManager.GPS_PROVIDER;
 
-public class SignUpActivity extends Activity implements LocationListener {
+public class SignUpActivity extends AppCompatActivity implements LocationListener {
     private RequestQueue queue;
     private final int REQUEST_PERMISSION_LOCATION=1;
-    private Map<String, Double> locationDetails;
-    private Intent findPlayersIntent;
+    private Double coordinates[];
     final private static String TAG = "SignUpActivity";
     private EditText usernameText;
     private EditText passwordText;
@@ -40,8 +51,10 @@ public class SignUpActivity extends Activity implements LocationListener {
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
-        locationDetails = new HashMap<>();
+        getSupportActionBar().hide();
         queue = Volley.newRequestQueue(this);
+
+        coordinates = new Double [2];
 
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
@@ -54,7 +67,7 @@ public class SignUpActivity extends Activity implements LocationListener {
         }
         locationManager.requestLocationUpdates(GPS_PROVIDER, 0, 0, this);
 
-        signUpButton = (Button) findViewById(R.id.btn_signup);
+        signUpButton = (Button) findViewById(R.id.btn_signUp);
         signUpButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){signUp();}
@@ -70,9 +83,9 @@ public class SignUpActivity extends Activity implements LocationListener {
      * location has been changed.
      * */
     @Override
-    public void onLocationChanged(@NonNull Location location) {
-        locationDetails.put("longitude", location.getLongitude());
-        locationDetails.put("latitude", location.getLatitude());
+    public void onLocationChanged(@NonNull Location location){
+        coordinates[0] = location.getLongitude();
+        coordinates[1] = location.getLatitude();
     }
 
     /*
@@ -110,7 +123,59 @@ public class SignUpActivity extends Activity implements LocationListener {
 
     //TODO: implement signup volley request
     private void signUp(){
+        Log.d(TAG, "signup pressed");
+        String username = usernameText.getText().toString();
+        String password = passwordText.getText().toString();
 
+        JSONArray coordinatesArray = new JSONArray();
+        coordinatesArray.put(coordinates[0]);
+        coordinatesArray.put(coordinates[1]);
+
+        Log.d(TAG, coordinatesArray.toString());
+
+        if(username.equals("") || password.equals("")){
+            Toast.makeText(this,"username or password empty", Toast.LENGTH_SHORT).show();
+        }
+        else{
+            String URL = "https://qmonitor-306302.wl.r.appspot.com/users";
+            JSONObject userInfo = new JSONObject();
+            try{
+                Log.d(TAG, String.valueOf(coordinates[0]));
+                Log.d(TAG, String.valueOf(coordinates[1]));
+                //create json body to put into request
+                userInfo.put("username", username);
+                userInfo.put("password", password);
+                userInfo.put("coordinates", coordinatesArray);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            Log.d(TAG, userInfo.toString());
+
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, URL, userInfo, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    Log.d(TAG, response.toString());
+                    try {
+                        UserInfoHelper.setUserId(response.get("_id").toString());
+                        Intent homePageIntent = new Intent(SignUpActivity.this, MainActivity.class);
+                        startActivity(homePageIntent);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.d(TAG, error.toString());
+                    Toast.makeText(SignUpActivity.this,"username exists already", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            // Add the request to the RequestQueue
+            queue.add(jsonObjectRequest);
+
+        }
     }
 
 
