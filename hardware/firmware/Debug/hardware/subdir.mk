@@ -4,17 +4,17 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
-../main.cpp 
+../hardware/wifi.cpp 
 
 OBJS += \
-./main.o 
+./hardware/wifi.o 
 
 CPP_DEPS += \
-./main.d 
+./hardware/wifi.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
-%.o: ../%.cpp
+hardware/%.o: ../hardware/%.cpp
 	@echo 'Building file: $<'
 	@echo 'Invoking: ARM C Compiler 5'
 	armcc --cpp -O0 -g --md --depend_format=unix_escaped -c -o "$@" "$<"
