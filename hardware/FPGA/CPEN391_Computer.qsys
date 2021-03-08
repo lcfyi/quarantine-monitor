@@ -87,7 +87,7 @@
       }
       datum sopceditor_expanded
       {
-         value = "0";
+         value = "1";
          type = "boolean";
       }
    }
@@ -113,7 +113,7 @@
       }
       datum sopceditor_expanded
       {
-         value = "0";
+         value = "1";
          type = "boolean";
       }
    }
@@ -243,7 +243,7 @@
       }
       datum sopceditor_expanded
       {
-         value = "0";
+         value = "1";
          type = "boolean";
       }
    }
@@ -269,7 +269,7 @@
       }
       datum sopceditor_expanded
       {
-         value = "0";
+         value = "1";
          type = "boolean";
       }
    }
@@ -297,6 +297,14 @@
       {
          value = "1";
          type = "boolean";
+      }
+   }
+   element Wifi_Reset
+   {
+      datum _sortIndex
+      {
+         value = "19";
+         type = "int";
       }
    }
    element bit_flipper_0
@@ -390,6 +398,11 @@
    name="system_pll_ref_reset"
    internal="System_PLL.ref_reset"
    type="reset"
+   dir="end" />
+ <interface
+   name="wifi_reset"
+   internal="Wifi_Reset.external_connection"
+   type="conduit"
    dir="end" />
  <module name="ARM_A9_HPS" kind="altera_hps" version="15.0" enabled="1">
   <parameter name="ABSTRACT_REAL_COMPARE_TEST" value="false" />
@@ -1197,6 +1210,20 @@
   <parameter name="gui_refclk" value="50.0" />
   <parameter name="other_boards" value="None" />
  </module>
+ <module name="Wifi_Reset" kind="altera_avalon_pio" version="15.0" enabled="1">
+  <parameter name="bitClearingEdgeCapReg" value="false" />
+  <parameter name="bitModifyingOutReg" value="false" />
+  <parameter name="captureEdge" value="false" />
+  <parameter name="clockRate" value="50000000" />
+  <parameter name="direction" value="Output" />
+  <parameter name="edgeType" value="RISING" />
+  <parameter name="generateIRQ" value="false" />
+  <parameter name="irqType" value="LEVEL" />
+  <parameter name="resetValue" value="0" />
+  <parameter name="simDoTestBenchWiring" value="false" />
+  <parameter name="simDrivenValue" value="0" />
+  <parameter name="width" value="8" />
+ </module>
  <module name="bit_flipper_0" kind="bit_flipper" version="1.0" enabled="1" />
  <connection
    kind="avalon"
@@ -1336,6 +1363,15 @@
  <connection
    kind="avalon"
    version="15.0"
+   start="ARM_A9_HPS.h2f_lw_axi_master"
+   end="Wifi_Reset.s1">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x0060" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="15.0"
    start="JTAG_To_FPGA_Bridge.master"
    end="IO_Bridge.avalon_slave">
   <parameter name="arbitrationPriority" value="1" />
@@ -1460,6 +1496,15 @@
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
+   kind="avalon"
+   version="15.0"
+   start="JTAG_To_FPGA_Bridge.master"
+   end="Wifi_Reset.s1">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0xff200060" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
    kind="clock"
    version="15.0"
    start="System_PLL.sys_clk"
@@ -1530,6 +1575,11 @@
    version="15.0"
    start="System_PLL.sys_clk"
    end="LCD_0.clk" />
+ <connection
+   kind="clock"
+   version="15.0"
+   start="System_PLL.sys_clk"
+   end="Wifi_Reset.clk" />
  <connection
    kind="clock"
    version="15.0"
@@ -1674,6 +1724,11 @@
    kind="reset"
    version="15.0"
    start="ARM_A9_HPS.h2f_reset"
+   end="Wifi_Reset.reset" />
+ <connection
+   kind="reset"
+   version="15.0"
+   start="ARM_A9_HPS.h2f_reset"
    end="Onchip_SRAM.reset1" />
  <connection
    kind="reset"
@@ -1755,6 +1810,11 @@
    version="15.0"
    start="System_PLL.reset_source"
    end="LCD_0.reset" />
+ <connection
+   kind="reset"
+   version="15.0"
+   start="System_PLL.reset_source"
+   end="Wifi_Reset.reset" />
  <connection
    kind="reset"
    version="15.0"

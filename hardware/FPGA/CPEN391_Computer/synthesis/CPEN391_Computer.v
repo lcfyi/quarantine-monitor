@@ -102,10 +102,11 @@ module CPEN391_Computer (
 		output wire        sdram_clk_clk,                   //            sdram_clk.clk
 		input  wire [9:0]  slider_switches_export,          //      slider_switches.export
 		input  wire        system_pll_ref_clk_clk,          //   system_pll_ref_clk.clk
-		input  wire        system_pll_ref_reset_reset       // system_pll_ref_reset.reset
+		input  wire        system_pll_ref_reset_reset,      // system_pll_ref_reset.reset
+		output wire [7:0]  wifi_reset_export                //           wifi_reset.export
 	);
 
-	wire         system_pll_sys_clk_clk;                                              // System_PLL:sys_clk_clk -> [ARM_A9_HPS:f2h_axi_clk, ARM_A9_HPS:h2f_axi_clk, ARM_A9_HPS:h2f_lw_axi_clk, HEX0_1:clk, HEX2_3:clk, HEX4_5:clk, IO_Bridge:clk, Interval_Timer:clk, JTAG_To_FPGA_Bridge:clk_clk, JTAG_To_HPS_Bridge:clk_clk, JTAG_UART_for_ARM_0:clk, JTAG_UART_for_ARM_1:clk, LCD_0:clk, LEDS:clk, Onchip_SRAM:clk, PushButtons:clk, SDRAM:clk, Slider_Switches:clk, SysID:clock, bit_flipper_0:clock, mm_interconnect_0:System_PLL_sys_clk_clk, mm_interconnect_1:System_PLL_sys_clk_clk, rst_controller:clk, rst_controller_003:clk]
+	wire         system_pll_sys_clk_clk;                                              // System_PLL:sys_clk_clk -> [ARM_A9_HPS:f2h_axi_clk, ARM_A9_HPS:h2f_axi_clk, ARM_A9_HPS:h2f_lw_axi_clk, HEX0_1:clk, HEX2_3:clk, HEX4_5:clk, IO_Bridge:clk, Interval_Timer:clk, JTAG_To_FPGA_Bridge:clk_clk, JTAG_To_HPS_Bridge:clk_clk, JTAG_UART_for_ARM_0:clk, JTAG_UART_for_ARM_1:clk, LCD_0:clk, LEDS:clk, Onchip_SRAM:clk, PushButtons:clk, SDRAM:clk, Slider_Switches:clk, SysID:clock, Wifi_Reset:clk, bit_flipper_0:clock, mm_interconnect_0:System_PLL_sys_clk_clk, mm_interconnect_1:System_PLL_sys_clk_clk, rst_controller:clk, rst_controller_003:clk]
 	wire   [1:0] arm_a9_hps_h2f_axi_master_awburst;                                   // ARM_A9_HPS:h2f_AWBURST -> mm_interconnect_0:ARM_A9_HPS_h2f_axi_master_awburst
 	wire   [3:0] arm_a9_hps_h2f_axi_master_arlen;                                     // ARM_A9_HPS:h2f_ARLEN -> mm_interconnect_0:ARM_A9_HPS_h2f_axi_master_arlen
 	wire   [7:0] arm_a9_hps_h2f_axi_master_wstrb;                                     // ARM_A9_HPS:h2f_WSTRB -> mm_interconnect_0:ARM_A9_HPS_h2f_axi_master_wstrb
@@ -254,6 +255,11 @@ module CPEN391_Computer (
 	wire   [1:0] mm_interconnect_0_lcd_0_s1_address;                                  // mm_interconnect_0:LCD_0_s1_address -> LCD_0:address
 	wire         mm_interconnect_0_lcd_0_s1_write;                                    // mm_interconnect_0:LCD_0_s1_write -> LCD_0:write_n
 	wire  [31:0] mm_interconnect_0_lcd_0_s1_writedata;                                // mm_interconnect_0:LCD_0_s1_writedata -> LCD_0:writedata
+	wire         mm_interconnect_0_wifi_reset_s1_chipselect;                          // mm_interconnect_0:Wifi_Reset_s1_chipselect -> Wifi_Reset:chipselect
+	wire  [31:0] mm_interconnect_0_wifi_reset_s1_readdata;                            // Wifi_Reset:readdata -> mm_interconnect_0:Wifi_Reset_s1_readdata
+	wire   [1:0] mm_interconnect_0_wifi_reset_s1_address;                             // mm_interconnect_0:Wifi_Reset_s1_address -> Wifi_Reset:address
+	wire         mm_interconnect_0_wifi_reset_s1_write;                               // mm_interconnect_0:Wifi_Reset_s1_write -> Wifi_Reset:write_n
+	wire  [31:0] mm_interconnect_0_wifi_reset_s1_writedata;                           // mm_interconnect_0:Wifi_Reset_s1_writedata -> Wifi_Reset:writedata
 	wire         mm_interconnect_0_jtag_uart_for_arm_0_avalon_jtag_slave_chipselect;  // mm_interconnect_0:JTAG_UART_for_ARM_0_avalon_jtag_slave_chipselect -> JTAG_UART_for_ARM_0:av_chipselect
 	wire  [31:0] mm_interconnect_0_jtag_uart_for_arm_0_avalon_jtag_slave_readdata;    // JTAG_UART_for_ARM_0:av_readdata -> mm_interconnect_0:JTAG_UART_for_ARM_0_avalon_jtag_slave_readdata
 	wire         mm_interconnect_0_jtag_uart_for_arm_0_avalon_jtag_slave_waitrequest; // JTAG_UART_for_ARM_0:av_waitrequest -> mm_interconnect_0:JTAG_UART_for_ARM_0_avalon_jtag_slave_waitrequest
@@ -321,7 +327,7 @@ module CPEN391_Computer (
 	wire  [31:0] arm_a9_hps_f2h_irq0_irq;                                             // irq_mapper:sender_irq -> ARM_A9_HPS:f2h_irq_p0
 	wire         irq_mapper_001_receiver0_irq;                                        // JTAG_UART_for_ARM_1:av_irq -> irq_mapper_001:receiver0_irq
 	wire  [31:0] arm_a9_hps_f2h_irq1_irq;                                             // irq_mapper_001:sender_irq -> ARM_A9_HPS:f2h_irq_p1
-	wire         rst_controller_reset_out_reset;                                      // rst_controller:reset_out -> [HEX0_1:reset_n, HEX2_3:reset_n, HEX4_5:reset_n, IO_Bridge:reset, Interval_Timer:reset_n, JTAG_UART_for_ARM_0:rst_n, JTAG_UART_for_ARM_1:rst_n, LCD_0:reset_n, LEDS:reset_n, Onchip_SRAM:reset, PushButtons:reset_n, SDRAM:reset_n, Slider_Switches:reset_n, SysID:reset_n, bit_flipper_0:reset_n, mm_interconnect_0:JTAG_To_FPGA_Bridge_clk_reset_reset_bridge_in_reset_reset, mm_interconnect_0:SDRAM_reset_reset_bridge_in_reset_reset, mm_interconnect_1:JTAG_To_HPS_Bridge_clk_reset_reset_bridge_in_reset_reset, mm_interconnect_1:JTAG_To_HPS_Bridge_master_translator_reset_reset_bridge_in_reset_reset, rst_translator:in_reset]
+	wire         rst_controller_reset_out_reset;                                      // rst_controller:reset_out -> [HEX0_1:reset_n, HEX2_3:reset_n, HEX4_5:reset_n, IO_Bridge:reset, Interval_Timer:reset_n, JTAG_UART_for_ARM_0:rst_n, JTAG_UART_for_ARM_1:rst_n, LCD_0:reset_n, LEDS:reset_n, Onchip_SRAM:reset, PushButtons:reset_n, SDRAM:reset_n, Slider_Switches:reset_n, SysID:reset_n, Wifi_Reset:reset_n, bit_flipper_0:reset_n, mm_interconnect_0:JTAG_To_FPGA_Bridge_clk_reset_reset_bridge_in_reset_reset, mm_interconnect_0:SDRAM_reset_reset_bridge_in_reset_reset, mm_interconnect_1:JTAG_To_HPS_Bridge_clk_reset_reset_bridge_in_reset_reset, mm_interconnect_1:JTAG_To_HPS_Bridge_master_translator_reset_reset_bridge_in_reset_reset, rst_translator:in_reset]
 	wire         rst_controller_reset_out_reset_req;                                  // rst_controller:reset_req -> [Onchip_SRAM:reset_req, rst_translator:reset_req_in]
 	wire         arm_a9_hps_h2f_reset_reset;                                          // ARM_A9_HPS:h2f_rst_n -> [rst_controller:reset_in0, rst_controller_001:reset_in0, rst_controller_002:reset_in0, rst_controller_003:reset_in0]
 	wire         system_pll_reset_source_reset;                                       // System_PLL:reset_source_reset -> [rst_controller:reset_in1, rst_controller_001:reset_in1, rst_controller_002:reset_in1]
@@ -751,6 +757,17 @@ module CPEN391_Computer (
 		.reset_source_reset (system_pll_reset_source_reset)  // reset_source.reset
 	);
 
+	CPEN391_Computer_HEX0_1 wifi_reset (
+		.clk        (system_pll_sys_clk_clk),                     //                 clk.clk
+		.reset_n    (~rst_controller_reset_out_reset),            //               reset.reset_n
+		.address    (mm_interconnect_0_wifi_reset_s1_address),    //                  s1.address
+		.write_n    (~mm_interconnect_0_wifi_reset_s1_write),     //                    .write_n
+		.writedata  (mm_interconnect_0_wifi_reset_s1_writedata),  //                    .writedata
+		.chipselect (mm_interconnect_0_wifi_reset_s1_chipselect), //                    .chipselect
+		.readdata   (mm_interconnect_0_wifi_reset_s1_readdata),   //                    .readdata
+		.out_port   (wifi_reset_export)                           // external_connection.export
+	);
+
 	bit_flipper bit_flipper_0 (
 		.reset_n (~rst_controller_reset_out_reset),                          //          reset.reset_n
 		.addr    (mm_interconnect_0_bit_flipper_0_avalon_slave_0_address),   // avalon_slave_0.address
@@ -927,7 +944,12 @@ module CPEN391_Computer (
 		.Slider_Switches_s1_address                                            (mm_interconnect_0_slider_switches_s1_address),                        //                                              Slider_Switches_s1.address
 		.Slider_Switches_s1_readdata                                           (mm_interconnect_0_slider_switches_s1_readdata),                       //                                                                .readdata
 		.SysID_control_slave_address                                           (mm_interconnect_0_sysid_control_slave_address),                       //                                             SysID_control_slave.address
-		.SysID_control_slave_readdata                                          (mm_interconnect_0_sysid_control_slave_readdata)                       //                                                                .readdata
+		.SysID_control_slave_readdata                                          (mm_interconnect_0_sysid_control_slave_readdata),                      //                                                                .readdata
+		.Wifi_Reset_s1_address                                                 (mm_interconnect_0_wifi_reset_s1_address),                             //                                                   Wifi_Reset_s1.address
+		.Wifi_Reset_s1_write                                                   (mm_interconnect_0_wifi_reset_s1_write),                               //                                                                .write
+		.Wifi_Reset_s1_readdata                                                (mm_interconnect_0_wifi_reset_s1_readdata),                            //                                                                .readdata
+		.Wifi_Reset_s1_writedata                                               (mm_interconnect_0_wifi_reset_s1_writedata),                           //                                                                .writedata
+		.Wifi_Reset_s1_chipselect                                              (mm_interconnect_0_wifi_reset_s1_chipselect)                           //                                                                .chipselect
 	);
 
 	CPEN391_Computer_mm_interconnect_1 mm_interconnect_1 (
