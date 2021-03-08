@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "hardware/wifi.h"
+#include "utils.h"
 //
 //// // ALL parallel IO ports created by QSYS have a 32 bit wide interface as far as the processor,
 //// // that is, it reads and writes 32 bit data to the port, even though the
@@ -40,36 +41,65 @@
 
 WiFi wifi;
 
-int main()
-{
-    int switches;
-    printf("Initializing WiFi UART.\n");
-    wifi.init();
-    printf("Done initializing UART.\n");
+void waitForNewline() {
+	int receivedChar;
+	do {
+		receivedChar = wifi.get_char();
+		printf("%c", receivedChar);
+	} while (receivedChar != '\n');
+}
 
-    int a;
+int main() {
+	int switches;
+	int buttons;
+	printf("Initializing WiFi UART.\n");
+	wifi.init();
+	printf("Done initializing UART.\n");
 
-    while (1)
-    {
-        switches = *SWITCHES;
-        printf("Switches %d\n", switches);
-        switch (switches)
-        {
-        case 1:
-            wifi.write("AT+CWLAP\r\n");
-            a = wifi.get_char();
-            wifi.flush();
-            break;
-        case 2:
-        default:
-            wifi.write("AT\r\n");
-            a = wifi.get_char();
-            printf("%c", a);
-            wifi.flush();
-        }
-        *LEDS = switches;
-        *HEX0_1 = switches;
-        *HEX2_3 = switches;
-        *HEX4_5 = switches;
-    }
+	printf("Setting configuration variables.\n");
+	wifi.write("0 \n"); // TODO add WiFi SSID
+	waitForNewline();
+	wifi.write("1 \n"); // TODO add WiFi password
+	waitForNewline();
+	wifi.write("3 https://lc.fyi/.netlify/functions/demo\n");
+	waitForNewline();
+
+	printf("Connecting to wifi.\n");
+	wifi.write("4\n");
+	waitForNewline();
+
+	bool buttonPressed = false;
+
+	while (1) {
+		wifi.flush();
+		buttons = *PUSHBUTTONS;
+		switches = *SWITCHES;
+
+		if (buttons != 15 && !buttonPressed) { // TODO make constant
+			buttonPressed = true;
+			switch (buttons) {
+			case 14: // KEY[0]
+				break;
+			case 13: // KEY[1]
+				char * x = new char[10];
+				sprintf(x, "P %d\n", switches);
+				printf(x);
+				wifi.write(x);
+				delete x;
+				break;
+			case 11: // KEY[2]
+				wifi.write("G\n");
+				break;
+			case 7: // KEY[3]
+				break;
+			}
+		}
+		if (buttons == 15) {
+			buttonPressed = false;
+		}
+		*LEDS = switches;
+		*HEX0_1 = switches;
+		*HEX2_3 = switches;
+		*HEX4_5 = switches;
+	}
 }

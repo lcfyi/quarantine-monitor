@@ -16,7 +16,12 @@ void WiFi::init()
     WiFi_FifoControlReg = 0x06;
     // Now Clear all bits in the FiFo control registers
     WiFi_FifoControlReg = 0x00;
-    // TODO reset the WiFi chip
+    // Reset the wifi chip (it's active low)
+    WiFi_Reset = 0x00;
+    naiveSleep(100);
+    WiFi_Reset = 0x01;
+    naiveSleep(1000);
+    flush();
 }
 
 char WiFi::put_char(char c)

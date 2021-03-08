@@ -3,6 +3,7 @@
 
 #include <string.h>
 #include <stdio.h>
+#include "../utils.h"
 
 // TODO these are hardcoded, will need changing once we run on Linux
 #define WiFi_ReceiverFifo (*(volatile unsigned char *)(0xFF210200))
@@ -17,7 +18,7 @@
 #define WiFi_ScratchReg (*(volatile unsigned char *)(0xFF21020E))
 #define WiFi_DivisorLatchLSB (*(volatile unsigned char *)(0xFF210200))
 #define WiFi_DivisorLatchMSB (*(volatile unsigned char *)(0xFF210202))
-
+#define WiFi_Reset (*(volatile unsigned int *)(0xFF200060))
 class WiFi
 {
 public:
