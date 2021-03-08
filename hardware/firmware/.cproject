@@ -18,7 +18,7 @@
 							<builder buildPath="${workspace_loc:/MyCPEN391Project}/Debug" id="com.arm.toolchain.baremetal.builder.536786904" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="com.arm.toolchain.baremetal.builder"/>
 							<tool id="com.arm.tool.c.compiler.baremetal.exe.debug.1037386373" name="ARM C Compiler 5" superClass="com.arm.tool.c.compiler.baremetal.exe.debug">
 								<option defaultValue="com.arm.tool.c.compiler.option.optlevel.min" id="com.arm.tool.c.compiler.baremetal.exe.debug.base.option.opt.325283365" name="Optimization level" superClass="com.arm.tool.c.compiler.baremetal.exe.debug.base.option.opt" valueType="enumerated"/>
-								<option id="com.arm.tool.c.compile.option.lang.763068008" superClass="com.arm.tool.c.compile.option.lang" value="com.arm.tool.c.compile.option.lang.c99" valueType="enumerated"/>
+								<option id="com.arm.tool.c.compile.option.lang.763068008" name="Source language mode" superClass="com.arm.tool.c.compile.option.lang" value="com.arm.tool.c.compile.option.lang.cpp" valueType="enumerated"/>
 								<inputType id="com.arm.tool.c.compiler.input.1719961089" superClass="com.arm.tool.c.compiler.input"/>
 								<inputType id="com.arm.tool.cpp.compiler.input.1815353114" superClass="com.arm.tool.cpp.compiler.input"/>
 							</tool>
@@ -27,7 +27,7 @@
 							</tool>
 							<tool id="com.arm.tool.assembler.1380537027" name="ARM Assembler 5" superClass="com.arm.tool.assembler"/>
 							<tool id="com.arm.tool.c.linker.291538591" name="ARM Linker 5" superClass="com.arm.tool.c.linker">
-								<option id="com.arm.tool.c.linker.option.scatter.1786129036" superClass="com.arm.tool.c.linker.option.scatter" value="C:\Users\hippo\Documents\qsys-tutorial\ds5\scatter.scat" valueType="string"/>
+								<option id="com.arm.tool.c.linker.option.scatter.1786129036" name="Scatter file (--scatter)" superClass="com.arm.tool.c.linker.option.scatter" value="C:\Users\hippo\Documents\quarantine-monitor\hardware\firmware\scatter.scat" valueType="string"/>
 							</tool>
 							<tool id="com.arm.tool.librarian.1359073760" name="ARM Librarian 5" superClass="com.arm.tool.librarian"/>
 						</toolChain>
@@ -80,8 +80,7 @@
 		<configuration configurationName="Release">
 			<resource resourceType="PROJECT" workspacePath="/MyCPEN391Project"/>
 		</configuration>
-		<configuration configurationName="Debug">
-			<resource resourceType="PROJECT" workspacePath="/MyCPEN391Project"/>
-		</configuration>
+		<configuration configurationName="Debug"/>
 	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 </cproject>

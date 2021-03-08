@@ -98,7 +98,8 @@ module CPEN391_Computer (
 	sdram_clk_clk,
 	slider_switches_export,
 	system_pll_ref_clk_clk,
-	system_pll_ref_reset_reset);	
+	system_pll_ref_reset_reset,
+	wifi_reset_export);	
 
 	output	[7:0]	hex0_1_export;
 	output	[7:0]	hex2_3_export;
@@ -199,4 +200,5 @@ module CPEN391_Computer (
 	input	[9:0]	slider_switches_export;
 	input		system_pll_ref_clk_clk;
 	input		system_pll_ref_reset_reset;
+	output	[7:0]	wifi_reset_export;
 endmodule

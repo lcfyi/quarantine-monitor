@@ -1,5 +1,5 @@
 Assembler report for CPEN391_Project
-Thu Feb 25 19:12:20 2021
+Sun Mar 07 23:33:25 2021
 Quartus II 64-Bit Version 15.0.0 Build 145 04/22/2015 Patches 0.01we SJ Web Edition
 
 
@@ -11,7 +11,7 @@ Quartus II 64-Bit Version 15.0.0 Build 145 04/22/2015 Patches 0.01we SJ Web Edit
   3. Assembler Settings
   4. Assembler Encrypted IP Cores Summary
   5. Assembler Generated Files
-  6. Assembler Device Options: C:/Users/hippo/Desktop/CPEN391_Computer (Verilog) UART - For 391 Students/CPEN391_Project.sof
+  6. Assembler Device Options: C:/Users/hippo/Documents/quarantine-monitor/hardware/FPGA/CPEN391_Project.sof
   7. Assembler Messages
 
 
@@ -39,7 +39,7 @@ agreement for further details.
 +---------------------------------------------------------------+
 ; Assembler Summary                                             ;
 +-----------------------+---------------------------------------+
-; Assembler Status      ; Successful - Thu Feb 25 19:12:20 2021 ;
+; Assembler Status      ; Successful - Sun Mar 07 23:33:25 2021 ;
 ; Revision Name         ; CPEN391_Project                       ;
 ; Top-level Entity Name ; MyComputer_Verilog                    ;
 ; Family                ; Cyclone V                             ;
@@ -64,24 +64,24 @@ agreement for further details.
 +--------+------------------------+--------------+
 
 
-+-----------------------------------------------------------------------------------------------+
-; Assembler Generated Files                                                                     ;
-+-----------------------------------------------------------------------------------------------+
-; File Name                                                                                     ;
-+-----------------------------------------------------------------------------------------------+
-; C:/Users/hippo/Desktop/CPEN391_Computer (Verilog) UART - For 391 Students/CPEN391_Project.sof ;
-+-----------------------------------------------------------------------------------------------+
++-------------------------------------------------------------------------------+
+; Assembler Generated Files                                                     ;
++-------------------------------------------------------------------------------+
+; File Name                                                                     ;
++-------------------------------------------------------------------------------+
+; C:/Users/hippo/Documents/quarantine-monitor/hardware/FPGA/CPEN391_Project.sof ;
++-------------------------------------------------------------------------------+
 
 
-+-------------------------------------------------------------------------------------------------------------------------+
-; Assembler Device Options: C:/Users/hippo/Desktop/CPEN391_Computer (Verilog) UART - For 391 Students/CPEN391_Project.sof ;
-+----------------+--------------------------------------------------------------------------------------------------------+
-; Option         ; Setting                                                                                                ;
-+----------------+--------------------------------------------------------------------------------------------------------+
-; Device         ; 5CSEMA5F31C6                                                                                           ;
-; JTAG usercode  ; 0x0978BB3D                                                                                             ;
-; Checksum       ; 0x0978BB3D                                                                                             ;
-+----------------+--------------------------------------------------------------------------------------------------------+
++---------------------------------------------------------------------------------------------------------+
+; Assembler Device Options: C:/Users/hippo/Documents/quarantine-monitor/hardware/FPGA/CPEN391_Project.sof ;
++----------------+----------------------------------------------------------------------------------------+
+; Option         ; Setting                                                                                ;
++----------------+----------------------------------------------------------------------------------------+
+; Device         ; 5CSEMA5F31C6                                                                           ;
+; JTAG usercode  ; 0x01AF31A8                                                                             ;
+; Checksum       ; 0x01AF31A8                                                                             ;
++----------------+----------------------------------------------------------------------------------------+
 
 
 +--------------------+
@@ -90,14 +90,14 @@ agreement for further details.
 Info: *******************************************************************
 Info: Running Quartus II 64-Bit Assembler
     Info: Version 15.0.0 Build 145 04/22/2015 Patches 0.01we SJ Web Edition
-    Info: Processing started: Thu Feb 25 19:12:07 2021
+    Info: Processing started: Sun Mar 07 23:33:13 2021
 Info: Command: quartus_asm --read_settings_files=off --write_settings_files=off CPEN391_Project -c CPEN391_Project
 Info (115030): Assembler is generating device programming files
 Info (11878): Hard Processor Subsystem configuration has not changed and a Preloader software update is not required
 Info: Quartus II 64-Bit Assembler was successful. 0 errors, 0 warnings
-    Info: Peak virtual memory: 5075 megabytes
-    Info: Processing ended: Thu Feb 25 19:12:21 2021
-    Info: Elapsed time: 00:00:14
-    Info: Total CPU time (on all processors): 00:00:13
+    Info: Peak virtual memory: 5002 megabytes
+    Info: Processing ended: Sun Mar 07 23:33:26 2021
+    Info: Elapsed time: 00:00:13
+    Info: Total CPU time (on all processors): 00:00:11
 
 

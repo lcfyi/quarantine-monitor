@@ -24,18 +24,7 @@ module MyComputer_Verilog (
 	
 		// Slider Switches
 		input unsigned [9:0] SW,
-		
-		// VGA/Graphics Signals
-		output VGA_BLANK_N,
-		output VGA_SYNC_N,
-		output VGA_CLK,
-		output VGA_HS,
-		output VGA_VS,
-		
-		output unsigned [7:0] VGA_B,
-		output unsigned [7:0] VGA_G,
-		output unsigned [7:0] VGA_R,
-	
+
 		// SDRAM on FPGA Side
 		output unsigned [12:0] DRAM_ADDR,
 		output unsigned [1:0] DRAM_BA,
@@ -170,6 +159,8 @@ module MyComputer_Verilog (
 	
 	// for LCD display connected to PIO port, 11 bits used
 	wire unsigned [15:0] LCD_WIRE;
+
+	wire [7:0] WIFI_RST_WIRE;
 	
  
 	 ///////////////////////////////////////////////////////////////////////////////////////
@@ -178,6 +169,7 @@ module MyComputer_Verilog (
 	 ///////////////////////////////////////////////////////////////////////////////////////
 	 
 		 CPEN391_Computer u0 (
+			.wifi_reset_export 				 (WIFI_RST_WIRE),
 			.hex0_1_export                   (Temp_hex0_1),                   //               hex0_1.export
 			.hex2_3_export                   (Temp_hex2_3),                   //               hex2_3.export
 			.hex4_5_export                   (Temp_hex4_5),                   //               hex4_5.export
@@ -324,33 +316,6 @@ module MyComputer_Verilog (
 			.Display0(HEX4),		// output of the component connect to HEX displays 4 and 5 on the DE1
 			.Display1(HEX5)		// output of the component connect to HEX displays 4 and 5 on the DE1
 		);	
-
-	  ///////////////////////////////////////////////////////////////////////////////////////////////
-	  // Instantiate an instance of the graphics and video controller circuit drawn as a schematic
-	  ///////////////////////////////////////////////////////////////////////////////////////////////
-			
-		Graphics_and_Video_Controller		GraphicsController1 ( 
-				.Reset_L							(RESET_L_WIRE),
-				.Clock_50Mhz 					(CLOCK_50),
-				.Address 						(IO_Address_WIRE),
-				.DataIn 							(IO_Write_Data_WIRE),
-				.DataOut 						(IO_Read_Data_WIRE),
-				.IOEnable_L 					(IO_Enable_L_WIRE),
-				.UpperByteSelect_L 			(IO_UpperByte_Select_L_WIRE),
-				.LowerByteSelect_L 			(IO_LowerByte_Select_L_WIRE),
-				.WriteEnable_L 				(IO_RW_WIRE),
-				.GraphicsCS_L 					(IO_Enable_L_WIRE),
-				
-				.VGA_Clock						(VGA_CLK),
-				.VGA_Blue 						(VGA_B),
-				.VGA_Green 						(VGA_G),
-				.VGA_Red							(VGA_R),
-				.VGA_HSync 						(VGA_HS),
-				.VGA_VSync						(VGA_VS),
-				.VGA_Blanking 					(VGA_BLANK_N),
-				.VGA_SYNC						(VGA_SYNC_N)
-		 );
-		
 	
 		///////////////////////////////////////////////////////////////////////////////////////////////
 		// create an instance of the IO port with serial ports
@@ -395,7 +360,7 @@ module MyComputer_Verilog (
 	
 		// wire the LCD wires to the GPIO Header pins
 		// data bits 0 - 7
-		assign GPIO_1[1] = KEY[0];
+		assign GPIO_1[1] = WIFI_RST_WIRE[0];
 		
 		// Set WIFI_EN to high
 		assign GPIO_1[10] = 1'b1;

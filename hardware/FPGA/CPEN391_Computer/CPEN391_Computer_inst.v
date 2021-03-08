@@ -97,6 +97,7 @@
 		.sdram_clk_clk                   (<connected-to-sdram_clk_clk>),                   //            sdram_clk.clk
 		.slider_switches_export          (<connected-to-slider_switches_export>),          //      slider_switches.export
 		.system_pll_ref_clk_clk          (<connected-to-system_pll_ref_clk_clk>),          //   system_pll_ref_clk.clk
-		.system_pll_ref_reset_reset      (<connected-to-system_pll_ref_reset_reset>)       // system_pll_ref_reset.reset
+		.system_pll_ref_reset_reset      (<connected-to-system_pll_ref_reset_reset>),      // system_pll_ref_reset.reset
+		.wifi_reset_export               (<connected-to-wifi_reset_export>)                //           wifi_reset.export
 	);
 
