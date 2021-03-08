@@ -4,11 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:gravity="center">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:gravity="center"
         android:orientation="vertical"
         tools:layout_editor_absoluteX="106dp"
         tools:layout_editor_absoluteY="196dp">
@@ -21,7 +23,7 @@
             android:layout_marginTop="20dp"
             app:cardBackgroundColor="@color/persian_green"
             app:cardCornerRadius="20dp"
-            app:cardElevation="0dp" >
+            app:cardElevation="0dp">
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -50,17 +52,19 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="277dp"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="20dp"
+            android:gravity="center"
             android:orientation="horizontal">
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/id_verification_card"
                 android:layout_width="160dp"
                 android:layout_height="match_parent"
-                android:layout_marginStart="22dp"
-                android:layout_marginTop="58dp"
-                android:layout_marginEnd="25dp"
-                android:layout_marginBottom="40dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="10dp"
                 app:cardBackgroundColor="@color/persian_green"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="0dp">
@@ -68,6 +72,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:gravity="center"
                     android:orientation="vertical">
 
                     <ImageView
@@ -82,6 +87,7 @@
                         android:id="@+id/facialRecognitionCardText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginVertical="5dp"
                         android:text="Facial Verification"
                         android:textAlignment="center"
                         android:textColor="#FFFFFF"
@@ -94,17 +100,18 @@
                 android:id="@+id/bluetooth_connection_card"
                 android:layout_width="160dp"
                 android:layout_height="match_parent"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="10dp"
                 app:cardBackgroundColor="@color/persian_green"
                 app:cardCornerRadius="20dp"
-                app:cardElevation="0dp"
-                android:layout_marginStart="22dp"
-                android:layout_marginTop="58dp"
-                android:layout_marginEnd="25dp"
-                android:layout_marginBottom="40dp" >
+                app:cardElevation="0dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:gravity="center"
                     android:orientation="vertical">
 
                     <ImageView
@@ -119,6 +126,7 @@
                         android:id="@+id/bluetoothCardText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginVertical="5dp"
                         android:text="Bluetooth Connection"
                         android:textAlignment="center"
                         android:textColor="#FFFFFF"
@@ -130,24 +138,27 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="20dp"
+            android:gravity="center"
             android:orientation="horizontal">
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/profile_card"
                 android:layout_width="160dp"
                 android:layout_height="match_parent"
-                android:layout_marginStart="22dp"
-                android:layout_marginTop="40dp"
-                android:layout_marginEnd="25dp"
-                android:layout_marginBottom="40dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="10dp"
                 app:cardBackgroundColor="@color/persian_green"
                 app:cardCornerRadius="20dp"
-                app:cardElevation="0dp" >
+                app:cardElevation="0dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:gravity="center"
                     android:orientation="vertical">
 
                     <ImageView
@@ -162,6 +173,7 @@
                         android:id="@+id/profileCardText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginVertical="5dp"
                         android:text="View or Edit Profile"
                         android:textAlignment="center"
                         android:textColor="#FFFFFF"
@@ -174,16 +186,18 @@
                 android:id="@+id/settings_card"
                 android:layout_width="160dp"
                 android:layout_height="match_parent"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="10dp"
                 app:cardBackgroundColor="@color/persian_green"
                 app:cardCornerRadius="20dp"
-                app:cardElevation="0dp"
-                android:layout_marginStart="22dp"
-                android:layout_marginTop="40dp"
-                android:layout_marginEnd="25dp"
-                android:layout_marginBottom="40dp">
+                app:cardElevation="0dp">
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:gravity="center"
                     android:orientation="vertical">
 
                     <ImageView
@@ -198,6 +212,7 @@
                         android:id="@+id/settingsCardText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginVertical="5dp"
                         android:text="View or Edit Settings"
                         android:textAlignment="center"
                         android:textColor="#FFFFFF"

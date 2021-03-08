@@ -110,7 +110,7 @@ public class LoginActivity extends AppCompatActivity {
                         public void onResponse(JSONObject response) {
                             Log.d(TAG, response.toString());
                             try {
-                                UserInfoHelper.setUserId(response.get("_id").toString());
+                                UserInfoHelper.setUserId(response.get("userid").toString());
                                 Intent homePageIntent = new Intent(LoginActivity.this, MainActivity.class);
                                 startActivity(homePageIntent);
                             } catch (JSONException e) {

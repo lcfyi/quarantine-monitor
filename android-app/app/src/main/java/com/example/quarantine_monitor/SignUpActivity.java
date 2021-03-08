@@ -58,10 +58,11 @@ public class SignUpActivity extends AppCompatActivity implements LocationListene
 
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             showExplanation("Allow location access?", "In order to use this application"  +
                             "we need to be able to access your location, for quarantine monitoring purposes.",
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_BACKGROUND_LOCATION},
                     REQUEST_PERMISSION_LOCATION);
             return;
         }
@@ -119,9 +120,7 @@ public class SignUpActivity extends AppCompatActivity implements LocationListene
         ActivityCompat.requestPermissions(this,
                 permissions, permissionRequestCode);
     }
-
-
-    //TODO: implement signup volley request
+    
     private void signUp(){
         Log.d(TAG, "signup pressed");
         String username = usernameText.getText().toString();
