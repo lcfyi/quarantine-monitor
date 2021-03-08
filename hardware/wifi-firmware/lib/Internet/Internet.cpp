@@ -2,7 +2,7 @@
 
 Internet::Internet() {}
 
-bool Internet::connect(String ssid, String password)
+String Internet::connect(String ssid, String password)
 {
     WiFi.mode(WIFI_OFF);
     delay(500);
@@ -20,13 +20,17 @@ bool Internet::connect(String ssid, String password)
     {
         DEBUG_PRINT("Successfully connected!");
         DEBUG_PRINT(WiFi.localIP());
-        if (client != NULL)
+        if (client == NULL)
         {
             client = new BearSSL::WiFiClientSecure();
             client->setInsecure();
         }
+        return WiFi.localIP().toString();
     }
-    return WiFi.status() == WL_CONNECTED;
+    else
+    {
+        return ERROR_STR;
+    }
 }
 
 String Internet::GET(String address)
@@ -68,7 +72,10 @@ String Internet::POST(String address, String body)
 
     if (https.begin(*client, address))
     {
-        DEBUG_PRINT("[POST] Initialized.");
+        DEBUG_PRINT("[POST] Initialized, sending " + body);
+
+        https.addHeader("Content-Type", "text/plain");
+        https.addHeader("Accept:", "*/*");
 
         int httpCode = https.POST(body);
 

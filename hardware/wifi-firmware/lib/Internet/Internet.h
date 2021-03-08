@@ -13,7 +13,7 @@ class Internet
 {
 public:
     Internet();
-    bool connect(String ssid, String password);
+    String connect(String ssid, String password);
     String GET(String address);
     String POST(String address, String body);
 
