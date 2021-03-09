@@ -18,10 +18,11 @@ app.use("/users", usersRouter);
 app.use("/stations", stationsRouter);
 app.use("/tests", testsRouter);
 
+// Runs main loop to handle tests - DISABLED
+//setInterval(algorithm.handleTests(), 600000);
+
 // Default redirect
 app.get('/', async function(req, res) {
-    console.log(algorithm.randomizedTimes([0, 61]));
-    algorithm.handleTests()
     res.send('Hello World!');
 })
 
