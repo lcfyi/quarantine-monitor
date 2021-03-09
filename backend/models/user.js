@@ -3,10 +3,10 @@ const mongoose = require("mongoose");
 //Defines the schema for a user
 const userSchema = new mongoose.Schema({
 	username: { 
-        type: String,
+        type: String
     },
     password: { 
-        type: String,
+        type: String
     },
     salt: {
         type: String
@@ -15,9 +15,15 @@ const userSchema = new mongoose.Schema({
         type: String
     },
 	stationid: { 
-        type: String,
+        type: String
     },
-    lastCoords: [Number],
+    admin: {
+        type: Boolean
+    },
+    status: {
+        type: Boolean
+    },
+    lastCoords: [Number], //Change to last record
     locationMap: [{
         time: {
             type: Number

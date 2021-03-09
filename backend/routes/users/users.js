@@ -84,7 +84,7 @@ router.put("/:userid", async (req, res) => {
 			user.stationid = req.body.stationid;
         }
         if (req.body.coordinates != null) {
-			user.lastCoords = req.body.location;
+			user.lastCoords = req.body.coordinates;
             let currentUnix = new Date().getTime().toString();
             let locMapEntry = JSON.parse("{\"time\":" + currentUnix + ",\"coordinates\": [" + req.body.coordinates.toString() + "]}");
             user.locationMap.push(locMapEntry);

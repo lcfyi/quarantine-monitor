@@ -3,13 +3,13 @@ const mongoose = require("mongoose");
 //Defines the schema for a test
 const testSchema = new mongoose.Schema({
 	userid: { 
-        type: String,
+        type: String
     },
     stationid: {
-        type: String,
+        type: String
     } ,
 	time: { 
-        type: Number,
+        type: Number
     },
     status: {
         type: Number

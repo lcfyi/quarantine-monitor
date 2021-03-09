@@ -3,56 +3,50 @@ const router = express.Router();
 const Test = require("../models/test");
 
 
-// /*
-//  *	GET request for a specific station.
-//  *  Can be queried by userids, stationids starttime, endtime, or status
-//  */
-// router.get("/", async (req, res) => {
+/*
+ *	GET request for a specific station.
+ *  Can be queried by admin, stationid, starttime, endtime, or status
+ *  Status can be 0 (Sent), 1 (Passed), 2 (Failed), 3 (Incomplete)
+ */
+router.get("/", async (req, res) => {
+	try {
+        
+		tests = await Test.find({});
+        console.log(tests);
+        if (tests == null)
+            throw "Not Found";
+        res.json(tests);
+	} catch (err) {
+		return res.status(404).send("Error 404: " + err.message);
+	}
+});
 
-// 	try {
+/*
+ *	POST request on status of test
+ *  Requires userid, stationid, status, and time
+ */
+ router.post("/update", async (req, res) => {
+	try {
 
-//         req.query.userid;
+        if (req.body.userid == null || req.body.stationid == null || req.body.status == null) {
+            throw "Not Found";
+        }
 
-// 		test = Test.find({}, async function(err, tests) {
+        let test = await Test.findOne({"userid": req.body.userid, "stationid": req.body.stationid, "time" : {$gte: req.body.time - 600}})
+        
+        console.log(test);
+        if (test == null) {
+            throw "Not Found"
+        }
 
-//         });
+        test.status = req.body.status;
+		await test.save();
+		res.status(200).send("Successfully updated test status");
+	} catch (err) {
+		res.status(400).send(err.message);
+	}
+});
 
-//         if (tests == null)
-//             throw "Not Found";
-// 	} catch (err) {
-// 		return res.status(404).send("Error 404: " + err.message);
-// 	}
 
-
-// 	res.json(tests);
-// });
-
-// /*
-//  *	POST request to create a test. 
-//  *  Takes in stationid, and creates the station.
-//  */
-// router.post("/", async (req, res) => {
-//     try {
-//         const station = new Station({
-//             _id: req.body.stationid,
-//             users: [],
-//             baseCoords: []
-//         });
-
-//          // Only create station if does not exist, else return 400
-// 		Station.countDocuments({ "_id": req.body.stationid }, async function (err, count) {
-
-// 			if (count !== 0) {
-// 				res.status(400).send("Station already exists");
-// 			} else {
-// 				await station.save()
-//                 res.status(201).send("Station created");
-// 			}
-
-// 		});
-//     } catch (err) {
-//         res.status(400).send(err.message);
-//     }
-// });
 
 module.exports = router;

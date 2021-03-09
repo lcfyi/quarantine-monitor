@@ -4,7 +4,10 @@ const mongoose = require("mongoose");
 const stationSchema = new mongoose.Schema({
     _id: String,
     users: [],
-    baseCoords: [Number]
+    baseCoords: [Number],
+    admin: {
+        type: String
+    }
 }, { collection: "stationDB" });
 
 module.exports = mongoose.model("Station", stationSchema);

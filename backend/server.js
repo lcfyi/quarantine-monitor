@@ -3,7 +3,6 @@ const logger = debug("db:error");
 const config = require("./config");
 const app = require("./index.js");
 const mongoose = require("mongoose");
-const sendPushNotification = require("./pushnotification");
 
 // Establish connection to the MongoDB database
 mongoose.connect("mongodb+srv://admin:" + config.DB_PASS + "@qmonitor.ffncm.mongodb.net/qmonitor?retryWrites=true&w=majority", { useNewUrlParser: false, useUnifiedTopology: true });

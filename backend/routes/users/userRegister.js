@@ -21,7 +21,9 @@ router.post("/", async (req, res) => {
 			salt: hashData.salt,
             stationid: "",
             lastCoords: req.body.coordinates,
-            locationMap: [locMapEntry]
+            locationMap: [locMapEntry],
+			admin: false,
+			status: false
 		});
 
         // Only create user if username does not exist, else return 400
@@ -33,7 +35,7 @@ router.post("/", async (req, res) => {
 			} else {
 				await user.save();
 				logger("User created");
-				res.status(201).json(`${user._id}`);
+				res.status(201).send({"userid": user._id});
 			}
 
 		});
