@@ -99,7 +99,7 @@ public class LoginActivity extends AppCompatActivity {
                 //create json body to put into request
                 userInfo.put("username", username);
                 userInfo.put("password", password);
-                userInfo.put("deviceToken", token);
+                userInfo.put("token", token);
             } catch (JSONException e) {
                 e.printStackTrace();
             }

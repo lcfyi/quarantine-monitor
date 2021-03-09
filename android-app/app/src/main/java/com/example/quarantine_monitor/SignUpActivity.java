@@ -120,7 +120,7 @@ public class SignUpActivity extends AppCompatActivity implements LocationListene
         ActivityCompat.requestPermissions(this,
                 permissions, permissionRequestCode);
     }
-    
+
     private void signUp(){
         Log.d(TAG, "signup pressed");
         String username = usernameText.getText().toString();
