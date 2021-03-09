@@ -10,12 +10,10 @@ const Test = require("../models/test");
  */
 router.get("/", async (req, res) => {
 	try {
-        
 		tests = await Test.find({});
         console.log(tests);
-        if (tests == null)
-            throw "Not Found";
-        res.json(tests);
+        if (tests != null)
+            res.json(tests); 
 	} catch (err) {
 		return res.status(404).send("Error 404: " + err.message);
 	}
