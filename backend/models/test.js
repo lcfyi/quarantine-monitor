@@ -13,6 +13,9 @@ const testSchema = new mongoose.Schema({
     },
     status: {
         type: Number
+    },
+    adminid: {
+        type: String
     }
 }, { collection: "testDB" });
 

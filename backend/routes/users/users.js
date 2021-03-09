@@ -19,7 +19,7 @@ async function getUser(req, res, next) {
 	let user;
 	try {
 		user = await User.findById(req.params.userid)
-        .select('username deviceToken stationid lastCoords locationMap');
+        .select('username deviceToken stationid lastCoords locationMap admin status availability scheduledTests');
 
         if (user == null)
             throw "Not Found";

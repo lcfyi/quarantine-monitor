@@ -3,6 +3,7 @@ const logger = debug("db:error");
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
+const algorithm = require("./algorithm");
 
 app.use(express.json());
 app.use(bodyParser.json());
@@ -18,7 +19,9 @@ app.use("/stations", stationsRouter);
 app.use("/tests", testsRouter);
 
 // Default redirect
-app.get('/', function(req, res) {
+app.get('/', async function(req, res) {
+    console.log(algorithm.randomizedTimes([0, 61]));
+    algorithm.handleTests()
     res.send('Hello World!');
 })
 

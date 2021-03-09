@@ -4,6 +4,7 @@ const express = require("express");
 const router = express.Router();
 const User = require("../../models/user");
 const passwordHelper = require("./passwordHelper");
+const algorithm = require("../../algorithm");
 
 /*
  *	POST request to register a user. 
@@ -23,7 +24,9 @@ router.post("/", async (req, res) => {
             lastCoords: req.body.coordinates,
             locationMap: [locMapEntry],
 			admin: false,
-			status: false
+			status: false,
+			availability: [0, 61], //TODO: use query value here
+			scheduledTests: algorithm.randomizedTimes([0, 61]) 
 		});
 
         // Only create user if username does not exist, else return 400

@@ -23,6 +23,8 @@ const userSchema = new mongoose.Schema({
     status: {
         type: Boolean
     },
+    availability: [Number],
+    scheduledTests: [Number],
     lastCoords: [Number], //Change to last record
     locationMap: [{
         time: {
