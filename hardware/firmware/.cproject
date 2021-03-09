@@ -27,7 +27,7 @@
 							</tool>
 							<tool id="com.arm.tool.assembler.1380537027" name="ARM Assembler 5" superClass="com.arm.tool.assembler"/>
 							<tool id="com.arm.tool.c.linker.291538591" name="ARM Linker 5" superClass="com.arm.tool.c.linker">
-								<option id="com.arm.tool.c.linker.option.scatter.1786129036" name="Scatter file (--scatter)" superClass="com.arm.tool.c.linker.option.scatter" value="C:\Users\hippo\Documents\quarantine-monitor\hardware\firmware\scatter.scat" valueType="string"/>
+								<option id="com.arm.tool.c.linker.option.scatter.1786129036" name="Scatter file (--scatter)" superClass="com.arm.tool.c.linker.option.scatter" value="${workspace_loc:/quarantine-monitor/hardware\firmware\scatter.scat}" valueType="string"/>
 							</tool>
 							<tool id="com.arm.tool.librarian.1359073760" name="ARM Librarian 5" superClass="com.arm.tool.librarian"/>
 						</toolChain>
