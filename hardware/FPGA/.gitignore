@@ -1,1 +1,4 @@
 *.flock
+*.cdb
+*.hdb
+*.tmw_info
