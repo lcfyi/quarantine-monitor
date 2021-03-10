@@ -1,0 +1,22 @@
+version: "3.7"
+
+services:
+  backend:
+    build: .
+    volumes:
+      - type: bind
+        source: ./
+        target: /app
+    ports:
+      - 8080:8080
+    depends_on:
+      - mongo
+    environment: # Insecure, use for local dev only. Do not deploy as a container
+      - DB_ADDR=mongodb://mongo:27017
+      - DB_USER=root
+      - DB_PASS=password
+  mongo:
+    image: mongo:latest
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=password
