@@ -63,3 +63,5 @@ We will need to set MSEL[4:0]= 5’b01010. Note that the picture below does not 
 7. Click your added '.sof' file and select Properties. Enable file compression by ticking the associated checkbox, leaving everything else as is.
 8. Generate the file.
 ![Screenshot](./images/quartus.PNG)
+
+Move the generated `.rbf` to the Linux filesystem, and run [the script](./program.sh). This will flash te FPGA.
