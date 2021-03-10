@@ -92,6 +92,9 @@ void UART::wait_until_char(char c, long timeout_cycles)
     } while (read != c);
 }
 
+/**
+ * This reads up until char c, but does not include char c.
+ */
 std::string UART::read_until_char(char c)
 {
     std::string read = "";
@@ -99,7 +102,9 @@ std::string UART::read_until_char(char c)
     do
     {
         read_char = get_char();
-        read += read_char;
+        if (read_char != c) {
+            read += read_char;
+        }
     } while (read_char != c);
     return read;
 }
