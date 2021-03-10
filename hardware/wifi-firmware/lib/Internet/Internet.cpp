@@ -1,6 +1,10 @@
 #include "internet.h"
 
-Internet::Internet() {}
+Internet::Internet()
+{
+    headers = new HeaderNode("Content-Type", "text/plain");
+    headers->next = new HeaderNode("Accept", "*/*");
+}
 
 String Internet::connect(String ssid, String password)
 {
@@ -33,14 +37,70 @@ String Internet::connect(String ssid, String password)
     }
 }
 
+void Internet::addHeader(String rawString)
+{
+    String key = "";
+    String value = "";
+    bool keyProcessed = false;
+    for (unsigned i = 0; i < rawString.length(); i++)
+    {
+        if (rawString[i] == ' ' && !keyProcessed)
+        {
+            keyProcessed = true;
+            continue;
+        }
+        if (rawString[i] != '\n')
+        {
+            if (!keyProcessed)
+            {
+                key += rawString[i];
+            }
+            else
+            {
+                value += rawString[i];
+            }
+        }
+    }
+    addHeader(key, value);
+}
+
+void Internet::addHeader(String key, String value)
+{
+    HeaderNode *tail = headers;
+
+    while (tail->next != NULL)
+    {
+        tail = tail->next;
+    }
+    tail->next = new HeaderNode(key, value);
+}
+
 String Internet::GET(String address)
 {
 
     HTTPClient https;
+    int res;
 
-    if (https.begin(*client, address))
+    if (address.startsWith("https"))
+    {
+        res = https.begin(*client, address);
+    }
+    else
+    {
+        res = https.begin(address);
+    }
+
+    if (res)
     {
         DEBUG_PRINT("[GET] Initialized.");
+
+        HeaderNode *ptr = headers;
+
+        while (ptr != NULL)
+        {
+            https.addHeader(ptr->key, ptr->value);
+            ptr = ptr->next;
+        }
 
         int httpCode = https.GET();
 
@@ -52,6 +112,10 @@ String Internet::GET(String address)
                 String payload = https.getString();
                 DEBUG_PRINT(payload);
                 https.end();
+                if (payload.charAt(payload.length() - 1) != '\n')
+                {
+                    payload += '\n';
+                }
                 return payload;
             }
         }
@@ -69,13 +133,28 @@ String Internet::GET(String address)
 String Internet::POST(String address, String body)
 {
     HTTPClient https;
+    int res;
 
-    if (https.begin(*client, address))
+    if (address.startsWith("https"))
+    {
+        res = https.begin(*client, address);
+    }
+    else
+    {
+        res = https.begin(address);
+    }
+
+    if (res)
     {
         DEBUG_PRINT("[POST] Initialized, sending " + body);
 
-        https.addHeader("Content-Type", "text/plain");
-        https.addHeader("Accept:", "*/*");
+        HeaderNode *ptr = headers;
+
+        while (ptr != NULL)
+        {
+            https.addHeader(ptr->key, ptr->value);
+            ptr = ptr->next;
+        }
 
         int httpCode = https.POST(body);
 
@@ -87,6 +166,10 @@ String Internet::POST(String address, String body)
                 String payload = https.getString();
                 DEBUG_PRINT(payload);
                 https.end();
+                if (payload.charAt(payload.length() - 1) != '\n')
+                {
+                    payload += '\n';
+                }
                 return payload;
             }
         }

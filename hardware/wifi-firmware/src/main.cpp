@@ -5,7 +5,6 @@
 String *ssid;
 String *password;
 String *serverAddr;
-String *deviceId;
 Internet internet;
 
 void setup()
@@ -13,7 +12,6 @@ void setup()
   ssid = new String("");
   password = new String("");
   serverAddr = new String("");
-  deviceId = new String("");
   Serial.begin(SERIAL_BAUD);
   Serial.setTimeout(SERIAL_TIMEOUT);
 }
@@ -37,9 +35,9 @@ void loop()
       Serial.print("Password set\n");
       break;
     case '2':
-      // set device ID
-      *deviceId = command.substring(2);
-      Serial.print("Device ID set\n");
+      // set header
+      internet.addHeader(command.substring(2));
+      Serial.print("Header set\n");
       break;
     case '3':
       // Set base server address
@@ -55,14 +53,10 @@ void loop()
     case '5':
       // TODO reconnect support
     case 'G':
-      internet.GET(*serverAddr);
-      Serial.print("GET\n");
+      Serial.print(internet.GET(*serverAddr));
       break;
     case 'P':
-      internet.POST(*serverAddr, command.substring(2));
-      Serial.print("POST ");
-      Serial.print(command.substring(2));
-      Serial.print("\n");
+      Serial.print(internet.POST(*serverAddr, command.substring(2)));
       break;
     }
   }

@@ -11,6 +11,7 @@ Full disclosure: this development workflow is ass. If you have any improvements,
 - EDS Shell (you could optionally use a regular shell in WSL/Linux, but you need the Altera IP libraries)
 - Ethernet cable
 - Mini-USB cable
+- RFS Board with WiFi firmware installed
 - MicroSD card with Linux installed
 - DE1-SoC configured properly to run Linux (refer to [../linux/README.md])
 
