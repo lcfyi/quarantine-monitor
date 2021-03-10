@@ -44,7 +44,7 @@ We will need to set MSEL[4:0]= 5’b01010. Note that the picture below does not 
 ![Screenshot](./images/SOC_diagram.PNG)
 ### 4. Launch PuTTY and connect
 1. Determine what COMM Port is being associated with your DE1 by launching 'Device Manager' (Windows Users) and expanding the 'Ports' drop-down. If there is more than one COMM Port, you will have to power off/on the DE1 to see which COMM Port disappeared.
-![Screenshot](./images/device_manager.PNG)
+![Screenshot](./images/Device_manager.PNG)
 2. On the 'Session' view of PuTTY, select 'Serial' under *Connection Type*. Change the 'Serial line' value to the associated COMM port to the DE1, and also change the 'Speed' to 115200.
 ![Screenshot](./images/putty_main.PNG)
 3. On the 'Serial' view of PuTTY, change the 'Serial line to connect to' to the appropriate COMM Port, the speed to 115200 and 'Flow Control' to None.
