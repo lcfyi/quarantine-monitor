@@ -31,7 +31,7 @@ CPPC                    = $(ARCH)-g++
 SIZE                    = $(ARCH)-size
 CFLAGS                  = -g -std=gnu99 -Wall
 CPPFLAGS                = -g -std=c++11 -Wall
-LDFLAGS                 = -g -Wall
+LDFLAGS                 = -g -pthread -Wall
  
 ################################################################################
 # Don't change anything below this line                                        #
