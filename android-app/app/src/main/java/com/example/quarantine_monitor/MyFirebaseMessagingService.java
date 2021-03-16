@@ -36,16 +36,12 @@ import org.json.JSONObject;
 
 import static android.location.LocationManager.GPS_PROVIDER;
 
-public class MyFirebaseMessagingService extends FirebaseMessagingService implements LocationListener{
+public class MyFirebaseMessagingService extends FirebaseMessagingService{
     final private static String TAG = "PushNotification";
-    private Double coordinates[] = new Double [2];
     Handler mHandler;
 
     @Override
     public void onMessageReceived(RemoteMessage message) {
-        Looper.prepare();
-        mHandler = new Handler(Looper.getMainLooper());
-
         RequestQueue queue = Volley.newRequestQueue(this);
 
         if(message != null){
@@ -53,18 +49,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService impleme
         }
         Log.d(TAG, "message received");
 
-        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            Log.d(TAG, "that's a yikes bro");
-            return;
-        }
-        locationManager.requestLocationUpdates(GPS_PROVIDER, 0, 0, this);
+        Double[] coordinates = UserInfoHelper.getLocation();
 
         JSONArray coordinatesArray = new JSONArray();
-        coordinatesArray.put(20);
-        coordinatesArray.put(20);
+        coordinatesArray.put(coordinates[0]);
+        coordinatesArray.put(coordinates[1]);
 
         String URL = "https://qmonitor-306302.wl.r.appspot.com/users/" + UserInfoHelper.getUserId();
         Log.d(TAG, URL);
@@ -93,18 +82,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService impleme
 
         // Add the request to the RequestQueue
         queue.add(jsonObjectRequest);
-        mHandler.sendEmptyMessage(0); //send ourself a message so the looper can stop itself
-        Looper.loop();
-    }
-
-    /*
-     * @desc: this function sets the local location variables with the correct coordinates whenever
-     * location has been changed.
-     * */
-    @Override
-    public void onLocationChanged(@NonNull Location location){
-        coordinates[0] = location.getLongitude();
-        coordinates[1] = location.getLatitude();
     }
 
     @Override

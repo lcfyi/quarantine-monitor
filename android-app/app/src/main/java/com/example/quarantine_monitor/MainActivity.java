@@ -15,6 +15,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         getSupportActionBar().hide();
 
+        startService(new Intent(this, BackgroundLocationService.class));
+
         CardView facialVerificationCard = (CardView) findViewById(R.id.id_verification_card);
         facialVerificationCard.setOnClickListener(new View.OnClickListener(){
             @Override
