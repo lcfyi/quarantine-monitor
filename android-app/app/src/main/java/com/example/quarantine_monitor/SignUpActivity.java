@@ -1,6 +1,7 @@
 package com.example.quarantine_monitor;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -47,6 +48,7 @@ public class SignUpActivity extends AppCompatActivity implements LocationListene
     private EditText usernameText;
     private EditText passwordText;
     private Button signUpButton;
+    private LocationManager locationManager;
 
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -54,9 +56,16 @@ public class SignUpActivity extends AppCompatActivity implements LocationListene
         getSupportActionBar().hide();
         queue = Volley.newRequestQueue(this);
 
+        signUpButton = (Button) findViewById(R.id.btn_signUp);
+        signUpButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){signUp();}
+        });
+        usernameText = (EditText) findViewById(R.id.input_username);
+        passwordText = (EditText) findViewById(R.id.input_password);
         coordinates = new Double [2];
 
-        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -67,16 +76,7 @@ public class SignUpActivity extends AppCompatActivity implements LocationListene
             return;
         }
         locationManager.requestLocationUpdates(GPS_PROVIDER, 0, 0, this);
-
-        signUpButton = (Button) findViewById(R.id.btn_signUp);
-        signUpButton.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){signUp();}
-        });
-
-        usernameText = (EditText) findViewById(R.id.input_username);
-        passwordText = (EditText) findViewById(R.id.input_password);
-
+        Log.d(TAG, "location manager running");
     }
 
     /*
@@ -85,6 +85,7 @@ public class SignUpActivity extends AppCompatActivity implements LocationListene
      * */
     @Override
     public void onLocationChanged(@NonNull Location location){
+        Log.d(TAG, coordinates.toString());
         coordinates[0] = location.getLongitude();
         coordinates[1] = location.getLatitude();
     }
@@ -99,26 +100,40 @@ public class SignUpActivity extends AppCompatActivity implements LocationListene
                 .setMessage(message)
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        requestPermission(permissions, permissionCode);
+                        requestPermissions(permissions, permissionCode);
                     }
                 })
                 .setNegativeButton("No", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         Log.d(TAG, "Returning to login page");
-                        Intent homePageIntent = new Intent(SignUpActivity.this, LoginActivity.class);
-                        startActivity(homePageIntent);
+                        Intent loginIntent = new Intent(SignUpActivity.this, LoginActivity.class);
+                        startActivity(loginIntent);
                     }
                 });
         builder.create().show();
     }
 
     /*
-     * @desc: this function requests the location permissions from the user.
+     * @desc: this function is called after permissions have been granted. It shows toasts based
+     * on what has happened.
      * */
-    private void requestPermission(String[] permissions, int permissionRequestCode) {
-        ActivityCompat.requestPermissions(this,
-                permissions, permissionRequestCode);
+    @SuppressLint("MissingPermission")
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_PERMISSION_LOCATION:
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(SignUpActivity.this, "Permission Granted, Thank You!", Toast.LENGTH_SHORT).show();
+                    locationManager.requestLocationUpdates(GPS_PROVIDER, 0, 0, this);
+                } else {
+                    Toast.makeText(SignUpActivity.this, "Permission Denied!", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            default:
+                break;
+        }
     }
 
     private void signUp(){
