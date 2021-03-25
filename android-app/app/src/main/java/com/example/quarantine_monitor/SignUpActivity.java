@@ -54,6 +54,13 @@ public class SignUpActivity extends AppCompatActivity implements LocationListene
         getSupportActionBar().hide();
         queue = Volley.newRequestQueue(this);
 
+        signUpButton = (Button) findViewById(R.id.btn_signUp);
+        signUpButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){signUp();}
+        });
+        usernameText = (EditText) findViewById(R.id.input_username);
+        passwordText = (EditText) findViewById(R.id.input_password);
         coordinates = new Double [2];
 
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -67,16 +74,7 @@ public class SignUpActivity extends AppCompatActivity implements LocationListene
             return;
         }
         locationManager.requestLocationUpdates(GPS_PROVIDER, 0, 0, this);
-
-        signUpButton = (Button) findViewById(R.id.btn_signUp);
-        signUpButton.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){signUp();}
-        });
-
-        usernameText = (EditText) findViewById(R.id.input_username);
-        passwordText = (EditText) findViewById(R.id.input_password);
-
+        Log.d(TAG, "location manager running");
     }
 
     /*
@@ -85,6 +83,7 @@ public class SignUpActivity extends AppCompatActivity implements LocationListene
      * */
     @Override
     public void onLocationChanged(@NonNull Location location){
+        Log.d(TAG, coordinates.toString());
         coordinates[0] = location.getLongitude();
         coordinates[1] = location.getLatitude();
     }
@@ -106,8 +105,8 @@ public class SignUpActivity extends AppCompatActivity implements LocationListene
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         Log.d(TAG, "Returning to login page");
-                        Intent homePageIntent = new Intent(SignUpActivity.this, LoginActivity.class);
-                        startActivity(homePageIntent);
+                        Intent loginIntent = new Intent(SignUpActivity.this, LoginActivity.class);
+                        startActivity(loginIntent);
                     }
                 });
         builder.create().show();
