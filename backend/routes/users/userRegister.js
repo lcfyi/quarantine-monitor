@@ -22,11 +22,12 @@ router.post("/", async (req, res) => {
 			salt: hashData.salt,
             stationid: "",
             lastCoords: req.body.coordinates,
+			endTime: currentUnix + 604800, // 2 weeks after user created
             locationMap: [locMapEntry],
 			admin: false,
 			status: false,
-			availability: [0, 61], //TODO: use query value here
-			scheduledTests: algorithm.randomizedTimes([0, 61]) 
+			availability: [24, 85], 
+			scheduledTests: algorithm.randomizedTimes([24, 85]) 
 		});
 
         // Only create user if username does not exist, else return 400

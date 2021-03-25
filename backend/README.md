@@ -4,7 +4,7 @@ The NodeJS application has deen deployed to a Google Cloud App Engine instance. 
 
 The database connected to the app is stored on a MongoDB Atlas cluster.
 
-TODO: Set up loop to verify client-De1-SoC connection
+TODO: Set up one minute loop to verify client-De1-SoC connection using signing token stored of station with current token from phone
 TODO: Test API with Jest
 TODO: Code clean up and supporting integration
 
@@ -12,12 +12,12 @@ TODO: Code clean up and supporting integration
 | Method | Description |
 | ------ | ----------- |
 | **POST /users** | Registers a user. Accepts keys `coordinates` (array), `username` (string), and `password` (string) in the body and returns the user id on success (201) and "User already exists with that username" (400) on failure.|
-| **POST /users/login** | Accepts keys `deviceToken` (string), `username` (string), and `password` (string) in the body and returns the user id on success (201) and "Incorrect Password" (400) on failure.|
+| **POST /users/login** | Accepts keys `deviceToken` (string), `username` (string), and `password` (string) in the body and returns the user id AND admin on success (201) and "Incorrect Password" (400) on failure.|
 | **GET /users/:userid** | Accepts param `userid` returns the user object containing `username`, `deviceToken`, `stationid`, `lastCoords`, `locationMap` on success and 404 on failure.|
 | **GET /users/:userid/plotmap** | Accepts param `userid` returns the user object containing `locationMap` on success and 404 on failure.|
 | **GET /users/:userid/station** | Accepts param `userid` returns the station object associated with the current user containing `users`, and `baseCoords` on success and 404 on failure.|
 | **DELETE /users/:userid/** | Deletes user with id `userid` and returns "Deleted User" on success and 404 on failure. |
-| **PUT /users/:userid/** | Updates user with id `userid`. Takes in keys `coordinates` (array) OR `stationid` and returns 200 on success and 404 on failure.|
+| **PUT /users/:userid/** | Updates user with id `userid`. Takes in keys `coordinates` (array) OR `stationid` OR `availability` (array) and returns 200 on success and 404 on failure.|
 | **POST /stations** | Registers a station. Accepts key `stationid` in the body and returns "Station created" on success (201) and "Station already exists" (400) on failure.|
 | **DELETE /stations/:stationid/** | Deletes station with id `stationid` and returns "Deleted Station" on success and 404 on failure. |
 | **GET /stations/:stationid/** | Accepts param `stationid` and returns the station object containing keys `users`, and `baseCoords` on success and 404 on failure.|
