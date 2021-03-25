@@ -5,7 +5,7 @@ TARGET                  = de1_soc_hps_binary
 ALT_DEVICE_FAMILY       = soc_cv_av
  
 # Some paths (Default should work)
-HWLIBS_ROOT             = ${SOCEDS_DEST_ROOT}/ip/altera/hps/altera_hps/hwlib
+HWLIBS_ROOT             = ./lib/ip/altera/hps/altera_hps/hwlib
  
 # Here we add all *.c files that we want to compile
 CSRCS                   = $(wildcard *.c) $(wildcard hardware/*.c)
@@ -31,7 +31,7 @@ CPPC                    = $(ARCH)-g++
 SIZE                    = $(ARCH)-size
 CFLAGS                  = -g -std=gnu99 -Wall
 CPPFLAGS                = -g -std=c++11 -Wall
-LDFLAGS                 = -g -Wall
+LDFLAGS                 = -g -pthread -Wall
  
 ################################################################################
 # Don't change anything below this line                                        #

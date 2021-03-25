@@ -156,9 +156,9 @@ public class SignUpActivity extends AppCompatActivity implements LocationListene
                 public void onResponse(JSONObject response) {
                     Log.d(TAG, response.toString());
                     try {
-                        UserInfoHelper.setUserId(response.get("_id").toString());
-                        Intent homePageIntent = new Intent(SignUpActivity.this, MainActivity.class);
-                        startActivity(homePageIntent);
+                        UserInfoHelper.setUserId(response.get("userid").toString());
+                        Intent bluetoothIntent = new Intent(SignUpActivity.this, BluetoothConnectionActivity.class);
+                        startActivity(bluetoothIntent);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
