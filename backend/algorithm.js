@@ -43,12 +43,8 @@ function randomizedTimes(availability){
  */
 async function handleTests(test, userid) {
     try {
-        
         // Iterate through all the remaining tests and flag them as incomplete (3)
 		var tests = await Test.find({"status": TEST_STATUS.SENT});
-        if (tests == null) {
-            return;
-        }
 
         for (var test of tests) {
             test.status = TEST_STATUS.INCOMPLETE;
@@ -62,31 +58,31 @@ async function handleTests(test, userid) {
             
         // Find all non-admin users who are currently flagged as following quarantine, and still supposed to be quarantined
         const now = new Date();
-        var users = await User.find({"admin": false, "status": true, "endTime": { $gt: now.getTime().toString()}});
+        var users = await User.find({"admin": false, "status": true, "endTime": { $gt: now.getTime()}});
         if (users == null) {
             return;
         }
         for (var user of users) {
             // TODO: remove test code
-            if (str(user._id) != userid) {
+            if (user._id.toString() != userid) {
                 continue;
             }
-            const currentSlot = now.getUTCHours * 6 + Math.floor(now.getUTCMinutes() / 10);
+            const currentSlot = now.getUTCHours() * 6 + Math.floor(now.getUTCMinutes() / 10);
             console.log(currentSlot);
             
-            if (user.availability[1] >= currentSlot) {
+            if (user.availability[1] >= currentSlot && !test) {
 
                 // Once the max time of the range has been hit for each day, regenerate the random times
                 user.scheduledTests = user.randomizedTimes();
                 await user.save();
-            } else if (user.scheduledTests.include(currentSlot) || test) {
+            } else if ((user.scheduledTests.includes(currentSlot) || test)) {
 
                 // If the current iteration is the test time, we create it
-                const station = await Station.find({"stationid": res.user.stationid});
+                const station = await Station.find({"stationid": user.stationid});
                 const test = new Test({
-                    "userid": str(user._id),
+                    "userid": user._id.toString(),
                     "stationid": user.stationid,
-                    "time": now.getTime.toString(),
+                    "time": now.getTime(),
                     "status": TEST_STATUS.SENT,
                     "adminid": station.adminid
                 });
@@ -102,7 +98,7 @@ async function handleTests(test, userid) {
             // Collect user's location every hour (or 6th iteration)
             // TODO: in 1 minute loop, any signing tokens which are unmatched I collect the location every iteration for that user in
             //       addition wtih the regular location tracking here
-            if (currentSlot % 6 == 0 || test) {
+            if (currentSlot % 6 == 0) {
                 sendPushNotification(user.deviceToken, {"key": "Requesting location"}, true);
             }
         }

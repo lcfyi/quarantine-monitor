@@ -47,18 +47,34 @@ router.get("/:userid/requestlocation", getUser, (req, res) => {
 });
 
 /*
+ *	DELETE request for the devicetoken
+ */
+router.delete("/:userid/devicetoken", async (req, res) => {
+	try {
+		let user = await User.findById(req.params.userid);
+
+		user.deviceToken = "";
+		await user.save();
+		res.status(200).send("Successfully signed out");
+	} catch(err) {
+		res.status(400).send(err.message);
+	}
+	
+})
+
+/*
  *	Test request to test the polling loops.
  */
- router.get("/:userid/sendtest/", getUser, (req, res) => {
-	algorithm.handleTests(true, str(res.user._id));
+ router.get("/:userid/sendtest/", getUser, async (req, res) => {
+	await algorithm.handleTests(true, res.user._id.toString());
 	res.send("Executed loop 1");
 });
 
 /*
  *	Test request to test the polling loop 2.
  */
- router.get("/:userid/sendtest2/", getUser, (req, res) => {
-	algorithm.handleTests(false, "");
+ router.get("/:userid/sendtest2/", getUser, async (req, res) => {
+	await algorithm.handleTests(false, "");
 	res.send("Executed loop 2");
 });
 
@@ -110,6 +126,10 @@ router.put("/:userid", async (req, res) => {
 		if (req.body.availability != null) {
 			user.availability = req.body.availability;
 			user.scheduledTests = algorithm.randomizedTimes(req.body.availability);		
+		}
+
+		if (req.body.endTime != null) {
+			user.endTime = req.body.endTime
 		}
 
 		await user.save();

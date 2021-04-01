@@ -44,7 +44,7 @@ router.post("/", async (req, res) => {
             _id: req.body.stationid,
             users: [],
             baseCoords: [],
-            admin: "603ac255c4e167649cab494b"
+            admin: "606533bc0a874e090c8ddbfc"
         });
 
          // Only create station if does not exist, else return 400

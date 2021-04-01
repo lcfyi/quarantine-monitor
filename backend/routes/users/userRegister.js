@@ -13,8 +13,8 @@ const algorithm = require("../../algorithm");
 router.post("/", async (req, res) => {
 	try {
 		let hashData = passwordHelper.saltHashPassword(req.body.password);
-        let currentUnix = new Date().getTime().toString();
-        let locMapEntry = JSON.parse("{\"time\":" + currentUnix + ",\"coordinates\": [" + req.body.coordinates.toString() + "]}");
+        let currentUnix = new Date().getTime();
+        let locMapEntry = JSON.parse("{\"time\":" + currentUnix.toString() + ",\"coordinates\": [" + req.body.coordinates.toString() + "]}");
         const user = new User({
 			username: req.body.username,
 			deviceToken: "",
@@ -22,7 +22,7 @@ router.post("/", async (req, res) => {
 			salt: hashData.salt,
             stationid: "",
             lastCoords: req.body.coordinates,
-			endTime: currentUnix + 604800, // 2 weeks after user created
+			endTime: currentUnix + 1209600000, // 2 weeks after user created
             locationMap: [locMapEntry],
 			admin: false,
 			status: false,
@@ -39,7 +39,7 @@ router.post("/", async (req, res) => {
 			} else {
 				await user.save();
 				logger("User created");
-				res.status(201).send({"userid": user._id});
+				res.status(201).send({"userid": user._id, "admin": user.admin, "endtime": user.endTime});
 			}
 
 		});
