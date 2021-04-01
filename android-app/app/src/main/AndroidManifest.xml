@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.quarantine_monitor">
 
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -45,6 +46,10 @@
         <activity
             android:name=".SettingsActivity"
             android:label="SettingsActivity">
+        </activity>
+        <activity
+            android:name=".DetectorActivity"
+            android:label="DetectorActivity">
         </activity>
 
         <service

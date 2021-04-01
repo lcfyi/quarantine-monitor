@@ -6,6 +6,7 @@ import androidx.cardview.widget.CardView;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -13,7 +14,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        getSupportActionBar().hide();
 
         startService(new Intent(this, BackgroundLocationService.class));
 
@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
         facialVerificationCard.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                Intent facialVerificationPageIntent = new Intent(MainActivity.this, FacialVerificationActivity.class);
+                Intent facialVerificationPageIntent = new Intent(MainActivity.this, DetectorActivity.class);
                 startActivity(facialVerificationPageIntent);
             }
         });
@@ -31,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v){
                 Intent bluetoothConnectPage = new Intent(MainActivity.this, BluetoothConnectionActivity.class);
+                bluetoothConnectPage.putExtra("SignUpWorkflow", "False");
                 startActivity(bluetoothConnectPage);
             }
         });
