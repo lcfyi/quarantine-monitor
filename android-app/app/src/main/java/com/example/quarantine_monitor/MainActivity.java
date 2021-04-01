@@ -6,8 +6,14 @@ import androidx.cardview.widget.CardView;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
+
+import java.util.Calendar;
+
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final String TAG = MainActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -16,6 +22,8 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().hide();
 
         startService(new Intent(this, BackgroundLocationService.class));
+
+        updateHeader();
 
         CardView facialVerificationCard = (CardView) findViewById(R.id.id_verification_card);
         facialVerificationCard.setOnClickListener(new View.OnClickListener(){
@@ -53,6 +61,49 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
 
+    @Override
+    public void onBackPressed(){
+        updateHeader();
+    }
+
+    /*
+     *  Creates the message for the header text view which displays the time period remaining
+     */
+    private void updateHeader() {
+        TextView daysCounter = findViewById(R.id.daysLeft);
+        String message;
+        if (!UserInfoHelper.getAdmin()) {
+            long curUt = System.currentTimeMillis();
+            if (curUt < UserInfoHelper.getEndtime()) {
+                // Convert the difference from milliseconds to days left
+                Calendar c = Calendar.getInstance();
+                int timeOfDay = c.get(Calendar.HOUR_OF_DAY);
+                String greeting;
+
+                if (timeOfDay >= 0 && timeOfDay < 12) {
+                    greeting = "Good morning";
+                } else if (timeOfDay >= 12 && timeOfDay < 16) {
+                    greeting = "Good afternoon";
+                } else if (timeOfDay >= 16 && timeOfDay < 21) {
+                    greeting = "Good evening";
+                } else {
+                    greeting = "Good night";
+                }
+
+                long millisRemaining = UserInfoHelper.getEndtime() - curUt;
+                int hours   = (int) ((millisRemaining / (1000*60*60)) % 24);
+                int days = (int) ((millisRemaining / (1000*60*60*24)) % 30);
+                message = String.format(greeting + ", you have %02d days %02d hours left in your quarantine.", days, hours);
+            } else {
+                message = "Congratulations! You have completed your quarantine period.";
+            }
+
+        } else {
+            message = "ADMIN";
+        }
+        daysCounter.setText(message);
+        //TODO: Link to plotting page here
     }
 }

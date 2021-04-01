@@ -2,6 +2,7 @@ package com.example.quarantine_monitor;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,6 +23,11 @@ public class BluetoothConnectionActivity extends AppCompatActivity {
                 startActivity(mainPageIntent);
             }
         });
+
+    }
+
+    @Override
+    public void onBackPressed(){
 
     }
 }
