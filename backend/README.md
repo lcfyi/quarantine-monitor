@@ -18,7 +18,7 @@ TODO: Code clean up and supporting integration
 | **GET /users/:userid/station** | Accepts param `userid` returns the station object associated with the current user containing `users`, and `baseCoords` on success and 404 on failure.|
 | **DELETE /users/:userid/** | Deletes user with id `userid` and returns "Deleted User" on success and 404 on failure. |
 | **DELETE /users/:userid/devicetoken** | Signs out the user by deleting their deviceToken for user with id `userid` and returns "Successfully signed out" on success and 400 on failure. |
-| **PUT /users/:userid/** | Updates user with id `userid`. Takes in keys `coordinates` (array) OR `stationid` OR `availability` (array) OR `endTime` (number) and returns 200 on success and 404 on failure.|
+| **PUT /users/:userid/** | Updates user with id `userid`. Takes in keys `coordinates` (array) OR `stationid` OR `availability` (array) OR `endTime` (number) OR `token` (String) and returns 200 on success and 404 on failure.|
 | **POST /stations** | Registers a station. Accepts key `stationid` in the body and returns "Station created" on success (201) and "Station already exists" (400) on failure.|
 | **DELETE /stations/:stationid/** | Deletes station with id `stationid` and returns "Deleted Station" on success and 404 on failure. |
 | **GET /stations/:stationid/** | Accepts param `stationid` and returns the station object containing keys `users`, and `baseCoords` on success and 404 on failure.|

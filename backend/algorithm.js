@@ -4,6 +4,7 @@ const Station = require("./models/station");
 const Test = require("./models/test");
 
 const TEST_STATUS = {"SENT": 0, "INCOMPLETE": 3};
+const NOTIF_TYPE = {"REQUEST_LOCATION": "0", "VERIFY_IDENTITY": "1", "ALERT_ADMIN": "2"};
 
 // Helper function to generate a random normal distribution in between min and max
 // https://stackoverflow.com/questions/25582882/javascript-math-random-normal-distribution-gaussian-bell-curve
@@ -50,10 +51,11 @@ async function handleTests(test, userid) {
             test.status = TEST_STATUS.INCOMPLETE;
             await test.save();
             
+            console.log(test.adminid);
             const admin = await User.findById(test.adminid)
             // Alert admin of the test of failure
             const body = "User " + test.userid + " connected to station " + test.stationid + " failed to complete a verification test. (Unix Time: " + test.time + ")";
-            sendPushNotification(admin.deviceToken, {"title": "QMonitor - Test Failure", "body": body}, false);
+            sendPushNotification(admin.deviceToken, {"key": NOTIF_TYPE.ALERT_ADMIN, "title": "Test Failure", "body": body});
         }
             
         // Find all non-admin users who are currently flagged as following quarantine, and still supposed to be quarantined
@@ -78,28 +80,30 @@ async function handleTests(test, userid) {
             } else if ((user.scheduledTests.includes(currentSlot) || test)) {
 
                 // If the current iteration is the test time, we create it
-                const station = await Station.find({"stationid": user.stationid});
+                const station = await Station.findById(user.stationid);
+                console.log(station);
                 const test = new Test({
                     "userid": user._id.toString(),
                     "stationid": user.stationid,
                     "time": now.getTime(),
                     "status": TEST_STATUS.SENT,
-                    "adminid": station.adminid
+                    "adminid": station.admin
                 });
                 await test.save();
 
                 // Send a push notification to user to trigger test
                 // TODO: set high priority?
                 sendPushNotification(user.deviceToken, 
-                    {"title": "QMonitor - Verify Identity", 
-                     "body": "Please complete the facial verification test within 10 minutes"}, false);
+                    {"key": NOTIF_TYPE.VERIFY_IDENTITY, 
+                     "title": "Verify Identity", 
+                     "body": "Please complete the facial verification test within 10 minutes"});
             }
 
             // Collect user's location every hour (or 6th iteration)
             // TODO: in 1 minute loop, any signing tokens which are unmatched I collect the location every iteration for that user in
             //       addition wtih the regular location tracking here
             if (currentSlot % 6 == 0) {
-                sendPushNotification(user.deviceToken, {"key": "Requesting location"}, true);
+                sendPushNotification(user.deviceToken, {"key": NOTIF_TYPE.REQUEST_LOCATION});
             }
         }
 

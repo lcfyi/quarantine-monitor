@@ -42,7 +42,7 @@ router.get("/:userid", getUser, (req, res) => {
  *	GET request for a specific user.
  */
 router.get("/:userid/requestlocation", getUser, (req, res) => {
-	sendPushNotification(res.user.deviceToken, {"key": "Requesting location"}, true);
+	sendPushNotification(res.user.deviceToken, {"key": "0"});
 	res.send("Submitted silent push notification!");
 });
 
@@ -130,6 +130,10 @@ router.put("/:userid", async (req, res) => {
 
 		if (req.body.endTime != null) {
 			user.endTime = req.body.endTime
+		}
+
+		if (req.body.token != null) {
+			user.deviceToken = req.body.token;
 		}
 
 		await user.save();
