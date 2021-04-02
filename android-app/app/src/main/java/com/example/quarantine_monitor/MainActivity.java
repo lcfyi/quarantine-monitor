@@ -86,16 +86,14 @@ public class MainActivity extends AppCompatActivity {
                     greeting = "Good morning";
                 } else if (timeOfDay >= 12 && timeOfDay < 16) {
                     greeting = "Good afternoon";
-                } else if (timeOfDay >= 16 && timeOfDay < 21) {
-                    greeting = "Good evening";
                 } else {
-                    greeting = "Good night";
+                    greeting = "Good evening";
                 }
 
                 long millisRemaining = UserInfoHelper.getEndtime() - curUt;
                 int hours   = (int) ((millisRemaining / (1000*60*60)) % 24);
                 int days = (int) ((millisRemaining / (1000*60*60*24)) % 30);
-                message = String.format(greeting + ", you have %02d days %02d hours left in your quarantine.", days, hours);
+                message = String.format(greeting + ", you have %02d days %d hours left in your quarantine.", days, hours);
             } else {
                 message = "Congratulations! You have completed your quarantine period.";
             }

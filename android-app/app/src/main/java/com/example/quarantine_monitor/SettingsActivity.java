@@ -35,15 +35,18 @@ public class SettingsActivity extends AppCompatActivity {
         signoutButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
+                // Delete the cookie file in the app-specific folder
+                UserInfoHelper.deleteCookieFile(getApplicationContext());
 
+                // Delete the stored device token on the server
                 String URL = "https://qmonitor-306302.wl.r.appspot.com/users/" + UserInfoHelper.getUserId() + "/devicetoken";
                 StringRequest jsonObjectRequest = new StringRequest(Request.Method.DELETE, URL,
                         new Response.Listener<String>() {
                             @Override
                             public void onResponse(String response) {
                                 // Delete cookie file
-                                Intent homePageIntent = new Intent(SettingsActivity.this, LoginActivity.class);
-                                startActivity(homePageIntent);
+                                Intent loginIntent = new Intent(SettingsActivity.this, LoginActivity.class);
+                                startActivity(loginIntent);
                             }
                         }, new Response.ErrorListener() {
                     @Override

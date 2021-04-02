@@ -22,8 +22,8 @@ router.post("/", async (req, res) => {
 			user.deviceToken = req.body.token;
 			logger(req.body.token);
 			await user.save();
-			res.status(201).send({"userid": user._id, "admin": user.admin, "endtime": user.endTime});
-			logger({"userid": user._id});
+			res.status(201).send({"_id": user._id, "admin": user.admin, "endTime": user.endTime});
+			logger({"_id": user._id});
 		} else {
 			res.status(400).send("Incorrect Password");
 			logger("Incorrect Password");

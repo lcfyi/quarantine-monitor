@@ -24,6 +24,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -67,9 +68,6 @@ public class LoginActivity extends AppCompatActivity {
 
                     }
                 });
-
-        RequestQueue queue = VolleyQueue.getInstance(this.getApplicationContext()).
-                getRequestQueue();
 
         loginButton = (Button) findViewById(R.id.btn_login);
         loginButton.setOnClickListener(new View.OnClickListener(){
@@ -138,9 +136,13 @@ public class LoginActivity extends AppCompatActivity {
                         public void onResponse(JSONObject response) {
                             Log.d(TAG, response.toString());
                             try {
-                                UserInfoHelper.setUserId(response.get("userid").toString());
-                                UserInfoHelper.setEndtime((long) response.get("endtime"));
+                                UserInfoHelper.setUserId(response.get("_id").toString());
+                                UserInfoHelper.setEndtime((long) response.get("endTime"));
                                 UserInfoHelper.setAdmin((Boolean) response.get("admin"));
+
+                                // Create the cookie file to store user login state
+                                UserInfoHelper.createCookieFile(getApplicationContext());
+
                                 Intent homePageIntent = new Intent(LoginActivity.this, MainActivity.class);
                                 startActivity(homePageIntent);
                             } catch (JSONException e) {
