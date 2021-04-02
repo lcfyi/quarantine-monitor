@@ -36,6 +36,8 @@ public interface SimilarityClassifier {
 
   void setUseNNAPI(boolean isChecked);
 
+  Recognition createRecognition(String label, Float distance, Float left, Float top, Float right, Float bottom, float [][] embedExtra);
+
   /** An immutable result returned by a Classifier describing what was recognized. */
   public class Recognition {
     /**
@@ -90,6 +92,22 @@ public interface SimilarityClassifier {
 
     public Float getDistance() {
       return distance;
+    }
+
+    public Float getTop(){
+      return location.top;
+    }
+
+    public Float getBottom(){
+      return location.bottom;
+    }
+
+    public Float getLeft(){
+      return location.left;
+    }
+
+    public Float getRight(){
+      return location.right;
     }
 
     public RectF getLocation() {

@@ -17,6 +17,7 @@
 package com.example.quarantine_monitor;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -50,7 +51,12 @@ import com.google.mlkit.vision.face.FaceDetection;
 import com.google.mlkit.vision.face.FaceDetector;
 import com.google.mlkit.vision.face.FaceDetectorOptions;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.LinkedList;
 import java.util.List;
 import com.example.quarantine_monitor.customview.OverlayView;
@@ -61,6 +67,8 @@ import com.example.quarantine_monitor.env.Logger;
 import com.example.quarantine_monitor.tflite.SimilarityClassifier;
 import com.example.quarantine_monitor.tflite.TFLiteObjectDetectionAPIModel;
 import com.example.quarantine_monitor.tracking.MultiBoxTracker;
+
+import org.json.JSONObject;
 
 
 /**
@@ -194,6 +202,7 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
                       TF_OD_API_INPUT_SIZE,
                       TF_OD_API_IS_QUANTIZED);
       //cropSize = TF_OD_API_INPUT_SIZE;
+      readFromFile(this);
     } catch (final IOException e) {
       e.printStackTrace();
       LOGGER.e(e, "Exception initializing classifier!");
@@ -410,6 +419,7 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
           }
           detector.register(name, rec);
           //knownFaces.put(name, rec);
+          writeToFile(DetectorActivity.this, name, rec);
           dlg.dismiss();
 
           showConfirmationDialogue("Successfully registered your facial profile",
@@ -633,6 +643,72 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
               }
             });
     builder.create().show();
+  }
+
+  public void readFromFile(Context context){
+    File dir = new File(context.getFilesDir(), "facial_verification.ser");
+    JSONObject facialProfile = null;
+    if(dir.exists()){
+      try{
+        FileInputStream file = context.openFileInput("facial_verification.ser");
+        ObjectInputStream in = new ObjectInputStream(file);
+        String facialProfileString = (String) in.readObject();
+        in.close();
+        file.close();
+
+        facialProfile = new JSONObject(facialProfileString);
+
+        Float distance = Float.parseFloat(facialProfile.getString("distance"));
+        Float top = Float.parseFloat(facialProfile.getString("top"));
+        Float bottom = Float.parseFloat(facialProfile.getString("bottom"));
+        Float left = Float.parseFloat(facialProfile.getString("left"));
+        Float right = Float.parseFloat(facialProfile.getString("right"));
+        float[][] embedExtra = new float[1][192];
+        Log.d(TAG, facialProfile.get("embedExtra").toString());
+
+
+        SimilarityClassifier.Recognition rec = detector.createRecognition(facialProfile.getString("label"),
+                distance, left, top, right, bottom, embedExtra);
+
+        Log.d(TAG, rec.toString());
+
+        detector.register(facialProfile.getString("label"), rec);
+        Log.d(TAG, facialProfile.toString());
+        Log.d(TAG, "successfully stored object");
+      }catch(Exception e){
+        Log.d(TAG, e.toString());
+      }
+    }
+
+  }
+
+  public void writeToFile(Context context, String label, SimilarityClassifier.Recognition recognition){
+    File dir = new File(context.getFilesDir(), "facial_verification.ser");
+    JSONObject facialProfile = new JSONObject();
+    try {
+      facialProfile.put("label", label);
+      facialProfile.put("distance", recognition.getDistance());
+      facialProfile.put("top", recognition.getTop());
+      facialProfile.put("bottom", recognition.getBottom());
+      facialProfile.put("left", recognition.getLeft());
+      facialProfile.put("right", recognition.getRight());
+      facialProfile.put("embedExtra", recognition.getExtra());
+
+      String facialProfileSerialized = facialProfile.toString();
+
+      FileOutputStream fileOut = context.openFileOutput("facial_verification.ser", Context.MODE_PRIVATE);
+
+      ObjectOutputStream out = new ObjectOutputStream(fileOut);
+      out.writeObject(facialProfileSerialized);
+      out.close();
+      fileOut.close();
+
+      Log.d(TAG, facialProfile.toString());
+      Log.d(TAG, "finish writing facial profile to string");
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
   }
 
 

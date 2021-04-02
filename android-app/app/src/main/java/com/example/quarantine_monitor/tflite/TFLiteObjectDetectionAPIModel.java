@@ -15,18 +15,24 @@ limitations under the License.
 
 package com.example.quarantine_monitor.tflite;
 
+import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.RectF;
 import android.os.Trace;
+import android.util.Log;
 import android.util.Pair;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.MappedByteBuffer;
@@ -36,7 +42,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.tensorflow.lite.Interpreter;
+
+import com.example.quarantine_monitor.DetectorActivity;
 import com.example.quarantine_monitor.env.Logger;
 
 /**
@@ -52,6 +63,8 @@ public class TFLiteObjectDetectionAPIModel
         implements SimilarityClassifier {
 
   private static final Logger LOGGER = new Logger();
+
+  private static final String TAG = "tf api";
 
   //private static final int OUTPUT_SIZE = 512;
   private static final int OUTPUT_SIZE = 192;
@@ -95,9 +108,10 @@ public class TFLiteObjectDetectionAPIModel
 
   private HashMap<String, Recognition> registered = new HashMap<>();
   public void register(String name, Recognition rec) {
-    if(!registered.containsKey(name)){
       registered.put(name, rec);
-    }
+      Log.d(TAG, name);
+      Log.d(TAG, rec.toString());
+      Log.d(TAG, registered.toString());
   }
 
   private TFLiteObjectDetectionAPIModel() {}
@@ -131,6 +145,9 @@ public class TFLiteObjectDetectionAPIModel
       throws IOException {
 
     final TFLiteObjectDetectionAPIModel d = new TFLiteObjectDetectionAPIModel();
+
+    //TODO: read facial profiles from file(?) here
+
 
     String actualFilename = labelFilename.split("file:///android_asset/")[1];
     InputStream labelsInput = assetManager.open(actualFilename);
@@ -177,6 +194,7 @@ public class TFLiteObjectDetectionAPIModel
     Pair<String, Float> ret = null;
     for (Map.Entry<String, Recognition> entry : registered.entrySet()) {
         final String name = entry.getKey();
+        Log.d(TAG, entry.getValue().toString());
         final float[] knownEmb = ((float[][]) entry.getValue().getExtra())[0];
 
         float distance = 0;
@@ -308,5 +326,17 @@ public class TFLiteObjectDetectionAPIModel
   @Override
   public void setUseNNAPI(boolean isChecked) {
     if (tfLite != null) tfLite.setUseNNAPI(isChecked);
+  }
+
+  @Override
+  public Recognition createRecognition(String label, Float distance, Float left, Float top, Float right, Float bottom, float[][] embedExtra){
+    String id = "0";
+    Recognition rec = new Recognition(
+            id,
+            label,
+            distance,
+            new RectF(left, top, right, bottom));
+    rec.setExtra(embedExtra);
+    return rec;
   }
 }
