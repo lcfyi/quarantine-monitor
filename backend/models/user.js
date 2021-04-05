@@ -25,6 +25,9 @@ const userSchema = new mongoose.Schema({
     },
     availability: [Number],
     scheduledTests: [Number],
+    endTime: {
+        type: Number
+    },
     lastCoords: [Number], //Change to last record
     locationMap: [{
         time: {

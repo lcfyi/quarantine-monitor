@@ -5,6 +5,7 @@ const router = express.Router();
 const User = require("../../models/user");
 const Station = require("../../models/station");
 const sendPushNotification = require("../../pushnotification");
+const algorithm = require("../../algorithm");
 
 // Routers for Register/Login functionality
 const userRegisterRouter = require("./userRegister");
@@ -19,7 +20,7 @@ async function getUser(req, res, next) {
 	let user;
 	try {
 		user = await User.findById(req.params.userid)
-        .select('username deviceToken stationid lastCoords locationMap admin status availability scheduledTests');
+        .select('username deviceToken stationid lastCoords locationMap admin status availability scheduledTests endTime');
 
         if (user == null)
             throw "Not Found";
@@ -41,8 +42,40 @@ router.get("/:userid", getUser, (req, res) => {
  *	GET request for a specific user.
  */
 router.get("/:userid/requestlocation", getUser, (req, res) => {
-	sendPushNotification(res.user.deviceToken, {"key": "Requesting location"}, true);
+	sendPushNotification(res.user.deviceToken, {"key": "0"});
 	res.send("Submitted silent push notification!");
+});
+
+/*
+ *	DELETE request for the devicetoken
+ */
+router.delete("/:userid/devicetoken", async (req, res) => {
+	try {
+		let user = await User.findById(req.params.userid);
+
+		user.deviceToken = "";
+		await user.save();
+		res.status(200).send("Successfully signed out");
+	} catch(err) {
+		res.status(400).send(err.message);
+	}
+	
+})
+
+/*
+ *	Test request to test the polling loops.
+ */
+ router.get("/:userid/sendtest/", getUser, async (req, res) => {
+	await algorithm.handleTests(true, res.user._id.toString());
+	res.send("Executed loop 1");
+});
+
+/*
+ *	Test request to test the polling loop 2.
+ */
+ router.get("/:userid/sendtest2/", getUser, async (req, res) => {
+	await algorithm.handleTests(false, "");
+	res.send("Executed loop 2");
 });
 
 /*
@@ -89,6 +122,19 @@ router.put("/:userid", async (req, res) => {
             let locMapEntry = JSON.parse("{\"time\":" + currentUnix + ",\"coordinates\": [" + req.body.coordinates.toString() + "]}");
             user.locationMap.push(locMapEntry);
         }
+
+		if (req.body.availability != null) {
+			user.availability = req.body.availability;
+			user.scheduledTests = algorithm.randomizedTimes(req.body.availability);		
+		}
+
+		if (req.body.endTime != null) {
+			user.endTime = req.body.endTime
+		}
+
+		if (req.body.token != null) {
+			user.deviceToken = req.body.token;
+		}
 
 		await user.save();
 		res.status(200).send("Successfully updated user details");

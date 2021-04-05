@@ -68,9 +68,7 @@ public class SignUpActivity extends AppCompatActivity implements LocationListene
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            showExplanation("Allow location access?", "In order to use this application"  +
-                            "we need to be able to access your location, for quarantine monitoring purposes.",
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_BACKGROUND_LOCATION},
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_BACKGROUND_LOCATION},
                     REQUEST_PERMISSION_LOCATION);
             return;
         }
@@ -90,30 +88,6 @@ public class SignUpActivity extends AppCompatActivity implements LocationListene
     }
 
     /*
-     * @desc: this function will show an explanation of why we need location permissions on this device.
-     * Upon yes it will attempt to ask for permissions, and upon no it will return the user to the home page.
-     * */
-    private void showExplanation(String title, String message, String[] permissions, final int permissionCode) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(title)
-                .setMessage(message)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        requestPermissions(permissions, permissionCode);
-                    }
-                })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Log.d(TAG, "Returning to login page");
-                        Intent loginIntent = new Intent(SignUpActivity.this, LoginActivity.class);
-                        startActivity(loginIntent);
-                    }
-                });
-        builder.create().show();
-    }
-
-    /*
      * @desc: this function is called after permissions have been granted. It shows toasts based
      * on what has happened.
      * */
@@ -128,6 +102,9 @@ public class SignUpActivity extends AppCompatActivity implements LocationListene
                     locationManager.requestLocationUpdates(GPS_PROVIDER, 0, 0, this);
                 } else {
                     Toast.makeText(SignUpActivity.this, "Permission Denied!", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "Returning to login page");
+                    Intent loginIntent = new Intent(SignUpActivity.this, LoginActivity.class);
+                    startActivity(loginIntent);
                 }
                 break;
             default:
@@ -147,7 +124,7 @@ public class SignUpActivity extends AppCompatActivity implements LocationListene
         Log.d(TAG, coordinatesArray.toString());
 
         if(username.equals("") || password.equals("")){
-            Toast.makeText(this,"username or password empty", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,"Username or Password Empty", Toast.LENGTH_SHORT).show();
         }
         else{
             String URL = "https://qmonitor-306302.wl.r.appspot.com/users";
@@ -170,7 +147,9 @@ public class SignUpActivity extends AppCompatActivity implements LocationListene
                 public void onResponse(JSONObject response) {
                     Log.d(TAG, response.toString());
                     try {
-                        UserInfoHelper.setUserId(response.get("_id").toString());
+                        UserInfoHelper.setUserId(response.get("userid").toString());
+                        UserInfoHelper.setEndtime((long) response.get("endtime"));
+                        UserInfoHelper.setAdmin((Boolean) response.get("admin"));
                         Intent bluetoothIntent = new Intent(SignUpActivity.this, BluetoothConnectionActivity.class);
                         bluetoothIntent.putExtra("SignUpWorkflow", "True");
                         startActivity(bluetoothIntent);
@@ -182,7 +161,7 @@ public class SignUpActivity extends AppCompatActivity implements LocationListene
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     Log.d(TAG, error.toString());
-                    Toast.makeText(SignUpActivity.this,"username exists already", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SignUpActivity.this,"Username Already Exists", Toast.LENGTH_SHORT).show();
                 }
             });
 
@@ -192,5 +171,10 @@ public class SignUpActivity extends AppCompatActivity implements LocationListene
         }
     }
 
-
+    @Override
+    public void onBackPressed(){
+        Log.d(TAG, "Returning to login page");
+        Intent loginIntent = new Intent(SignUpActivity.this, LoginActivity.class);
+        startActivity(loginIntent);
+    }
 }

@@ -24,6 +24,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -38,7 +39,6 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 public class LoginActivity extends AppCompatActivity {
     final private static String TAG = "LoginActivity";
     public String user_Id;
-    private RequestQueue queue;
     private Button loginButton;
     private EditText usernameText;
     private EditText passwordText;
@@ -72,8 +72,6 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 });
 
-        queue = Volley.newRequestQueue(this);
-
         loginButton = (Button) findViewById(R.id.btn_login);
         loginButton.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -94,29 +92,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     /*
-     * @desc: this function will show an explanation of why we need location permissions on this device.
-     * Upon yes it will attempt to ask for permissions, and upon no it will return the user to the home page.
-     * */
-    private void showExplanation(String title, String message, String[] permissions, final int permissionCode) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(title)
-                .setMessage(message)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        requestPermission(permissions, permissionCode);
-                        login();
-                    }
-                })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Log.d(TAG, "Returning to login page");
-                    }
-                });
-        builder.create().show();
-    }
-
-    /*
      * @desc: this function requests the location permissions from the user.
      * */
     private void requestPermission(String[] permissions, int permissionRequestCode) {
@@ -129,13 +104,12 @@ public class LoginActivity extends AppCompatActivity {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            showExplanation("Allow location access?", "In order to use this application"  +
-                            "we need to be able to access your location, for quarantine monitoring purposes.",
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_BACKGROUND_LOCATION},
+            requestPermission(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_BACKGROUND_LOCATION},
                     REQUEST_PERMISSION_LOCATION);
+            Toast.makeText(getApplicationContext(), "ERROR AT LOGINNN", Toast.LENGTH_SHORT).show();
+
             return;
         }
-
         login();
     }
 
@@ -148,7 +122,7 @@ public class LoginActivity extends AppCompatActivity {
         Log.d(TAG, "attempting login");
 
         if(username.equals("") || password.equals("")){
-            Toast.makeText(this,"username or password empty", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,"Username or Password Empty", Toast.LENGTH_SHORT).show();
         }
         else{
             try{
@@ -167,6 +141,12 @@ public class LoginActivity extends AppCompatActivity {
                             Log.d(TAG, response.toString());
                             try {
                                 UserInfoHelper.setUserId(response.get("_id").toString());
+                                UserInfoHelper.setEndtime((long) response.get("endTime"));
+                                UserInfoHelper.setAdmin((Boolean) response.get("admin"));
+
+                                // Create the cookie file to store user login state
+                                UserInfoHelper.createCookieFile(getApplicationContext());
+
                                 Intent homePageIntent = new Intent(LoginActivity.this, MainActivity.class);
                                 startActivity(homePageIntent);
                             } catch (JSONException e) {
@@ -177,15 +157,18 @@ public class LoginActivity extends AppCompatActivity {
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     Log.d(TAG, error.toString());
-                    Toast.makeText(LoginActivity.this,"username or password incorrect", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this,"Invalid Username or Password", Toast.LENGTH_SHORT).show();
                 }
             });
 
             Log.d(TAG, userInfo.toString());
             // Add the request to the RequestQueue
-            queue.add(jsonObjectRequest);
+            VolleyQueue.getInstance(this).addToRequestQueue(jsonObjectRequest);
 
         }
     }
+
+    @Override
+    public void onBackPressed(){ }
 }
 
