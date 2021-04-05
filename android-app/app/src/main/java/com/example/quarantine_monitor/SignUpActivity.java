@@ -1,6 +1,7 @@
 package com.example.quarantine_monitor;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -47,6 +48,7 @@ public class SignUpActivity extends AppCompatActivity implements LocationListene
     private EditText usernameText;
     private EditText passwordText;
     private Button signUpButton;
+    private LocationManager locationManager;
 
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -54,29 +56,25 @@ public class SignUpActivity extends AppCompatActivity implements LocationListene
         getSupportActionBar().hide();
         queue = Volley.newRequestQueue(this);
 
-        coordinates = new Double [2];
-
-        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            showExplanation("Allow location access?", "In order to use this application"  +
-                            "we need to be able to access your location, for quarantine monitoring purposes.",
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_BACKGROUND_LOCATION},
-                    REQUEST_PERMISSION_LOCATION);
-            return;
-        }
-        locationManager.requestLocationUpdates(GPS_PROVIDER, 0, 0, this);
-
         signUpButton = (Button) findViewById(R.id.btn_signUp);
         signUpButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){signUp();}
         });
-
         usernameText = (EditText) findViewById(R.id.input_username);
         passwordText = (EditText) findViewById(R.id.input_password);
+        coordinates = new Double [2];
 
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_BACKGROUND_LOCATION},
+                    REQUEST_PERMISSION_LOCATION);
+            return;
+        }
+        locationManager.requestLocationUpdates(GPS_PROVIDER, 0, 0, this);
+        Log.d(TAG, "location manager running");
     }
 
     /*
@@ -85,40 +83,34 @@ public class SignUpActivity extends AppCompatActivity implements LocationListene
      * */
     @Override
     public void onLocationChanged(@NonNull Location location){
+        Log.d(TAG, coordinates.toString());
         coordinates[0] = location.getLongitude();
         coordinates[1] = location.getLatitude();
     }
 
     /*
-     * @desc: this function will show an explanation of why we need location permissions on this device.
-     * Upon yes it will attempt to ask for permissions, and upon no it will return the user to the home page.
+     * @desc: this function is called after permissions have been granted. It shows toasts based
+     * on what has happened.
      * */
-    private void showExplanation(String title, String message, String[] permissions, final int permissionCode) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(title)
-                .setMessage(message)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        requestPermission(permissions, permissionCode);
-                    }
-                })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Log.d(TAG, "Returning to login page");
-                        Intent homePageIntent = new Intent(SignUpActivity.this, LoginActivity.class);
-                        startActivity(homePageIntent);
-                    }
-                });
-        builder.create().show();
-    }
-
-    /*
-     * @desc: this function requests the location permissions from the user.
-     * */
-    private void requestPermission(String[] permissions, int permissionRequestCode) {
-        ActivityCompat.requestPermissions(this,
-                permissions, permissionRequestCode);
+    @SuppressLint("MissingPermission")
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_PERMISSION_LOCATION:
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(SignUpActivity.this, "Permission Granted, Thank You!", Toast.LENGTH_SHORT).show();
+                    locationManager.requestLocationUpdates(GPS_PROVIDER, 0, 0, this);
+                } else {
+                    Toast.makeText(SignUpActivity.this, "Permission Denied!", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "Returning to login page");
+                    Intent loginIntent = new Intent(SignUpActivity.this, LoginActivity.class);
+                    startActivity(loginIntent);
+                }
+                break;
+            default:
+                break;
+        }
     }
 
     private void signUp(){
@@ -133,7 +125,7 @@ public class SignUpActivity extends AppCompatActivity implements LocationListene
         Log.d(TAG, coordinatesArray.toString());
 
         if(username.equals("") || password.equals("")){
-            Toast.makeText(this,"username or password empty", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,"Username or Password Empty", Toast.LENGTH_SHORT).show();
         }
         else{
             String URL = "https://qmonitor-306302.wl.r.appspot.com/users";
@@ -156,9 +148,11 @@ public class SignUpActivity extends AppCompatActivity implements LocationListene
                 public void onResponse(JSONObject response) {
                     Log.d(TAG, response.toString());
                     try {
-                        UserInfoHelper.setUserId(response.get("_id").toString());
-                        Intent homePageIntent = new Intent(SignUpActivity.this, MainActivity.class);
-                        startActivity(homePageIntent);
+                        UserInfoHelper.setUserId(response.get("userid").toString());
+                        UserInfoHelper.setEndtime((long) response.get("endtime"));
+                        UserInfoHelper.setAdmin((Boolean) response.get("admin"));
+                        Intent bluetoothIntent = new Intent(SignUpActivity.this, BluetoothConnectionActivity.class);
+                        startActivity(bluetoothIntent);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -167,7 +161,7 @@ public class SignUpActivity extends AppCompatActivity implements LocationListene
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     Log.d(TAG, error.toString());
-                    Toast.makeText(SignUpActivity.this,"username exists already", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SignUpActivity.this,"Username Already Exists", Toast.LENGTH_SHORT).show();
                 }
             });
 
@@ -177,5 +171,10 @@ public class SignUpActivity extends AppCompatActivity implements LocationListene
         }
     }
 
-
+    @Override
+    public void onBackPressed(){
+        Log.d(TAG, "Returning to login page");
+        Intent loginIntent = new Intent(SignUpActivity.this, LoginActivity.class);
+        startActivity(loginIntent);
+    }
 }

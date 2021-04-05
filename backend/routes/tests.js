@@ -30,7 +30,7 @@ router.get("/", async (req, res) => {
             throw "Not Found";
         }
 
-        let test = await Test.findOne({"userid": req.body.userid, "stationid": req.body.stationid, "time" : {$gte: req.body.time - 600}})
+        let test = await Test.findOne({"userid": req.body.userid, "stationid": req.body.stationid, "time" : {$gte: req.body.time - 600000}})
         
         console.log(test);
         if (test == null) {

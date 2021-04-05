@@ -3,6 +3,9 @@ const User = require("./models/user");
 const Station = require("./models/station");
 const Test = require("./models/test");
 
+const TEST_STATUS = {"SENT": 0, "INCOMPLETE": 3};
+const NOTIF_TYPE = {"REQUEST_LOCATION": "0", "VERIFY_IDENTITY": "1", "ALERT_ADMIN": "2"};
+
 // Helper function to generate a random normal distribution in between min and max
 // https://stackoverflow.com/questions/25582882/javascript-math-random-normal-distribution-gaussian-bell-curve
 function randn(min, max) {
@@ -38,60 +41,69 @@ function randomizedTimes(availability){
 /*
  *	Main looping algorithm to submit new tests and handle previous ones.
  *  Occasionally handle
- *  TODO: handle time zones by accepting input
  */
-async function handleTests() {
+async function handleTests(test, userid) {
     try {
-        
         // Iterate through all the remaining tests and flag them as incomplete (3)
-		var tests = await Test.find({"status": 0});
-        if (tests == null) {
-            return;
-        }
+		var tests = await Test.find({"status": TEST_STATUS.SENT});
 
         for (var test of tests) {
-            // TODO: use static variable
-            test.status = 3;
+            test.status = TEST_STATUS.INCOMPLETE;
             await test.save();
             
+            console.log(test.adminid);
             const admin = await User.findById(test.adminid)
             // Alert admin of the test of failure
-            //sendPushNotification(admin.deviceToken)
+            const body = "User " + test.userid + " connected to station " + test.stationid + " failed to complete a verification test. (Unix Time: " + test.time + ")";
+            sendPushNotification(admin.deviceToken, {"key": NOTIF_TYPE.ALERT_ADMIN, "title": "Test Failure", "body": body});
         }
             
-        // Find all non-admin users who are currently flagged as following quarantine
-        var users = await User.find({"admin": false, "status": true});
+        // Find all non-admin users who are currently flagged as following quarantine, and still supposed to be quarantined
+        const now = new Date();
+        var users = await User.find({"admin": false, "status": true, "endTime": { $gt: now.getTime()}});
         if (users == null) {
             return;
         }
         for (var user of users) {
+            // TODO: remove test code
+            if (user._id.toString() != userid) {
+                continue;
+            }
+            const currentSlot = now.getUTCHours() * 6 + Math.floor(now.getUTCMinutes() / 10);
+            console.log(currentSlot);
             
-            const now = new Date();
-            const currentSlot = now.getUTCHours * 6 + Math.floor(now.getUTCMinutes() / 10);
-            
-            if (user.availability[1] >= currentSlot) {
+            if (user.availability[1] >= currentSlot && !test) {
 
                 // Once the max time of the range has been hit for each day, regenerate the random times
                 user.scheduledTests = user.randomizedTimes();
                 await user.save();
-            } else if (user.scheduledTests.include(currentSlot)) {
+            } else if ((user.scheduledTests.includes(currentSlot) || test)) {
 
                 // If the current iteration is the test time, we create it
-                const station = await Station.find({"stationid": res.user.stationid});
+                const station = await Station.findById(user.stationid);
+                console.log(station);
                 const test = new Test({
-                    "userid": str(user._id),
+                    "userid": user._id.toString(),
                     "stationid": user.stationid,
-                    "time": now.getTime.toString(),
-                    "status": 0,
-                    "adminid": station.adminid
+                    "time": now.getTime(),
+                    "status": TEST_STATUS.SENT,
+                    "adminid": station.admin
                 });
                 await test.save();
 
                 // Send a push notification to user to trigger test
-                // TODO: set high priority
+                // TODO: set high priority?
                 sendPushNotification(user.deviceToken, 
-                    {"title": "QMonitor - Verify Identity", 
-                     "body": "Please complete the facial verification test within 10 minutes"}, false);
+                    {"key": NOTIF_TYPE.VERIFY_IDENTITY, 
+                     "title": "Verify Identity", 
+                     "body": "Please complete the facial verification test within 10 minutes"});
+            }
+
+            // Collect user's location every hour (or 6th iteration)
+            // TODO: in 1 minute loop, any signing tokens which are unmatched I collect the location every iteration for that user in
+            //       addition wtih the regular location tracking here
+            if (currentSlot % 6 == 0) {
+                sendPushNotification(user.deviceToken, {"key": NOTIF_TYPE.REQUEST_LOCATION});
             }
         }
 
@@ -100,7 +112,5 @@ async function handleTests() {
 		return;
 	}
 }
-
-
 
 module.exports = {randomizedTimes, handleTests};
