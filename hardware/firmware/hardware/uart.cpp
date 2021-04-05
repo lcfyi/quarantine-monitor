@@ -52,10 +52,15 @@ char UART::put_char(char c)
 
 char UART::get_char(long timeout)
 {
-    for (int cycles = 0; !test_for_data() && cycles < timeout; cycles++)
+    long cycles = 0;
+    for (; !test_for_data() && cycles < timeout; cycles++)
         ;
 
-    return ACCESS_ADDR(TRANSLATE_ADDR(_receiver_fifo));
+    if (cycles == timeout) {
+        return 0;
+    } else {
+        return ACCESS_ADDR(TRANSLATE_ADDR(_receiver_fifo));
+    }
 }
 
 bool UART::test_for_data()
