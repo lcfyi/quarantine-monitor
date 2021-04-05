@@ -104,12 +104,16 @@ std::string UART::read_until_char(char c)
 {
     std::string read = "";
     char read_char;
+    const int RETRY_COUNT = 3;
+    int tries = 0;
     do
     {
         read_char = get_char();
-        if (read_char != c) {
+        if (!read_char) {
+            tries++;
+        } else if (read_char != c) {
             read += read_char;
         }
-    } while (read_char != c);
+    } while (read_char != c && tries < RETRY_COUNT);
     return read;
 }
