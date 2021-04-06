@@ -88,7 +88,8 @@ void wifi_thread()
             wifi.set_ssid(config.get_value(config.WIFI_SETTINGS, "ssid"));
             wifi.set_password(config.get_value(config.WIFI_SETTINGS, "password"));
             wifi.set_server_addr(config.get_value(config.SERVER_SETTINGS, "addr"));
-            wifi.set_header("Base", config.get_value(config.SERVER_SETTINGS, "base"));
+            wifi.set_header("Base", config.get_value(config.BASE_SETTINGS, "base"));
+            wifi.set_header("Token", config.get_value(config.BASE_SETTINGS, "token"));
             if (debug)
                 std::cout << "[WIFI] Connecting..." << std::endl;
             wifi.connect();
@@ -241,6 +242,7 @@ int main()
     initialize_mmap();
 
     config.set_value(config.BASE_SETTINGS, "base", "123");
+    config.set_value(config.BASE_SETTINGS, "token", "demo-token");
     std::string debug_setting = config.get_value(config.BASE_SETTINGS, "debug");
 
     if (debug_setting.length())
