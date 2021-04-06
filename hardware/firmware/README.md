@@ -68,3 +68,5 @@ tolerance=1000
 `ini-rset\n` - Resets the WiFi module
 
 `get-stat\n` - Returns the integer status of the WiFi module's connection to the server address (either `0` for failure or `1` for success)
+
+In order to maintain the Bluetooth connection, the DE1 will require the BT device to send a packet (of any data) every 10 seconds as a keep-alive. The DE1 will flag the BT connection as broken beyond this, and reset on new data.
