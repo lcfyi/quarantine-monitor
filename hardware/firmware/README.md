@@ -36,3 +36,35 @@ You'll want to set `SOCEDS_DEST_ROOT` to `/mnt/c/altera/15.0/embedded` if you're
 ```bash
 sudo apt-get install gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf
 ```
+
+### Debugging
+
+To get debug prints from the DE1, set the following in `/var/cache/settings.ini`:
+
+```ini
+[base]
+debug=1
+```
+
+### Setting Accelerometer Tolerance
+
+For example, to set it at 1000:
+
+```ini
+[accel]
+tolerance=1000
+```
+
+### Bluetooth Commands
+
+`set-ssid <ssid>\n` - Sets the SSID
+
+`set-pass <password>\n` - Sets the password
+
+`set-addr <addr>\n` - Sets the server address
+
+`set-face\n` - Sets the flag for a successful face verification
+
+`ini-rset\n` - Resets the WiFi module
+
+`get-stat\n` - Returns the integer status of the WiFi module's connection to the server address (either `0` for failure or `1` for success)
