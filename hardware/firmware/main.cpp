@@ -6,6 +6,7 @@
 
 #include "utils/mmap.h"
 #include "utils/config.h"
+#include "utils/picosha2.h"
 #include "hardware/wifi.h"
 #include "hardware/bluetooth.h"
 #include "hardware/io.h"
@@ -23,6 +24,14 @@ bool accelerometer_triggered = false;
 bool face_verified = false;
 bool bluetooth_triggered = false;
 
+/**
+ * Deal with the wrap-around values from the accelerometer.
+ */
+bool accelerometer_compare(int before, int after, int tolerance)
+{
+    return abs(before - after) > tolerance && abs(before - after + 65535) > tolerance && abs(before - after - 65535) > tolerance;
+}
+
 void accelerometer_thread()
 {
     if (debug)
@@ -30,17 +39,17 @@ void accelerometer_thread()
 
     Accelerometer accelerometer;
 
-    std::string accelerometer_tolerance_setting = config.get_value(config.ACCELEROMETER_SETTINGS, "tolerance");
+    std::string at_setting = config.get_value(config.ACCELEROMETER_SETTINGS, "tolerance");
 
-    int accelerometer_tolerance = 100;
+    int at = 10;
 
-    if (accelerometer_tolerance_setting.length())
+    if (at_setting.length())
     {
-        accelerometer_tolerance = std::stoi(accelerometer_tolerance_setting);
+        at = std::stoi(at_setting);
     }
 
     if (debug)
-        std::cout << "[ACCEL] Accelerometer value set at: " << accelerometer_tolerance << std::endl;
+        std::cout << "[ACCEL] Accelerometer value set at: " << at << std::endl;
 
     Accelerometer::Data last = accelerometer.get_data();
 
@@ -48,30 +57,21 @@ void accelerometer_thread()
     {
         Accelerometer::Data curr = accelerometer.get_data();
 
-        accelerometer_triggered = accelerometer_triggered || abs(curr.x - last.x) > accelerometer_tolerance || abs(curr.y - last.y) > accelerometer_tolerance || abs(curr.z - last.z) > accelerometer_tolerance;
+        accelerometer_triggered = accelerometer_triggered || accelerometer_compare(curr.x, last.x, at) || accelerometer_compare(curr.y, last.y, at) || accelerometer_compare(curr.z, last.z, at);
 
         last = curr;
-        usleep(100000); // 100ms
+        usleep(10000); // 10ms
     }
-}
-
-void wifi_payload_create()
-{
 }
 
 void wifi_thread()
 {
     if (debug)
         std::cout << "[WIFI] Thread starting." << std::endl;
-    // The wifi thread also consumes an accelerometer since that'll
-    // be the only thread that needs access to its data
-    WiFi wifi;
-    int counter = 0;
-    std::string seed = config.get_value(config.WIFI_SETTINGS, "seed");
 
-    if (!seed.length()) {
-        seed = "base_seed";
-    }
+    WiFi wifi;
+    long counter = 0;
+    std::string SERVER_OK = "OK";
 
     while (1)
     {
@@ -98,7 +98,7 @@ void wifi_thread()
             std::string v = wifi.GET();
             if (debug)
                 std::cout << "[WIFI] Value from get: " << v << std::endl;
-            if (v.rfind("OK", 0) == 0)
+            if (v.rfind(SERVER_OK, 0) == 0)
             {
                 if (debug)
                     std::cout << "[WIFI] OK" << std::endl;
@@ -110,21 +110,31 @@ void wifi_thread()
 
         if (wifi_success)
         {
-            counter++;
-            std::string payload = "{\"h\":\"" + std::to_string(counter) + "\",\"s\":{\"a\":" + std::to_string(accelerometer_triggered) + ",\"b\":" + std::to_string(bluetooth_triggered);
-            if (face_verified) {
+            std::string payload = "{\"h\":\"" + std::to_string(counter) + "\",\"s\":{\"a\":" + std::to_string(!accelerometer_triggered) + ",\"b\":" + std::to_string(!bluetooth_triggered);
+            std::string checksum;
+            if (face_verified)
+            {
                 if (debug)
                     std::cout << "[WIFI] Sending face verification flag" << std::endl;
                 payload += ",\"f\": 1";
-                face_verified = false; // TODO we shouldn't clear the flag until we get an OK from the server
+                face_verified = false;
             }
             payload += "}}";
-            std::string resp = wifi.POST(payload);
-            if (debug)
-                std::cout << "[WIFI] POST response: " << resp << std::endl;
-            accelerometer_triggered = false; // Reset the flag
+            accelerometer_triggered = false;
+            picosha2::hash256_hex_string(payload, checksum);
+            counter++;
+            while (true)
+            {
+                std::string resp = wifi.POST(payload + ";" + checksum);
+                if (debug)
+                    std::cout << "[WIFI] POST response: " << resp << std::endl;
+                if (resp == SERVER_OK)
+                    break;
+
+                usleep(100000); // 100ms
+            }
         }
-        usleep(1000000);
+        usleep(1000000); // 1000ms
     }
 }
 
