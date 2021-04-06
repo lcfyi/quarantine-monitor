@@ -52,10 +52,15 @@ char UART::put_char(char c)
 
 char UART::get_char(long timeout)
 {
-    for (int cycles = 0; !test_for_data() && cycles < timeout; cycles++)
+    long cycles = 0;
+    for (; !test_for_data() && cycles < timeout; cycles++)
         ;
 
-    return ACCESS_ADDR(TRANSLATE_ADDR(_receiver_fifo));
+    if (cycles == timeout) {
+        return 0;
+    } else {
+        return ACCESS_ADDR(TRANSLATE_ADDR(_receiver_fifo));
+    }
 }
 
 bool UART::test_for_data()
@@ -99,12 +104,16 @@ std::string UART::read_until_char(char c)
 {
     std::string read = "";
     char read_char;
+    const int RETRY_COUNT = 3;
+    int tries = 0;
     do
     {
         read_char = get_char();
-        if (read_char != c) {
+        if (!read_char) {
+            tries++;
+        } else if (read_char != c) {
             read += read_char;
         }
-    } while (read_char != c);
+    } while (read_char != c && tries < RETRY_COUNT);
     return read;
 }
