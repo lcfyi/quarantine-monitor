@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+import com.example.quarantine_monitor.DisconnectBluetooth;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -110,6 +111,7 @@ public class BluetoothDisconnectionActivity extends AppCompatActivity {
             BTConnection.disconnect();
 
             Intent bluetoothConnectionActivityIntent = new Intent(BluetoothDisconnectionActivity.this, BluetoothConnectionActivity.class);
+            bluetoothConnectionActivityIntent.putExtra("SignUpWorkflow", "False");
             startActivity(bluetoothConnectionActivityIntent);
         }
 

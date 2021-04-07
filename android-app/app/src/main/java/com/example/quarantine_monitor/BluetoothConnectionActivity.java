@@ -60,6 +60,8 @@ public class BluetoothConnectionActivity extends AppCompatActivity {
     BluetoothAdapter myBluetooth = null;
     BluetoothSocket btSocket = null;
 
+    private boolean signUpFlag = false;
+
 //    private boolean ConnectSuccess = false;
 
     // singleton class to keep track of bluetooth connection
@@ -69,6 +71,10 @@ public class BluetoothConnectionActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Bundle extras = getIntent().getExtras();
+        if(extras.getString("SignUpWorkflow").equals("True")){
+            signUpFlag = true;
+        }
 
         setContentView(R.layout.activity_connect);
         getSupportActionBar().hide();
@@ -141,9 +147,14 @@ public class BluetoothConnectionActivity extends AppCompatActivity {
             device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
             if (BluetoothDevice.ACTION_ACL_CONNECTED.equals(action)) {
                 Toast.makeText(getApplicationContext(), "Device is now Connected",    Toast.LENGTH_SHORT).show();
-
-                Intent bluetoothDisconnectionActivityIntent = new Intent(BluetoothConnectionActivity.this, BluetoothDisconnectionActivity.class);
-                startActivity(bluetoothDisconnectionActivityIntent);
+                if(signUpFlag){
+                    Intent facialVerificationActivityIntent = new Intent(BluetoothConnectionActivity.this, FacialVerificationActivity.class);
+                    startActivity(facialVerificationActivityIntent);
+                }
+                else {
+                    Intent bluetoothDisconnectionActivityIntent = new Intent(BluetoothConnectionActivity.this, BluetoothDisconnectionActivity.class);
+                    startActivity(bluetoothDisconnectionActivityIntent);
+                }
 
             } else if (BluetoothDevice.ACTION_ACL_DISCONNECTED.equals(action)) {
                 Toast.makeText(getApplicationContext(), "Device Not Connected",       Toast.LENGTH_SHORT).show();

@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v){
                 Intent bluetoothConnectPage = new Intent(MainActivity.this, BluetoothConnectionActivity.class);
+                bluetoothConnectPage.putExtra("SignUpWorkflow", "False");
                 startActivity(bluetoothConnectPage);
             }
         });
