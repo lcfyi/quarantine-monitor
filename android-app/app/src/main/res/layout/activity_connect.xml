@@ -15,14 +15,10 @@
         tools:layout_editor_absoluteY="180dp">
 
         <ListView
+            android:layout_marginTop="50px"
             android:id="@+id/paired_bluetooth_device_list"
             android:layout_width="wrap_content"
-            android:layout_height="383dp" />
-        
-        <TextView
-            android:id="@+id/text1"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="406dp" />
 
 
 
