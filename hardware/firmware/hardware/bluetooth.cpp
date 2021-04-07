@@ -7,10 +7,7 @@ Bluetooth::Bluetooth() : UART(Bluetooth_LineControlReg, Bluetooth_DivisorLatchLS
 
 void Bluetooth::send(std::string value)
 {
-    for (char const &c : value)
-    {
-        put_char(c);
-    }
+    write(value);
 }
 
 bool Bluetooth::available()
@@ -21,4 +18,9 @@ bool Bluetooth::available()
 char Bluetooth::read()
 {
     return get_char();
+}
+
+void Bluetooth::bt_flush()
+{
+    flush();
 }

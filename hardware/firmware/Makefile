@@ -8,16 +8,16 @@ ALT_DEVICE_FAMILY       = soc_cv_av
 HWLIBS_ROOT             = ./lib/ip/altera/hps/altera_hps/hwlib
  
 # Here we add all *.c files that we want to compile
-CSRCS                   = $(wildcard *.c) $(wildcard hardware/*.c)
+CSRCS                   = $(wildcard *.c) $(wildcard hardware/*.c) $(wildcard utils/*.c)
  
 # Here we add all *.cpp files that we want to compile
-CPPSRCS                 = $(wildcard *.cpp) $(wildcard hardware/*.cpp)
+CPPSRCS                 = $(wildcard *.cpp) $(wildcard hardware/*.cpp) $(wildcard utils/*.cpp)
  
 # Here we add the paths to all include directories
 INCS                    =
  
 # Parameters for SCP upload. Set up SSH keys to bypass password prompt
-SCP_TARGET_IP           = 192.168.0.96
+SCP_TARGET_IP           = 192.168.0.101
 SCP_USER                = root
 SCP_TARGET_PATH         = /home/root
 SCP                     = scp
@@ -29,9 +29,9 @@ LD                      = $(ARCH)-g++
 CC                      = $(ARCH)-gcc
 CPPC                    = $(ARCH)-g++
 SIZE                    = $(ARCH)-size
-CFLAGS                  = -g -std=gnu99 -Wall
-CPPFLAGS                = -g -std=c++11 -Wall
-LDFLAGS                 = -g -pthread -Wall
+CFLAGS                  = -g -std=gnu99 -Wall -static-libstdc++
+CPPFLAGS                = -g -std=c++11 -Wall -static-libstdc++
+LDFLAGS                 = -g -pthread -Wall -static-libstdc++
  
 ################################################################################
 # Don't change anything below this line                                        #

@@ -4,7 +4,7 @@
 #include <unistd.h>
 #include <string>
 #include "uart.h"
-#include "../mmap.h"
+#include "../utils/mmap.h"
 
 /**
  * Mapped based on QSys.
@@ -41,6 +41,7 @@ public:
     void set_header(std::string key, std::string value);
     void set_server_addr(std::string server_addr);
     void connect();
+    void reset();
 
     std::string GET();
     std::string POST(std::string body);
