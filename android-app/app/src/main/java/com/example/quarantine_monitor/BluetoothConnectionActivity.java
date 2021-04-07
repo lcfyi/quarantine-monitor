@@ -60,10 +60,11 @@ public class BluetoothConnectionActivity extends AppCompatActivity {
     BluetoothAdapter myBluetooth = null;
     BluetoothSocket btSocket = null;
 
-    private boolean ConnectSuccess = false;
+//    private boolean ConnectSuccess = false;
 
     // singleton class to keep track of bluetooth connection
     BluetoothConnection isBTConnected = BluetoothConnection.getInstance();
+    BluetoothConnectionRFS rfsBTConnection = BluetoothConnectionRFS.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,57 +76,14 @@ public class BluetoothConnectionActivity extends AppCompatActivity {
         if(!isBTConnected.isConnected()) {
             Context context = this;
 
-//        BluetoothManager manager = (BluetoothManager) getSystemService(BLUETOOTH_SERVICE);
-//        List<BluetoothDevice> connected = manager.getConnectedDevices(GATT);
-//        Log.i("Connected Devices: ", connected.size()+"");
-//        Toast.makeText(getApplicationContext(), "Connected Devices: "+connected.size(), Toast.LENGTH_SHORT).show();
-
             BA = BluetoothAdapter.getDefaultAdapter();
             pairedDevices();
 
-//        Intent intent = getIntent();
-//        address = intent.getStringExtra("add");
-//        if(address != null) {
-//            new ConnectBT().execute();
-//        }
             IntentFilter filter = new IntentFilter();
             filter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
             filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED);
             filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
             this.registerReceiver(broadcastReceiver, filter);
-//
-//        bluetoothManager = (BluetoothManager) getSystemService(BLUETOOTH_SERVICE);
-//
-//        connectedDevices = bluetoothManager.getConnectedDevices(GATT);
-//
-//        ArrayList<String> list = new ArrayList<String>();
-//
-//        String allItems = "";
-//
-//        for(BluetoothDevice btDevice : connectedDevices){
-//            allItems = allItems + "\n" + btDevice.getName(); //adds a new line between items
-//        }
-//
-//        Toast.makeText(getApplicationContext(),allItems, Toast.LENGTH_LONG).show();
-//
-//        BA = BluetoothAdapter.getDefaultAdapter();
-//        Intent turnOn = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-//        startActivityForResult(turnOn, 0);
-//        Toast.makeText(getApplicationContext(), "Turned on",Toast.LENGTH_LONG).show();
-//        PD = BA.getBondedDevices();
-
-//        ArrayList<String> list = new ArrayList<String>();
-//
-//        for(BluetoothDevice bt : PD) list.add(bt.getName());
-//        String allItems = "";
-//
-//        for(String str : list){
-//            allItems = allItems + "\n" + str; //adds a new line between items
-//        }
-
-//        Toast.makeText(getApplicationContext(),allItems, Toast.LENGTH_LONG).show();
-
-//        getPairedDevices();
         }
         else {
             setContentView(R.layout.activity_bt_connected);
@@ -159,12 +117,17 @@ public class BluetoothConnectionActivity extends AppCompatActivity {
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             String info = ((TextView)view).getText().toString();
             address = info.substring(info.length() - 17);
+            String[] infoArr = info.split("\n");
 
-            if(!isBTConnected.isConnected()) {
-                new ConnectBT().execute();
+            if(!infoArr[0].equals("hc01.com HC-05")) {
+                Toast.makeText(getApplicationContext(), "Incorrect Device Selected\nPlease connect to hc01.com HC-05",    Toast.LENGTH_SHORT).show();
             }
             else {
-                setContentView(R.layout.activity_bt_connected);
+                if (!isBTConnected.isConnected()) {
+                    new ConnectBT().execute();
+                } else {
+                    setContentView(R.layout.activity_bt_connected);
+                }
             }
         }
     };
@@ -183,13 +146,23 @@ public class BluetoothConnectionActivity extends AppCompatActivity {
                 startActivity(bluetoothDisconnectionActivityIntent);
 
             } else if (BluetoothDevice.ACTION_ACL_DISCONNECTED.equals(action)) {
-                Toast.makeText(getApplicationContext(), "Device not connected",       Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Device Not Connected",       Toast.LENGTH_SHORT).show();
 
 //                setContentView(R.layout.activity_bt_not_connected);
 //                getPairedDevices();
             }
         }
     };
+
+    private boolean bluetoothConnect(){
+        try{
+            rfsBTConnection.getBTSocket().connect();
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 
     private class ConnectBT extends AsyncTask<Void, Void, Void> {
         @Override
@@ -206,19 +179,31 @@ public class BluetoothConnectionActivity extends AppCompatActivity {
 
                     BluetoothDevice hc = myBluetooth.getRemoteDevice(address);
 
-                    BluetoothConnectionRFS rfsBTConnection = BluetoothConnectionRFS.getInstance();
-                    rfsBTConnection.setBluetoothDevice(hc);
-
                     btSocket = hc.createInsecureRfcommSocketToServiceRecord(MY_UUID);
-                    rfsBTConnection.setBTSocket(btSocket);
 
                     BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
+                    rfsBTConnection.setBluetoothDevice(hc);
+                    rfsBTConnection.setBTSocket(btSocket);
 
-                    btSocket.connect();
-                    ConnectSuccess = true;
+                    if(bluetoothConnect()){
+                        isBTConnected.connect();
+                    }
+
                 }
             } catch (IOException e) {
-                Toast.makeText(getApplicationContext(), "Error Detected & Connection Failed", Toast.LENGTH_SHORT).show();
+                runOnUiThread(new Runnable(){
+                    @Override
+                    public void run() {
+                        BluetoothConnectionRFS rfsBTConnection = BluetoothConnectionRFS.getInstance();
+                        try {
+                            rfsBTConnection.getBTSocket().close();
+                        } catch (IOException ioException) {
+                            ioException.printStackTrace();
+                        }
+                        Toast.makeText(getApplicationContext(), "Error Detected & Connection Failed\nPlease make sure the Bluetooth Device is Turned on and within range", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
 //                ConnectSuccess = false;
             }
             return null;
@@ -228,12 +213,13 @@ public class BluetoothConnectionActivity extends AppCompatActivity {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
 
-            if (!ConnectSuccess) {
+            if (!isBTConnected.isConnected()) {
                 Toast.makeText(getApplicationContext(), "Connection Failed", Toast.LENGTH_SHORT).show();
-            } else {
-//                Toast.makeText(getApplicationContext(), "Connected. Please do not disconnect", Toast.LENGTH_SHORT).show();
-                isBTConnected.connect();
             }
+//            else {
+////                Toast.makeText(getApplicationContext(), "Connected. Please do not disconnect", Toast.LENGTH_SHORT).show();
+//                isBTConnected.connect();
+//            }
         }
     }
 

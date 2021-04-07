@@ -23,7 +23,9 @@ import java.util.List;
 import static android.bluetooth.BluetoothProfile.GATT;
 
 public class BluetoothDisconnectionActivity extends AppCompatActivity {
+    boolean errorFound = false;
     Button disconnectButton;
+    Button mainMenuButton;
     InputStream BTInputStream = null;
     OutputStream BTOutputStream = null;
     BluetoothAdapter BTAdapter = null;
@@ -50,6 +52,19 @@ public class BluetoothDisconnectionActivity extends AppCompatActivity {
 
         disconnectButton = (Button) findViewById(R.id.BT_disconnect_button);
         disconnectButton.setOnClickListener(v -> BTdisconnect());
+
+        mainMenuButton = (Button) findViewById(R.id.main_menu_button);
+        mainMenuButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goToMainMenu();
+            }
+        });
+    }
+
+    public void goToMainMenu() {
+        Intent mainMenuActivityIntent = new Intent(BluetoothDisconnectionActivity.this, MainActivity.class);
+        startActivity(mainMenuActivityIntent);
     }
 
     public void BTdisconnect() {
@@ -57,6 +72,7 @@ public class BluetoothDisconnectionActivity extends AppCompatActivity {
             BTInputStream = BTSocket.getInputStream();
             BTOutputStream = BTSocket.getOutputStream();
         } catch (Exception e) {
+            errorFound = true;
             Toast.makeText(getApplicationContext(), "Input and Output Streams not open", Toast.LENGTH_SHORT).show();
         }
 
@@ -64,6 +80,7 @@ public class BluetoothDisconnectionActivity extends AppCompatActivity {
             try {
                 BTInputStream.close();
             } catch (Exception e) {
+                errorFound = true;
                 Toast.makeText(getApplicationContext(), "Input stream not correctly closed", Toast.LENGTH_SHORT).show();
             }
             BTInputStream = null;
@@ -73,6 +90,7 @@ public class BluetoothDisconnectionActivity extends AppCompatActivity {
             try {
                 BTOutputStream.close();
             } catch (Exception e) {
+                errorFound = true;
                 Toast.makeText(getApplicationContext(), "Output stream not correctly closed", Toast.LENGTH_SHORT).show();
             }
             BTOutputStream = null;
@@ -82,16 +100,18 @@ public class BluetoothDisconnectionActivity extends AppCompatActivity {
             try {
                 BTSocket.close();
             } catch (Exception e) {
+                errorFound = true;
                 Toast.makeText(getApplicationContext(), "Socket not correctly closed", Toast.LENGTH_SHORT).show();
             }
             BTSocket = null;
         }
 
-        Toast.makeText(getApplicationContext(), "BT Device Successfully Disconnected", Toast.LENGTH_SHORT).show();
+        if(errorFound == false && BTSocket == null && BTInputStream == null && BTOutputStream == null) {
+            BTConnection.disconnect();
 
-        BTConnection.disconnect();
+            Intent bluetoothConnectionActivityIntent = new Intent(BluetoothDisconnectionActivity.this, BluetoothConnectionActivity.class);
+            startActivity(bluetoothConnectionActivityIntent);
+        }
 
-        Intent bluetoothConnectionActivityIntent = new Intent(BluetoothDisconnectionActivity.this, BluetoothConnectionActivity.class);
-        startActivity(bluetoothConnectionActivityIntent);
     }
 }
