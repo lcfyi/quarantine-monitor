@@ -66,7 +66,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService{
                 break;
             case KEY_VERIFY_IDEN:
                 super.onMessageReceived(message);
-                Intent fvi = new Intent(getApplicationContext(), FacialVerificationActivity.class);
+                Intent fvi = new Intent(getApplicationContext(), DetectorActivity.class);
                 sendNotification(message, fvi);
                 break;
             case KEY_ALERT_ADMIN:
@@ -182,5 +182,40 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService{
         manager.notify(id, mBuilder.build());
     }
 
+//    // For strictly internal notification services
+//    public void sendNotification(String title, String body, NotificationCompat.Builder mBuilder) {
+////        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this, "notify_001");
+//        Intent ii = new Intent(getApplicationContext(), MainActivity.class);
+//        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, ii, 0);
+//        Bitmap licon = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher_round);
+//
+//        mBuilder.setContentIntent(pendingIntent);
+//        mBuilder.setContentTitle(title);
+//        mBuilder.setContentText(body);
+//        mBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(body));
+//        mBuilder.setSmallIcon(R.mipmap.ic_launcher_round);
+//        mBuilder.setLargeIcon(licon);
+//        mBuilder.setTimeoutAfter(60*10*1000);
+//        mBuilder.setPriority(NotificationCompat.PRIORITY_MAX);
+//        mBuilder.setAutoCancel(false);
+//
+//        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+//
+//        // === Removed some obsoletes
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+//        {
+//            String channelId = "notify_001";
+//            NotificationChannel channel = new NotificationChannel(
+//                    channelId,
+//                    "Channel for QMonitor",
+//                    NotificationManager.IMPORTANCE_HIGH);
+//            manager.createNotificationChannel(channel);
+//            mBuilder.setChannelId(channelId);
+//        }
+//
+//        // Generate unique id
+//        int id = (int) ((new Date().getTime() / 1000L) % Integer.MAX_VALUE);
+//        manager.notify(id, mBuilder.build());
+//    }
 }
 

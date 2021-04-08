@@ -53,7 +53,6 @@ public class SignUpActivity extends AppCompatActivity implements LocationListene
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
-        getSupportActionBar().hide();
         queue = Volley.newRequestQueue(this);
 
         signUpButton = (Button) findViewById(R.id.btn_signUp);
@@ -152,6 +151,7 @@ public class SignUpActivity extends AppCompatActivity implements LocationListene
                         UserInfoHelper.setEndtime((long) response.get("endTime"));
                         UserInfoHelper.setAdmin((Boolean) response.get("admin"));
                         Intent bluetoothIntent = new Intent(SignUpActivity.this, BluetoothConnectionActivity.class);
+                        bluetoothIntent.putExtra("SignUpWorkflow", "True");
                         startActivity(bluetoothIntent);
                     } catch (JSONException e) {
                         e.printStackTrace();

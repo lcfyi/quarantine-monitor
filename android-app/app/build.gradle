@@ -39,11 +39,15 @@ dependencies {
     implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.22'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
 
+    // added MLKit dependencies for face detector
+    implementation 'com.google.mlkit:face-detection:16.0.0'
     // Import the Firebase BoM
     implementation platform('com.google.firebase:firebase-bom:26.5.0')
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
     implementation 'com.github.AnyChart:AnyChart-Android:1.1.2'
     implementation 'androidx.viewpager:viewpager:1.0.0'
+
+    implementation('org.tensorflow:tensorflow-lite:0.0.0-nightly') { changing = true }
 
 
     testImplementation 'junit:junit:4.+'
