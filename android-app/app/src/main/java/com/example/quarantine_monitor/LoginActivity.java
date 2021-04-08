@@ -144,8 +144,13 @@ public class LoginActivity extends AppCompatActivity {
                                 // Create the cookie file to store user login state
                                 UserInfoHelper.createCookieFile(getApplicationContext());
 
-                                Intent homePageIntent = new Intent(LoginActivity.this, MainActivity.class);
-                                startActivity(homePageIntent);
+                                if (UserInfoHelper.getAdmin()) {
+                                    Intent adminPageIntent = new Intent(LoginActivity.this, AdminMainActivity.class);
+                                    startActivity(adminPageIntent);
+                                } else {
+                                    Intent homePageIntent = new Intent(LoginActivity.this, MainActivity.class);
+                                    startActivity(homePageIntent);
+                                }
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }

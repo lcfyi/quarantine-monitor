@@ -21,8 +21,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         getSupportActionBar().hide();
 
-        startService(new Intent(this, BackgroundLocationService.class));
-
         updateHeader();
 
         CardView facialVerificationCard = (CardView) findViewById(R.id.id_verification_card);
@@ -40,15 +38,6 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v){
                 Intent bluetoothConnectPage = new Intent(MainActivity.this, BluetoothConnectionActivity.class);
                 startActivity(bluetoothConnectPage);
-            }
-        });
-
-        CardView profileCard = (CardView) findViewById(R.id.profile_card);
-        profileCard.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                Intent profilePage = new Intent(MainActivity.this, ProfileActivity.class);
-                startActivity(profilePage);
             }
         });
 
@@ -73,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private void updateHeader() {
         TextView daysCounter = findViewById(R.id.daysLeft);
-        String message;
+        String message = null;
         if (!UserInfoHelper.getAdmin()) {
             long curUt = System.currentTimeMillis();
             if (curUt < UserInfoHelper.getEndtime()) {
@@ -93,15 +82,12 @@ public class MainActivity extends AppCompatActivity {
                 long millisRemaining = UserInfoHelper.getEndtime() - curUt;
                 int hours   = (int) ((millisRemaining / (1000*60*60)) % 24);
                 int days = (int) ((millisRemaining / (1000*60*60*24)) % 30);
-                message = String.format(greeting + ", you have %02d days %d hours left in your quarantine.", days, hours);
+                message = String.format(greeting + ", you have %d days %d hours left in your quarantine.", days, hours);
             } else {
                 message = "Congratulations! You have completed your quarantine period.";
             }
 
-        } else {
-            message = "ADMIN";
         }
         daysCounter.setText(message);
-        //TODO: Link to plotting page here
     }
 }

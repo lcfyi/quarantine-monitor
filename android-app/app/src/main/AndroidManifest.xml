@@ -46,14 +46,21 @@
             android:label="BluetoothConnectionActivity">
         </activity>
         <activity
-            android:name=".ProfileActivity"
-            android:label="ProfileActivity">
-        </activity>
-        <activity
             android:name=".SettingsActivity"
             android:label="SettingsActivity">
         </activity>
-
+        <activity
+            android:name=".AdminMainActivity"
+            android:label="AdminMainActivity">
+        </activity>
+        <activity
+            android:name=".StatisticsActivity"
+            android:label="StatisticsActivity">
+        </activity>
+        <activity
+            android:name=".NotificationLogActivity"
+            android:label="NotificationLogActivity">
+        </activity>
         <service
             android:name=".MyFirebaseMessagingService"
             android:exported="false">
