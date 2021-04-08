@@ -147,8 +147,8 @@ public class SignUpActivity extends AppCompatActivity implements LocationListene
                 public void onResponse(JSONObject response) {
                     Log.d(TAG, response.toString());
                     try {
-                        UserInfoHelper.setUserId(response.get("userid").toString());
-                        UserInfoHelper.setEndtime((long) response.get("endtime"));
+                        UserInfoHelper.setUserId(response.get("_id").toString());
+                        UserInfoHelper.setEndtime((long) response.get("endTime"));
                         UserInfoHelper.setAdmin((Boolean) response.get("admin"));
                         Intent bluetoothIntent = new Intent(SignUpActivity.this, BluetoothConnectionActivity.class);
                         bluetoothIntent.putExtra("SignUpWorkflow", "True");

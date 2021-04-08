@@ -142,6 +142,8 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
   //private HashMap<String, Classifier.Recognition> knownFaces = new HashMap<>();
 
   private String TAG = "facialDetection";
+  private String user_label = "";
+  private boolean signUpWorkflow = false;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -168,7 +170,16 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
 
     faceDetector = detector;
 
-
+    Bundle extras = getIntent().getExtras();
+    if(extras.getString("SignUpWorkflow").equals("True")){
+      showConfirmationDialogue("Register facial profile", "Please press the '+' button to" +
+              "add your facial profile to your phone. ", 1);
+      signUpWorkflow = true;
+    }
+    else{
+      showConfirmationDialogue("Perform identity verification", "Please look at your camera to" +
+              "verify your identity.", 1);
+    }
     //checkWritePermission();
 
   }
@@ -469,6 +480,8 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
     paint.setStyle(Style.STROKE);
     paint.setStrokeWidth(2.0f);
 
+    boolean verified = false;
+
     float minimumConfidence = MINIMUM_CONFIDENCE_TF_OD_API;
     switch (MODE) {
       case TF_OD_API:
@@ -568,6 +581,7 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
             label = result.getTitle();
             if (result.getId().equals("0")) {
               color = Color.GREEN;
+              verified = true;
             }
             else {
               color = Color.RED;
@@ -600,6 +614,11 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
         result.setExtra(extra);
         result.setCrop(crop);
         mappedRecognitions.add(result);
+
+        if(verified && !signUpWorkflow){
+          //TODO: add connection to de1 to send boolean
+          showConfirmationDialogue("Identity verified", "Returning back to home page now.", 3);
+        }
 
       }
 
@@ -671,6 +690,7 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
                 distance, left, top, right, bottom, embedExtra);
 
         Log.d(TAG, rec.toString());
+        user_label = facialProfile.getString("label");
 
         detector.register(facialProfile.getString("label"), rec);
         Log.d(TAG, facialProfile.toString());
