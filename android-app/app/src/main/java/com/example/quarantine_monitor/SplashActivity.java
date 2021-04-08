@@ -24,6 +24,8 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
         getSupportActionBar().hide();
 
+        startService(new Intent(this, BackgroundLocationService.class));
+
         // Bypasses login page if previously logged in
         if (UserInfoHelper.containsCookieFile(getApplicationContext())) {
             String data = UserInfoHelper.readCookieFile(getApplicationContext());
@@ -44,8 +46,13 @@ public class SplashActivity extends AppCompatActivity {
                                 // Create the cookie file to store user login state
                                 UserInfoHelper.createCookieFile(getApplicationContext());
 
-                                Intent homePageIntent = new Intent(SplashActivity.this, MainActivity.class);
-                                startActivity(homePageIntent);
+                                if (UserInfoHelper.getAdmin()) {
+                                    Intent adminPageIntent = new Intent(SplashActivity.this, AdminMainActivity.class);
+                                    startActivity(adminPageIntent);
+                                } else {
+                                    Intent homePageIntent = new Intent(SplashActivity.this, MainActivity.class);
+                                    startActivity(homePageIntent);
+                                }
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             };
