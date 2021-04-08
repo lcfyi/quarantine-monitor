@@ -36,3 +36,82 @@ You'll want to set `SOCEDS_DEST_ROOT` to `/mnt/c/altera/15.0/embedded` if you're
 ```bash
 sudo apt-get install gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf
 ```
+
+### Debugging
+
+To get debug prints from the DE1, set the following in `/var/cache/settings.ini`:
+
+```ini
+[base]
+debug=1
+```
+
+### Setting Accelerometer Tolerance
+
+For example, to set it at 1000:
+
+```ini
+[accel]
+tolerance=1000
+```
+
+### Bluetooth Commands
+
+`set-ssid <ssid>\n` - Sets the SSID
+
+`set-pass <password>\n` - Sets the password
+
+`set-addr <addr>\n` - Sets the server address
+
+`set-face\n` - Sets the flag for a successful face verification
+
+`ini-rset\n` - Resets the WiFi module
+
+`get-stat\n` - Returns the integer status of the WiFi module's connection to the server address (either `0` for failure or `1` for success)
+
+In order to maintain the Bluetooth connection, the DE1 will require the BT device to send a packet (of any data) every 10 seconds as a keep-alive. The DE1 will flag the BT connection as broken beyond this, and reset on new data.
+
+### Communication Spec
+
+In order to communicate with the server, the DE1 expects the following endpoints:
+
+#### `GET /station`
+
+This is a public test endpoint, and can simply return `OK` as `text/plain`.
+
+#### `POST /station`
+
+This is the ingestion endpoint, where all stations will send their data to. It should:
+
+- Take a `text/plain` payload, where it will:
+  - Split on the deliminter `;`, where the first element is a JSON string and the second is the SHA256 checksum
+    - If the JSON string's hash matches the checksum, return `OK`
+    - If the hash does not match, return `ERROR`
+- Verify the header contains a `Base` and `Token`, which will be used to identify and authenticate the packet
+
+An example of the server's behaviour should be:
+
+```javascript
+let [payload, checksum] = payload.split(";");
+if (SHA256(payload) === checksum) return "OK";
+else return "ERROR";
+```
+
+The JSON payload will follow this structure:
+
+```json
+{
+    "h": <sequence number>,
+    "s": {
+        "a": <status>,
+        "b": <status>,
+        "f": <status>
+    }
+}
+```
+
+The `sequence number` is a monotonic counter that the server must track and verify that each packet is `n + 1` of the previous packet's `n`. The `status` flag is an integer boolean with either `1` or `0`, where the latter indicates that an issue has been detected with the corresponding sensor.
+
+- `a` corresponds to the accelerometer's status, where `0` means the device has moved since the last check
+- `b` corresponds to the bluetooth connection, where `0` means that client has not communicated with the DE1 for over 10 seconds
+- `f` corresponds to the facial verification, where `1` means the facial verification succeeded. Note that this is an optional key and is not included unless the verification succeeded

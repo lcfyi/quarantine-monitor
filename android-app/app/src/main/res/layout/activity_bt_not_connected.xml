@@ -58,6 +58,6 @@
             android:id="@+id/textView3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="BT NOT Connected" />
+            android:text="Bluetooth Is Not Connected" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -27,6 +27,7 @@ public:
     void send(std::string value);
     bool available();
     char read();
+    void bt_flush();
 };
 
 #endif

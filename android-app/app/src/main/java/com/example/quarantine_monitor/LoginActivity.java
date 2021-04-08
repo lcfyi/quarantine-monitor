@@ -147,8 +147,15 @@ public class LoginActivity extends AppCompatActivity {
                                 // Create the cookie file to store user login state
                                 UserInfoHelper.createCookieFile(getApplicationContext());
 
-                                Intent homePageIntent = new Intent(LoginActivity.this, MainActivity.class);
-                                startActivity(homePageIntent);
+                                // redirecting user away from homepage and to the bluetooth page
+//                                Intent homePageIntent = new Intent(LoginActivity.this, MainActivity.class);
+//                                startActivity(homePageIntent);
+
+                                // directing user to the bluetooth page
+                                Intent BTIntent = new Intent(LoginActivity.this, BluetoothConnectionActivity.class);
+                                BTIntent.putExtra("SignUpWorkflow", "False");
+                                startActivity(BTIntent);
+
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }

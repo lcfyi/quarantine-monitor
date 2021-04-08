@@ -60,6 +60,11 @@
             android:name=".DetectorActivity"
             android:label="DetectorActivity">
         </activity>
+        <activity
+            android:name=".BluetoothDisconnectionActivity"
+            android:label="BluetoothDisconnectionActivity">
+        </activity>
+        
 
         <service
             android:name=".MyFirebaseMessagingService"

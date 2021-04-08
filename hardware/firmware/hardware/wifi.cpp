@@ -4,10 +4,7 @@ WiFi::WiFi() : UART(WiFi_LineControlReg, WiFi_DivisorLatchLSB, WiFi_DivisorLatch
 {
     // In addition to the UART setup, we'll also reset the WiFi module
     init(WIFI_BAUD_RATE);
-    ACCESS_ADDR(TRANSLATE_ADDR(WiFi_Reset)) = 0x0;
-    usleep(500000);
-    ACCESS_ADDR(TRANSLATE_ADDR(WiFi_Reset)) = 0x1;
-    usleep(500000);
+    reset();
 }
 
 void WiFi::set_ssid(std::string ssid)
@@ -38,6 +35,15 @@ void WiFi::connect()
 {
     write("4\n");
     wait_until_char('\n', TIMEOUT_CYCLES);
+}
+
+void WiFi::reset()
+{
+    ACCESS_ADDR(TRANSLATE_ADDR(WiFi_Reset)) = 0x0;
+    usleep(500000);
+    ACCESS_ADDR(TRANSLATE_ADDR(WiFi_Reset)) = 0x1;
+    usleep(500000);
+    flush();
 }
 
 std::string WiFi::GET()

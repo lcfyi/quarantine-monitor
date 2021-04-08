@@ -4,7 +4,7 @@
 #include <string>
 #include <stdio.h>
 #include <unistd.h>
-#include "../mmap.h"
+#include "../utils/mmap.h"
 
 #define TIMEOUT_CYCLES 10000000
 

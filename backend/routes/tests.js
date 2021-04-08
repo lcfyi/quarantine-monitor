@@ -4,13 +4,22 @@ const Test = require("../models/test");
 
 
 /*
- *	GET request for a specific station.
- *  Can be queried by admin, stationid, starttime, endtime, or status
+ *	GET request for a specific tests.
+ *  Can be queried by status, userid
  *  Status can be 0 (Sent), 1 (Passed), 2 (Failed), 3 (Incomplete)
  */
 router.get("/", async (req, res) => {
 	try {
-		tests = await Test.find({});
+        let query = {};
+        
+        if (req.query.userid !== undefined) {
+            query.userid = req.query.userid;
+        }
+
+        if (req.query.status !== undefined) {
+            query.status = req.query.status;
+        }
+		tests = await Test.find(query);
         console.log(tests);
         if (tests != null)
             res.json(tests); 
@@ -26,18 +35,18 @@ router.get("/", async (req, res) => {
  router.post("/update", async (req, res) => {
 	try {
 
-        if (req.body.userid == null || req.body.stationid == null || req.body.status == null) {
+        if (req.body.stationid == null) {
             throw "Not Found";
         }
 
-        let test = await Test.findOne({"userid": req.body.userid, "stationid": req.body.stationid, "time" : {$gte: req.body.time - 600000}})
+        let test = await Test.findOne({"stationid": req.body.stationid, "time" : {$gte: req.body.time - 600000}});
         
         console.log(test);
         if (test == null) {
             throw "Not Found"
         }
 
-        test.status = req.body.status;
+        test.status = 1;
 		await test.save();
 		res.status(200).send("Successfully updated test status");
 	} catch (err) {

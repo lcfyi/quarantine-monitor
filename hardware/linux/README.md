@@ -64,4 +64,13 @@ We will need to set MSEL[4:0]= 5’b01010. Note that the picture below does not 
 8. Generate the file.
 ![Screenshot](./images/quartus.PNG)
 
-Move the generated `.rbf` to the Linux filesystem, and run [the script](./program.sh). This will flash te FPGA.
+Move the generated `.rbf` to the Linux filesystem, and run [the script](./program.sh). This will flash the FPGA.
+
+
+## Initializing the firmware at boot
+
+We'll be using `init.d` in order to initialize the firmware, following the steps [here](https://unix.stackexchange.com/questions/56957/how-to-start-an-application-automatically-on-boot).
+
+1. Move `program.sh` to `/etc/init.d`
+2. Make sure we have execution permissions on the file.
+3. 
