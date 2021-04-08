@@ -1,5 +1,8 @@
 package com.example.quarantine_monitor;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
@@ -9,6 +12,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.BroadcastReceiver;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,15 +25,19 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.util.Log;
+
 import com.example.quarantine_monitor.BluetoothConnection;
+import com.example.quarantine_monitor.MyFirebaseMessagingService;
 
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.core.app.NotificationCompat;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -72,14 +81,14 @@ public class BluetoothConnectionActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle extras = getIntent().getExtras();
-        if(extras.getString("SignUpWorkflow").equals("True")){
+        if (extras.getString("SignUpWorkflow").equals("True")) {
             signUpFlag = true;
         }
 
         setContentView(R.layout.activity_connect);
         getSupportActionBar().hide();
 
-        if(!isBTConnected.isConnected()) {
+        if (!isBTConnected.isConnected()) {
             Context context = this;
 
             BA = BluetoothAdapter.getDefaultAdapter();
@@ -90,9 +99,9 @@ public class BluetoothConnectionActivity extends AppCompatActivity {
             filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED);
             filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
             this.registerReceiver(broadcastReceiver, filter);
-        }
-        else {
-            setContentView(R.layout.activity_bt_connected);
+        } else {
+            Intent bluetoothDisconnectionActivityIntent = new Intent(BluetoothConnectionActivity.this, BluetoothDisconnectionActivity.class);
+            startActivity(bluetoothDisconnectionActivityIntent);
         }
     }
 
@@ -100,12 +109,11 @@ public class BluetoothConnectionActivity extends AppCompatActivity {
         Devices = BA.getBondedDevices();
         ArrayList list = new ArrayList();
 
-        if(Devices.size() > 0) {
-            for(BluetoothDevice bt : Devices) {
+        if (Devices.size() > 0) {
+            for (BluetoothDevice bt : Devices) {
                 list.add(bt.getName() + "\n" + bt.getAddress());
             }
-        }
-        else {
+        } else {
             Toast.makeText(getApplicationContext(), "No Paired Bluetooth Devices Found", Toast.LENGTH_SHORT).show();
         }
 
@@ -121,14 +129,13 @@ public class BluetoothConnectionActivity extends AppCompatActivity {
         @RequiresApi(api = Build.VERSION_CODES.R)
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            String info = ((TextView)view).getText().toString();
+            String info = ((TextView) view).getText().toString();
             address = info.substring(info.length() - 17);
             String[] infoArr = info.split("\n");
 
-            if(!infoArr[0].equals("hc01.com HC-05")) {
-                Toast.makeText(getApplicationContext(), "Incorrect Device Selected\nPlease connect to hc01.com HC-05",    Toast.LENGTH_SHORT).show();
-            }
-            else {
+            if (!infoArr[0].equals("hc01.com HC-05")) {
+                Toast.makeText(getApplicationContext(), "Incorrect Device Selected\nPlease connect to hc01.com HC-05", Toast.LENGTH_SHORT).show();
+            } else {
                 if (!isBTConnected.isConnected()) {
                     new ConnectBT().execute();
                 } else {
@@ -146,27 +153,56 @@ public class BluetoothConnectionActivity extends AppCompatActivity {
             String action = intent.getAction();
             device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
             if (BluetoothDevice.ACTION_ACL_CONNECTED.equals(action)) {
-                Toast.makeText(getApplicationContext(), "Device is now Connected",    Toast.LENGTH_SHORT).show();
-                if(signUpFlag){
+                Toast.makeText(getApplicationContext(), "Device is now Connected", Toast.LENGTH_SHORT).show();
+                if (signUpFlag) {
                     Intent facialVerificationActivityIntent = new Intent(BluetoothConnectionActivity.this, FacialVerificationActivity.class);
                     startActivity(facialVerificationActivityIntent);
-                }
-                else {
+                } else {
                     Intent bluetoothDisconnectionActivityIntent = new Intent(BluetoothConnectionActivity.this, BluetoothDisconnectionActivity.class);
                     startActivity(bluetoothDisconnectionActivityIntent);
                 }
 
             } else if (BluetoothDevice.ACTION_ACL_DISCONNECTED.equals(action)) {
-                Toast.makeText(getApplicationContext(), "Device Not Connected",       Toast.LENGTH_SHORT).show();
+                NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext(), "notify_001");
+                Intent ii = new Intent(getApplicationContext(), BluetoothConnectionActivity.class);
+                PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, ii, 0);
+                Bitmap licon = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher_round);
 
-//                setContentView(R.layout.activity_bt_not_connected);
-//                getPairedDevices();
+                String title = "ALERT";
+                String body = "Quarantine Monitor Disconnected\n Please Reconnect via Bluetooth";
+                mBuilder.setContentIntent(pendingIntent);
+                mBuilder.setContentTitle(title);
+                mBuilder.setContentText(body);
+                mBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(body));
+                mBuilder.setSmallIcon(R.mipmap.ic_launcher_round);
+                mBuilder.setLargeIcon(licon);
+                mBuilder.setTimeoutAfter(60 * 10 * 1000);
+                mBuilder.setPriority(NotificationCompat.PRIORITY_MAX);
+                mBuilder.setAutoCancel(false);
+
+                NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+                // === Removed some obsoletes
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    String channelId = "notify_001";
+                    NotificationChannel channel = new NotificationChannel(
+                            channelId,
+                            "Channel for QMonitor",
+                            NotificationManager.IMPORTANCE_HIGH);
+                    manager.createNotificationChannel(channel);
+                    mBuilder.setChannelId(channelId);
+                }
+
+                // Generate unique id
+                int id = (int) ((new Date().getTime() / 1000L) % Integer.MAX_VALUE);
+                manager.notify(id, mBuilder.build());
+
             }
         }
     };
 
-    private boolean bluetoothConnect(){
-        try{
+    private boolean bluetoothConnect() {
+        try {
             rfsBTConnection.getBTSocket().connect();
             return true;
         } catch (IOException e) {
@@ -179,7 +215,7 @@ public class BluetoothConnectionActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            Toast.makeText(getApplicationContext(), "Connecting... Please Wait",    Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Connecting... Please Wait", Toast.LENGTH_SHORT).show();
         }
 
         @Override
@@ -196,13 +232,13 @@ public class BluetoothConnectionActivity extends AppCompatActivity {
                     rfsBTConnection.setBluetoothDevice(hc);
                     rfsBTConnection.setBTSocket(btSocket);
 
-                    if(bluetoothConnect()){
+                    if (bluetoothConnect()) {
                         isBTConnected.connect();
                     }
 
                 }
             } catch (IOException e) {
-                runOnUiThread(new Runnable(){
+                runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         BluetoothConnectionRFS rfsBTConnection = BluetoothConnectionRFS.getInstance();
