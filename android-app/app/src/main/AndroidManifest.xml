@@ -41,10 +41,6 @@
             android:label="SignUpActivity">
         </activity>
         <activity
-            android:name=".FacialVerificationActivity"
-            android:label="FacialVerificationActivity">
-        </activity>
-        <activity
             android:name=".BluetoothConnectionActivity"
             android:label="BluetoothConnectionActivity">
         </activity>
