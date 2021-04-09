@@ -157,6 +157,7 @@ public class BluetoothConnectionActivity extends AppCompatActivity {
                 if (signUpFlag) {
                     Intent facialVerificationActivityIntent = new Intent(BluetoothConnectionActivity.this, DetectorActivity.class);
                     facialVerificationActivityIntent.putExtra("SignUpWorkflow", "False");
+                    facialVerificationActivityIntent.putExtra("TestWorkflow", "False");
                     startActivity(facialVerificationActivityIntent);
                 } else {
                     Intent bluetoothDisconnectionActivityIntent = new Intent(BluetoothConnectionActivity.this, BluetoothDisconnectionActivity.class);

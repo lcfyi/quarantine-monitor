@@ -68,6 +68,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService{
                 super.onMessageReceived(message);
                 Intent fvi = new Intent(getApplicationContext(), DetectorActivity.class);
                 fvi.putExtra("SignUpWorkflow", "False");
+                fvi.putExtra("TestWorkflow", "True");
                 sendNotification(message, fvi);
                 break;
             case KEY_ALERT_ADMIN:
