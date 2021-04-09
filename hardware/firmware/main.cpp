@@ -186,7 +186,7 @@ void bluetooth_thread()
         std::cout << "[BLUETOOTH] Thread starting." << std::endl;
     Bluetooth bluetooth;
     const int RETRY_COUNT = 3;
-    const long CHALLENGE_INTERVAL = 1000000;
+    const long CHALLENGE_INTERVAL = 150000;
     long counter = 0;
 
     while (1)
