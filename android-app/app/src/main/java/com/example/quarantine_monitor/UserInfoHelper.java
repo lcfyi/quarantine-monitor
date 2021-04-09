@@ -18,8 +18,14 @@ public class UserInfoHelper {
     private static Double[] coordinates = new Double[2];
     private static Boolean admin;
     private static long endTime;
+    private static Boolean fvResult = false;
 
     private static final String cookieFileName = "config.txt";
+
+    public static Boolean getFvResult() {return fvResult;}
+    public static void setFvResult(Boolean result){
+        UserInfoHelper.fvResult = result;
+    }
 
     public static String getUserId() {return userId;}
     public static void setUserId(String userId) {

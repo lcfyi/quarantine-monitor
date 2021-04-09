@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -34,9 +35,21 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Array;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
 import static android.location.LocationManager.GPS_PROVIDER;
 
@@ -49,6 +62,9 @@ public class SignUpActivity extends AppCompatActivity implements LocationListene
     private EditText passwordText;
     private Button signUpButton;
     private LocationManager locationManager;
+    private Spinner startTimeSpinner;
+    private Spinner endTimeSpinner;
+    private SimpleDateFormat dateFormat;
     private boolean disableBackButton = false;
 
     protected void onCreate(Bundle savedInstanceState){
@@ -63,6 +79,10 @@ public class SignUpActivity extends AppCompatActivity implements LocationListene
         });
         usernameText = (EditText) findViewById(R.id.input_username);
         passwordText = (EditText) findViewById(R.id.input_password);
+        startTimeSpinner = (Spinner) findViewById(R.id.startTime_spinner);
+        endTimeSpinner = (Spinner) findViewById(R.id.endTime_spinner);
+        dateFormat = new SimpleDateFormat("HH:mm");
+
         coordinates = new Double [2];
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -118,57 +138,80 @@ public class SignUpActivity extends AppCompatActivity implements LocationListene
         String username = usernameText.getText().toString();
         String password = passwordText.getText().toString();
 
+        String startTimeString = startTimeSpinner.getSelectedItem().toString();
+        String endTimeString = endTimeSpinner.getSelectedItem().toString();
+
         JSONArray coordinatesArray = new JSONArray();
         coordinatesArray.put(coordinates[0]);
         coordinatesArray.put(coordinates[1]);
+
 
         Log.d(TAG, coordinatesArray.toString());
 
         if(username.equals("") || password.equals("")){
             Toast.makeText(this,"Username or Password Empty", Toast.LENGTH_SHORT).show();
         }
+        else if (startTimeString.equals(null) || endTimeString.equals(null)){
+            Toast.makeText(this,"Please input proper start and end time", Toast.LENGTH_SHORT).show();
+        }
         else{
-            String URL = "https://qmonitor-306302.wl.r.appspot.com/users";
-            JSONObject userInfo = new JSONObject();
-            try{
-                Log.d(TAG, String.valueOf(coordinates[0]));
-                Log.d(TAG, String.valueOf(coordinates[1]));
-                //create json body to put into request
-                userInfo.put("username", username);
-                userInfo.put("password", password);
-                userInfo.put("coordinates", coordinatesArray);
-            } catch (JSONException e) {
+            Date startTime = null;
+            Date endTime = null;
+            try {
+                startTime = dateFormat.parse(startTimeString);
+                endTime = dateFormat.parse(endTimeString);
+            } catch (ParseException e) {
                 e.printStackTrace();
             }
 
-            Log.d(TAG, userInfo.toString());
+            Log.d(TAG, String.valueOf(startTime.getHours()));
+            Log.d(TAG, String.valueOf(endTime.getHours()));
 
-            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, URL, userInfo, new Response.Listener<JSONObject>() {
-                @Override
-                public void onResponse(JSONObject response) {
-                    Log.d(TAG, response.toString());
-                    try {
-                        UserInfoHelper.setUserId(response.get("_id").toString());
-                        UserInfoHelper.setEndtime((long) response.get("endTime"));
-                        UserInfoHelper.setAdmin((Boolean) response.get("admin"));
-                        Intent bluetoothIntent = new Intent(SignUpActivity.this, BluetoothConnectionActivity.class);
-                        bluetoothIntent.putExtra("SignUpWorkflow", "True");
-                        startActivity(bluetoothIntent);
-                        disableBackButton = true;
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+            if(endTime.getHours() - startTime.getHours() < 1){
+                Toast.makeText(this,"Start time must occur before End time", Toast.LENGTH_SHORT).show();
+            }
+            else{
+                String URL = "https://qmonitor-306302.wl.r.appspot.com/users";
+                JSONObject userInfo = new JSONObject();
+                try{
+                    Log.d(TAG, String.valueOf(coordinates[0]));
+                    Log.d(TAG, String.valueOf(coordinates[1]));
+                    //create json body to put into request
+                    userInfo.put("username", username);
+                    userInfo.put("password", password);
+                    userInfo.put("coordinates", coordinatesArray);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                Log.d(TAG, userInfo.toString());
+
+                Date finalStartTime = startTime;
+                Date finalEndTime = endTime;
+                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, URL, userInfo, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d(TAG, response.toString());
+                        try {
+                            UserInfoHelper.setUserId(response.get("_id").toString());
+                            UserInfoHelper.setEndtime((long) response.get("endTime"));
+                            UserInfoHelper.setAdmin((Boolean) response.get("admin"));
+                            setTime(finalStartTime, finalEndTime, response.get("_id").toString());
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    Log.d(TAG, error.toString());
-                    Toast.makeText(SignUpActivity.this,"Username Already Exists", Toast.LENGTH_SHORT).show();
-                }
-            });
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d(TAG, error.toString());
+                        Toast.makeText(SignUpActivity.this,"Username Already Exists", Toast.LENGTH_SHORT).show();
+                    }
+                });
 
-            // Add the request to the RequestQueue
-            queue.add(jsonObjectRequest);
+                // Add the request to the RequestQueue
+                queue.add(jsonObjectRequest);
+            }
 
         }
     }
@@ -184,5 +227,68 @@ public class SignUpActivity extends AppCompatActivity implements LocationListene
         else {
 
         }
+    }
+
+    private void setTime(Date startTime, Date endTime, String userId){
+
+        TimeZone tz = TimeZone.getDefault();
+        Calendar cal = GregorianCalendar.getInstance(tz);
+        int offsetInMillis = tz.getOffset(cal.getTimeInMillis());
+        int hourOffset = Math.abs(offsetInMillis / 3600000);
+        int minuteOffset = Math.abs((offsetInMillis / 60000) % 60);
+        double startHour = startTime.getHours();
+        double startMinute = startTime.getMinutes();
+        double endHour = endTime.getHours();
+        double endMinute = endTime.getMinutes();
+
+        if(offsetInMillis >= 0){
+            startHour += hourOffset;
+            startMinute += minuteOffset;
+            endHour += hourOffset;
+            endMinute += minuteOffset;
+        }
+        else{
+            startHour -= hourOffset;
+            startMinute -= minuteOffset;
+            endHour -= hourOffset;
+            endMinute -= minuteOffset;
+        }
+
+
+        Double start = startHour * 6 + Math.floor(startMinute / 10);
+        Double end = endHour* 6 + Math.floor(endMinute / 10);
+
+        JSONArray timeArray = new JSONArray();
+        timeArray.put(start);
+        timeArray.put(end);
+
+        String URL = "https://qmonitor-306302.wl.r.appspot.com/users/" + userId;
+        JSONObject userInfo = new JSONObject();
+        try{
+            userInfo.put("availability", timeArray);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        Log.d(TAG, userInfo.toString());
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PUT, URL, userInfo, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                Log.d(TAG, response.toString());
+                Intent bluetoothIntent = new Intent(SignUpActivity.this, BluetoothConnectionActivity.class);
+                bluetoothIntent.putExtra("SignUpWorkflow", "True");
+                startActivity(bluetoothIntent);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d(TAG, error.toString());
+                Toast.makeText(SignUpActivity.this,"Error inputting time", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Add the request to the RequestQueue
+        queue.add(jsonObjectRequest);
     }
 }
