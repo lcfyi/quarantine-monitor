@@ -81,7 +81,7 @@ public class BluetoothConnectionActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle extras = getIntent().getExtras();
-        if (extras.getString("SignUpWorkflow").equals("True")) {
+        if (extras != null && extras.getString("SignUpWorkflow").equals("True")) {
             signUpFlag = true;
         }
 
@@ -155,11 +155,12 @@ public class BluetoothConnectionActivity extends AppCompatActivity {
             if (BluetoothDevice.ACTION_ACL_CONNECTED.equals(action)) {
                 Toast.makeText(getApplicationContext(), "Device is now Connected", Toast.LENGTH_SHORT).show();
                 if (signUpFlag) {
-                    Intent facialVerificationActivityIntent = new Intent(BluetoothConnectionActivity.this, DetectorActivity.class);
-                    facialVerificationActivityIntent.putExtra("SignUpWorkflow", "False");
-                    startActivity(facialVerificationActivityIntent);
+                    Intent wifiSetupActivityIntent = new Intent(BluetoothConnectionActivity.this, WifiAndBluetoothSetupActivity.class);
+                    wifiSetupActivityIntent.putExtra("SignUpWorkflow", "True");
+                    startActivity(wifiSetupActivityIntent);
                 } else {
                     Intent bluetoothDisconnectionActivityIntent = new Intent(BluetoothConnectionActivity.this, BluetoothDisconnectionActivity.class);
+                    bluetoothDisconnectionActivityIntent.putExtra("SignUpWorkflow", "False");
                     startActivity(bluetoothDisconnectionActivityIntent);
                 }
 

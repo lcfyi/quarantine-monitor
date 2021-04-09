@@ -35,6 +35,8 @@ public class BluetoothDisconnectionActivity extends AppCompatActivity {
     BluetoothDevice BTDevice = null;
     BluetoothManager BTManager = null;
 
+    boolean signUpFlag = false;
+
     BluetoothConnectionRFS rfsBTDevice = BluetoothConnectionRFS.getInstance();
     BluetoothConnection BTConnection = BluetoothConnection.getInstance();
 
@@ -42,6 +44,10 @@ public class BluetoothDisconnectionActivity extends AppCompatActivity {
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Bundle extras = getIntent().getExtras();
+        if (extras != null && extras.getString("SignUpWorkflow").equals("True")) {
+            signUpFlag = true;
+        }
         setContentView(R.layout.activity_bt_connected);
 
 //        BTManager = (BluetoothManager) getSystemService(BLUETOOTH_SERVICE);
@@ -130,6 +136,17 @@ public class BluetoothDisconnectionActivity extends AppCompatActivity {
             startActivity(bluetoothConnectionActivityIntent);
             finish();
         }
+    }
 
+    @Override
+    public void onBackPressed(){
+        // create a boolean to chec
+        if(!signUpFlag){
+            Intent homePageIntent = new Intent(BluetoothDisconnectionActivity.this, MainActivity.class);
+            startActivity(homePageIntent);
+        }
+        else {
+            // do nothing
+        }
     }
 }

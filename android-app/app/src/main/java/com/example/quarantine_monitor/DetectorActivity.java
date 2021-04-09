@@ -644,6 +644,7 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
             .setPositiveButton("OK", new DialogInterface.OnClickListener() {
               public void onClick(DialogInterface dialog, int id) {
                 Intent homePageIntent = new Intent(DetectorActivity.this, MainActivity.class);
+                homePageIntent.putExtra("SignUpWorkflow", "False");
                 switch(event){
                   case 1: Log.d(TAG, "Need to register face, show explanation");
                     dialog.dismiss();

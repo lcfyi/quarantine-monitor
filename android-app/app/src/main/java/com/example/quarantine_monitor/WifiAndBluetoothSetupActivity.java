@@ -2,6 +2,7 @@ package com.example.quarantine_monitor;
 
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.content.Intent;
 import android.location.SettingInjectorService;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -51,10 +52,10 @@ public class WifiAndBluetoothSetupActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wifi_and_bluetooth_setup);
-//        Bundle extras = getIntent().getExtras();
-//        if (extras.getString("SignUpWorkflow").equals("True")) {
-//            signUpFlag = true;
-//        }
+        Bundle extras = getIntent().getExtras();
+        if (extras != null && extras.getString("SignUpWorkflow").equals("True")) {
+            signUpFlag = true;
+        }
 
         wifiName = (EditText) findViewById(R.id.input_wifiName);
         wifiPW = (EditText) findViewById(R.id.input_wifiPassword);
@@ -153,18 +154,17 @@ public class WifiAndBluetoothSetupActivity extends AppCompatActivity {
 
 //        String wifi = wifiName.getText().toString();
 //        String pw = wifiPW.getText().toString();
+        Toast.makeText(this, "Connecting to your Wifi.\nPlease Wait...", Toast.LENGTH_LONG).show();
+
         submitButton.setEnabled(false);
 
         String wifi = "TELUS2742";
         String pw = "3pxdm9h5dd";
 
         if(wifi.matches("") || pw.matches("")) {
-            Toast.makeText(this, "Please enter your wifi name and password", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Please enter your wifi name and password", Toast.LENGTH_LONG).show();
             return;
         }
-
-        Toast.makeText(this, "Connecting to your Wifi.\nPlease Wait...", Toast.LENGTH_SHORT).show();
-
         if(BTSocket != null) {
             try {
                 BTSocket.getOutputStream().write((setWifiNameCommand + " " + wifi + newline).getBytes());
@@ -175,9 +175,11 @@ public class WifiAndBluetoothSetupActivity extends AppCompatActivity {
                 SystemClock.sleep(1500);
                 BTSocket.getOutputStream().write((setWifi + newline).getBytes());
                 SystemClock.sleep(10000);
+
+                long startTime = System.currentTimeMillis();
                 BTSocket.getOutputStream().write((getWifiStatus + newline).getBytes());
                 //noinspection InfiniteLoopStatement
-                while (len == -1) {
+                while (len == -1 && (System.currentTimeMillis()-startTime)<10000) {
                     len = BTSocket.getInputStream().read(buffer);
                     byte[] data = Arrays.copyOf(buffer, len);
                     Log.i(TAG, "len is " + len);
@@ -187,13 +189,23 @@ public class WifiAndBluetoothSetupActivity extends AppCompatActivity {
                     Toast.makeText(this, "Connection Successful", Toast.LENGTH_LONG).show();
                     submitButton.setEnabled(true);
                     setupPinging();
+                    if(signUpFlag){
+                        Intent facialVerificationActivityIntent = new Intent(WifiAndBluetoothSetupActivity.this, DetectorActivity.class);
+                        facialVerificationActivityIntent.putExtra("SignUpWorkflow", "True");;
+                        startActivity(facialVerificationActivityIntent);
+                    }
+                    else {
+                        Intent mainActivityIntent = new Intent(WifiAndBluetoothSetupActivity.this, MainActivity.class);
+                        mainActivityIntent.putExtra("SignUpWorkflow", "False");;
+                        startActivity(mainActivityIntent);
+                    }
                 }
                 else {
-                    Toast.makeText(this, "Connection Did not happen", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "Connection Did not happen.\nPlease make sure you entered the wifi credentials correctly", Toast.LENGTH_LONG).show();
                     submitButton.setEnabled(true);
                 }
             } catch (IOException e) {
-                Toast.makeText(this, "SOMETHING WENT WRONG WHILE SETTING WIFI", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "SOMETHING WENT WRONG WHILE SETTING WIFI", Toast.LENGTH_LONG).show();
                 e.printStackTrace();
             }
         }
@@ -204,13 +216,23 @@ public class WifiAndBluetoothSetupActivity extends AppCompatActivity {
             @Override
             public void run() {
                 while(true){
-                    try {
-                        BTSocket.getOutputStream().write((ping + newline).getBytes());
-                        Log.i(TAG, "setupPinging: "+ ping);
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                    if(UserInfoHelper.getFvResult()) {
+                        UserInfoHelper.setFvResult(false);
+                        try{
+                            BTSocket.getOutputStream().write((setFlagForFacialVerification + newline).getBytes());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
-                    SystemClock.sleep(1000);
+                    else {
+                        try {
+                            BTSocket.getOutputStream().write((ping + newline).getBytes());
+                            Log.i(TAG, "setupPinging: "+ ping);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    SystemClock.sleep(2500);
                 }
             }
         }).start();
