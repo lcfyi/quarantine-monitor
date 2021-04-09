@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v){
                 Intent facialVerificationPageIntent = new Intent(MainActivity.this, DetectorActivity.class);
                 facialVerificationPageIntent.putExtra("SignUpWorkflow", "False");
+                facialVerificationPageIntent.putExtra("TestWorkflow", "False");
                 startActivity(facialVerificationPageIntent);
             }
         });

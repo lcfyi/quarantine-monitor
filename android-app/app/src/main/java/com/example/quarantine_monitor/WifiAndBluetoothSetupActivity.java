@@ -152,18 +152,20 @@ public class WifiAndBluetoothSetupActivity extends AppCompatActivity {
 //                break;
 //        }
 
-//        String wifi = wifiName.getText().toString();
-//        String pw = wifiPW.getText().toString();
-        Toast.makeText(this, "Connecting to your Wifi.\nPlease Wait...", Toast.LENGTH_LONG).show();
+        String wifi = wifiName.getText().toString();
+        String pw = wifiPW.getText().toString();
 
         submitButton.setEnabled(false);
 
-        String wifi = "TELUS2742";
-        String pw = "3pxdm9h5dd";
+//        String wifi = "TELUS2742";
+//        String pw = "3pxdm9h5dd";
 
         if(wifi.matches("") || pw.matches("")) {
             Toast.makeText(this, "Please enter your wifi name and password", Toast.LENGTH_LONG).show();
             return;
+        }
+        else {
+            Toast.makeText(this, "Connecting to your Wifi.\nPlease Wait...", Toast.LENGTH_LONG).show();
         }
         if(BTSocket != null) {
             try {
