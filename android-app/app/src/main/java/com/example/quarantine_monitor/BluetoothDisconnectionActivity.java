@@ -66,6 +66,7 @@ public class BluetoothDisconnectionActivity extends AppCompatActivity {
     public void goToMainMenu() {
         Intent mainMenuActivityIntent = new Intent(BluetoothDisconnectionActivity.this, MainActivity.class);
         startActivity(mainMenuActivityIntent);
+        finish();
     }
 
     public void BTdisconnect() {
@@ -113,6 +114,7 @@ public class BluetoothDisconnectionActivity extends AppCompatActivity {
             Intent bluetoothConnectionActivityIntent = new Intent(BluetoothDisconnectionActivity.this, BluetoothConnectionActivity.class);
             bluetoothConnectionActivityIntent.putExtra("SignUpWorkflow", "False");
             startActivity(bluetoothConnectionActivityIntent);
+            finish();
         }
 
     }

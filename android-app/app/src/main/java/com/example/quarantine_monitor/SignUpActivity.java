@@ -49,6 +49,7 @@ public class SignUpActivity extends AppCompatActivity implements LocationListene
     private EditText passwordText;
     private Button signUpButton;
     private LocationManager locationManager;
+    private boolean disableBackButton = false;
 
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -154,6 +155,7 @@ public class SignUpActivity extends AppCompatActivity implements LocationListene
                         Intent bluetoothIntent = new Intent(SignUpActivity.this, BluetoothConnectionActivity.class);
                         bluetoothIntent.putExtra("SignUpWorkflow", "True");
                         startActivity(bluetoothIntent);
+                        disableBackButton = true;
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -174,8 +176,14 @@ public class SignUpActivity extends AppCompatActivity implements LocationListene
 
     @Override
     public void onBackPressed(){
-        Log.d(TAG, "Returning to login page");
-        Intent loginIntent = new Intent(SignUpActivity.this, LoginActivity.class);
-        startActivity(loginIntent);
+        // if user presses back button before pressing signup button
+        if(!disableBackButton) {
+            Log.d(TAG, "Returning to login page");
+            Intent loginIntent = new Intent(SignUpActivity.this, LoginActivity.class);
+            startActivity(loginIntent);
+        }
+        else {
+
+        }
     }
 }

@@ -6,6 +6,8 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class FacialVerificationActivity extends AppCompatActivity {
+    private boolean fromSignupProcess = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -13,9 +15,16 @@ public class FacialVerificationActivity extends AppCompatActivity {
         getSupportActionBar().hide();
     }
 
+    // todo - @naomi, make some boolean check to see if the facial verification came from signup process, if yes, make fromSignupProcess = true
     @Override
     public void onBackPressed(){
-        Intent homePageIntent = new Intent(FacialVerificationActivity.this, MainActivity.class);
-        startActivity(homePageIntent);
+        // create a boolean to chec
+        if(!fromSignupProcess){
+            Intent homePageIntent = new Intent(FacialVerificationActivity.this, MainActivity.class);
+            startActivity(homePageIntent);
+        }
+        else {
+            // do nothing
+        }
     }
 }

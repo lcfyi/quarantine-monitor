@@ -84,6 +84,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v){
                 Intent signUpPageIntent = new Intent(LoginActivity.this, SignUpActivity.class);
                 startActivity(signUpPageIntent);
+                finish();
             }
         });
     }
@@ -152,7 +153,7 @@ public class LoginActivity extends AppCompatActivity {
                                 Intent BTIntent = new Intent(LoginActivity.this, BluetoothConnectionActivity.class);
                                 BTIntent.putExtra("SignUpWorkflow", "False");
                                 startActivity(BTIntent);
-
+                                finish();
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
