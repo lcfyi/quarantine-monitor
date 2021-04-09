@@ -1,6 +1,6 @@
 #include "uart.h"
 
-const int SLEEP_TIME = 10;
+#define SLEEP_TIME 20
 
 UART::UART(int line_control_reg,
            int divisor_latch_lsb,
