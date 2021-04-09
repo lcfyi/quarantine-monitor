@@ -67,6 +67,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService{
             case KEY_VERIFY_IDEN:
                 super.onMessageReceived(message);
                 Intent fvi = new Intent(getApplicationContext(), DetectorActivity.class);
+                fvi.putExtra("SignUpWorkflow", "False");
                 sendNotification(message, fvi);
                 break;
             case KEY_ALERT_ADMIN:
