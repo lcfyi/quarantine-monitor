@@ -177,7 +177,7 @@ std::string bluetooth_command(std::string command)
         face_verified = true;
     }
 
-    return "";
+    return command;
 }
 
 void bluetooth_thread()
@@ -233,7 +233,7 @@ void bluetooth_thread()
         {
             counter++;
         }
-        usleep(1000); // We need to poll the bus often in order to clear the buffer
+        usleep(100); // We need to poll the bus often in order to clear the buffer
     }
 }
 
