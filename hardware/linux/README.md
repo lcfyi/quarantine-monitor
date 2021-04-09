@@ -72,5 +72,6 @@ Move the generated `.rbf` to the Linux filesystem, and run [the script](./progra
 We'll be using `init.d` in order to initialize the firmware, following the steps [here](https://unix.stackexchange.com/questions/56957/how-to-start-an-application-automatically-on-boot).
 
 1. Move `program.sh` to `/etc/init.d`
-2. Make sure we have execution permissions on the file.
-3. 
+2. Edit the script to hardcode the path of the `rbf` file.
+3. Make sure we have execution permissions on the file.
+4. Create the system link to start it at default (`update-rc.d program.sh defaults`)
