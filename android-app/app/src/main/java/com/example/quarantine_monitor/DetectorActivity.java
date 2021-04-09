@@ -731,5 +731,9 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
 
   }
 
+  private void getTests(){
+
+  }
+
 
 }
