@@ -86,7 +86,6 @@ public class BluetoothConnectionActivity extends AppCompatActivity {
         }
 
         setContentView(R.layout.activity_connect);
-        getSupportActionBar().hide();
 
         if (!isBTConnected.isConnected()) {
             Context context = this;
@@ -156,7 +155,8 @@ public class BluetoothConnectionActivity extends AppCompatActivity {
             if (BluetoothDevice.ACTION_ACL_CONNECTED.equals(action)) {
                 Toast.makeText(getApplicationContext(), "Device is now Connected", Toast.LENGTH_SHORT).show();
                 if (signUpFlag) {
-                    Intent facialVerificationActivityIntent = new Intent(BluetoothConnectionActivity.this, FacialVerificationActivity.class);
+                    Intent facialVerificationActivityIntent = new Intent(BluetoothConnectionActivity.this, DetectorActivity.class);
+                    facialVerificationActivityIntent.putExtra("SignUpWorkflow", "False");
                     startActivity(facialVerificationActivityIntent);
                 } else {
                     Intent bluetoothDisconnectionActivityIntent = new Intent(BluetoothConnectionActivity.this, BluetoothDisconnectionActivity.class);

@@ -42,7 +42,6 @@ public class BluetoothDisconnectionActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bt_connected);
-        getSupportActionBar().hide();
 
 //        BTManager = (BluetoothManager) getSystemService(BLUETOOTH_SERVICE);
 //        List<BluetoothDevice> connected = BTManager.getConnectedDevices(GATT);

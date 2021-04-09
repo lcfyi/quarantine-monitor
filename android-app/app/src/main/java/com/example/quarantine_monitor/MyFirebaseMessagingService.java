@@ -66,7 +66,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService{
                 break;
             case KEY_VERIFY_IDEN:
                 super.onMessageReceived(message);
-                Intent fvi = new Intent(getApplicationContext(), FacialVerificationActivity.class);
+                Intent fvi = new Intent(getApplicationContext(), DetectorActivity.class);
                 sendNotification(message, fvi);
                 break;
             case KEY_ALERT_ADMIN:
