@@ -44,9 +44,7 @@ public class WifiAndBluetoothSetupActivity extends AppCompatActivity {
     private final String newline = "\n";
 
     byte[] buffer = new byte[1024];
-    char[] bufferc = new char[1024];
     int len = -1;
-    private BufferedReader in = null;
 
     String TAG = "wifi & bluetooth setup";
 
@@ -180,21 +178,20 @@ public class WifiAndBluetoothSetupActivity extends AppCompatActivity {
                 BTSocket.getOutputStream().write((getWifiStatus + newline).getBytes());
                 //noinspection InfiniteLoopStatement
                 while (len == -1) {
-                    in = new BufferedReader(new InputStreamReader(BTSocket.getInputStream()));
-                    len = in.read(bufferc);
+                    len = BTSocket.getInputStream().read(buffer);
                     byte[] data = Arrays.copyOf(buffer, len);
-                    Log.i(TAG, "len is "+len);
+                    Log.i(TAG, "len is " + len);
                     Log.i(TAG, "data is" + data);
                 }
-                if(len >= 1) {
-                    Toast.makeText(this, "Connection Successful", Toast.LENGTH_SHORT).show();
+                if(len > 1) {
+                    Toast.makeText(this, "Connection Successful", Toast.LENGTH_LONG).show();
                     submitButton.setEnabled(true);
                     setupPinging();
                 }
                 else {
-                    Toast.makeText(this, "Connection Did not happen", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Connection Did not happen", Toast.LENGTH_LONG).show();
+                    submitButton.setEnabled(true);
                 }
-                submitButton.setEnabled(true);
             } catch (IOException e) {
                 Toast.makeText(this, "SOMETHING WENT WRONG WHILE SETTING WIFI", Toast.LENGTH_SHORT).show();
                 e.printStackTrace();
@@ -203,13 +200,19 @@ public class WifiAndBluetoothSetupActivity extends AppCompatActivity {
     }
 
     private void setupPinging() {
-        while(true){
-            try {
-                BTSocket.getOutputStream().write((ping).getBytes());
-            } catch (IOException e) {
-                e.printStackTrace();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while(true){
+                    try {
+                        BTSocket.getOutputStream().write((ping + newline).getBytes());
+                        Log.i(TAG, "setupPinging: "+ ping);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    SystemClock.sleep(1000);
+                }
             }
-            SystemClock.sleep(1000);
-        }
+        }).start();
     }
 }
