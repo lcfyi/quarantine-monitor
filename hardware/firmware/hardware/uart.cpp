@@ -1,5 +1,7 @@
 #include "uart.h"
 
+const int SLEEP_TIME = 10;
+
 UART::UART(int line_control_reg,
            int divisor_latch_lsb,
            int divisor_latch_msb,
@@ -43,7 +45,9 @@ void UART::init(int baud_rate)
 char UART::put_char(char c)
 {
     while (((ACCESS_ADDR(TRANSLATE_ADDR(_line_status_reg))) & 0x20) != 0x20)
-        ;
+    {
+        usleep(SLEEP_TIME);
+    }
 
     ACCESS_ADDR(TRANSLATE_ADDR(_transmitter_fifo)) = c;
 
@@ -54,7 +58,9 @@ char UART::get_char(long timeout)
 {
     long cycles = 0;
     for (; !test_for_data() && cycles < timeout; cycles++)
-        ;
+    {
+        usleep(SLEEP_TIME);
+    }
 
     if (cycles == timeout) {
         return 0;
@@ -72,6 +78,7 @@ void UART::flush(bool print_to_stdout)
 {
     while (test_for_data())
     {
+        usleep(SLEEP_TIME);
         char read = ACCESS_ADDR(TRANSLATE_ADDR(_receiver_fifo));
         if (print_to_stdout)
         {
@@ -84,6 +91,7 @@ void UART::write(std::string str)
 {
     for (char const &c : str)
     {
+        usleep(SLEEP_TIME);
         put_char(c);
     }
 }
@@ -93,6 +101,7 @@ void UART::wait_until_char(char c, long timeout_cycles)
     char read;
     do
     {
+        usleep(SLEEP_TIME);
         read = get_char(timeout_cycles);
     } while (read != c);
 }
@@ -108,6 +117,7 @@ std::string UART::read_until_char(char c)
     int tries = 0;
     do
     {
+        usleep(SLEEP_TIME);
         read_char = get_char();
         if (!read_char) {
             tries++;

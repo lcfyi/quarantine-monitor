@@ -60,7 +60,10 @@
             android:name=".BluetoothDisconnectionActivity"
             android:label="BluetoothDisconnectionActivity">
         </activity>
-        
+        <activity
+            android:name=".WifiAndBluetoothSetupActivity"
+            android:label="WifiAndBluetoothSetupActivity">
+        </activity>
 
         <service
             android:name=".MyFirebaseMessagingService"

@@ -101,6 +101,7 @@ public class BluetoothConnectionActivity extends AppCompatActivity {
         } else {
             Intent bluetoothDisconnectionActivityIntent = new Intent(BluetoothConnectionActivity.this, BluetoothDisconnectionActivity.class);
             startActivity(bluetoothDisconnectionActivityIntent);
+            finish();
         }
     }
 
@@ -163,8 +164,10 @@ public class BluetoothConnectionActivity extends AppCompatActivity {
                 }
 
             } else if (BluetoothDevice.ACTION_ACL_DISCONNECTED.equals(action)) {
+                isBTConnected.disconnect();
+
                 NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext(), "notify_001");
-                Intent ii = new Intent(getApplicationContext(), BluetoothConnectionActivity.class);
+                Intent ii = new Intent(getApplicationContext(), MainActivity.class);
                 PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, ii, 0);
                 Bitmap licon = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher_round);
 
@@ -270,7 +273,16 @@ public class BluetoothConnectionActivity extends AppCompatActivity {
         }
     }
 
-//    private void connect() {
+    @Override
+    public void onBackPressed() {
+        if(!signUpFlag) {
+            super.onBackPressed();
+        }
+        else {
+            // do nothing
+        }
+    }
+    //    private void connect() {
 //        try {
 //            BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 //            BluetoothDevice device = bluetoothAdapter.getRemoteDevice(deviceAddress);

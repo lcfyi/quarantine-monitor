@@ -45,6 +45,7 @@ public class SplashActivity extends AppCompatActivity {
 
                                 Intent homePageIntent = new Intent(SplashActivity.this, MainActivity.class);
                                 startActivity(homePageIntent);
+                                finish();
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             };
@@ -59,6 +60,7 @@ public class SplashActivity extends AppCompatActivity {
                     Toast.makeText(SplashActivity.this,"Error Logging In", Toast.LENGTH_SHORT).show();
                     Intent loginIntent = new Intent(SplashActivity.this, LoginActivity.class);
                     startActivity(loginIntent);
+                    finish();
                 }
             });
 
