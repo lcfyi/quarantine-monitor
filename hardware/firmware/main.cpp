@@ -186,7 +186,7 @@ void bluetooth_thread()
         std::cout << "[BLUETOOTH] Thread starting." << std::endl;
     Bluetooth bluetooth;
     const int RETRY_COUNT = 3;
-    const long CHALLENGE_INTERVAL = 10000;
+    const long CHALLENGE_INTERVAL = 150000;
     long counter = 0;
 
     while (1)
@@ -233,7 +233,7 @@ void bluetooth_thread()
         {
             counter++;
         }
-        usleep(100); // We need to poll the bus often in order to clear the buffer
+        usleep(10); // We need to poll the bus often in order to clear the buffer
     }
 }
 
