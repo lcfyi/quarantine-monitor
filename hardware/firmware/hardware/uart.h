@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include "../utils/mmap.h"
 
-#define TIMEOUT_CYCLES 10000000
+#define TIMEOUT_CYCLES 5000
 
 class UART
 {
