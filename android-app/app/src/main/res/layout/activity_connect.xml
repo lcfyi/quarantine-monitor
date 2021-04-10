@@ -14,6 +14,20 @@
         tools:layout_editor_absoluteX="178dp"
         tools:layout_editor_absoluteY="180dp">
 
+        <TextView
+            android:id="@+id/BT_connect_title1"
+            android:textAlignment="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Tap to connect to the Base Station" />
+
+        <TextView
+            android:id="@+id/BT_connect_title2"
+            android:textAlignment="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Device name should contain 'HC-05'" />
+
         <ListView
             android:layout_marginTop="50px"
             android:id="@+id/paired_bluetooth_device_list"
@@ -22,7 +36,8 @@
 
 
 
-<!--        <androidx.cardview.widget.CardView-->
+
+        <!--        <androidx.cardview.widget.CardView-->
 <!--            android:id="@+id/bluetooth_connection_card"-->
 <!--            android:layout_width="match_parent"-->
 <!--            android:layout_height="wrap_content"-->

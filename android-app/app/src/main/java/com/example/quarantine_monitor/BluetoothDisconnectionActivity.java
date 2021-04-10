@@ -27,12 +27,15 @@ public class BluetoothDisconnectionActivity extends AppCompatActivity {
     boolean errorFound = false;
     Button disconnectButton;
     Button mainMenuButton;
+    Button wifiSetupButton;
     InputStream BTInputStream = null;
     OutputStream BTOutputStream = null;
     BluetoothAdapter BTAdapter = null;
     BluetoothSocket BTSocket = null;
     BluetoothDevice BTDevice = null;
     BluetoothManager BTManager = null;
+
+    boolean signUpFlag = false;
 
     BluetoothConnectionRFS rfsBTDevice = BluetoothConnectionRFS.getInstance();
     BluetoothConnection BTConnection = BluetoothConnection.getInstance();
@@ -41,6 +44,10 @@ public class BluetoothDisconnectionActivity extends AppCompatActivity {
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Bundle extras = getIntent().getExtras();
+        if (extras != null && extras.getString("SignUpWorkflow").equals("True")) {
+            signUpFlag = true;
+        }
         setContentView(R.layout.activity_bt_connected);
 
 //        BTManager = (BluetoothManager) getSystemService(BLUETOOTH_SERVICE);
@@ -60,11 +67,26 @@ public class BluetoothDisconnectionActivity extends AppCompatActivity {
                 goToMainMenu();
             }
         });
+
+        wifiSetupButton = (Button) findViewById(R.id.wifi_setup_button);
+        wifiSetupButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goToWifiSetupActivity();
+            }
+        });
+
     }
 
     public void goToMainMenu() {
         Intent mainMenuActivityIntent = new Intent(BluetoothDisconnectionActivity.this, MainActivity.class);
         startActivity(mainMenuActivityIntent);
+        finish();
+    }
+
+    public void goToWifiSetupActivity() {
+        Intent wifiSetupActivityIntent = new Intent(BluetoothDisconnectionActivity.this, WifiAndBluetoothSetupActivity.class);
+        startActivity(wifiSetupActivityIntent);
     }
 
     public void BTdisconnect() {
@@ -112,7 +134,19 @@ public class BluetoothDisconnectionActivity extends AppCompatActivity {
             Intent bluetoothConnectionActivityIntent = new Intent(BluetoothDisconnectionActivity.this, BluetoothConnectionActivity.class);
             bluetoothConnectionActivityIntent.putExtra("SignUpWorkflow", "False");
             startActivity(bluetoothConnectionActivityIntent);
+            finish();
         }
+    }
 
+    @Override
+    public void onBackPressed(){
+        // create a boolean to chec
+        if(!signUpFlag){
+            Intent homePageIntent = new Intent(BluetoothDisconnectionActivity.this, MainActivity.class);
+            startActivity(homePageIntent);
+        }
+        else {
+            // do nothing
+        }
     }
 }

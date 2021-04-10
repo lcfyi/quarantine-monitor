@@ -2,7 +2,6 @@
 #include <iostream>
 #include <thread>
 #include <string>
-#include <mutex>
 
 #include "utils/mmap.h"
 #include "utils/config.h"
@@ -13,7 +12,6 @@
 #include "hardware/accelerometer.h"
 
 ConfigController config;
-std::mutex wifi_init_mutex;
 bool wifi_init = false;
 bool wifi_success = false;
 bool debug = false;
@@ -78,9 +76,9 @@ void wifi_thread()
         if (debug)
             std::cout << "[WIFI] Loop." << std::endl;
 
-        wifi_init_mutex.lock();
         if (!wifi_init)
         {
+            wifi_init = true;
             wifi_success = false;
             if (debug)
                 std::cout << "[WIFI] Initializing..." << std::endl;
@@ -93,7 +91,6 @@ void wifi_thread()
             if (debug)
                 std::cout << "[WIFI] Connecting..." << std::endl;
             wifi.connect();
-            wifi_init = true;
             if (debug)
                 std::cout << "[WIFI] Testing connection" << std::endl;
             std::string v = wifi.GET();
@@ -107,7 +104,6 @@ void wifi_thread()
             }
             counter = 0;
         }
-        wifi_init_mutex.unlock();
 
         if (wifi_success)
         {
@@ -161,12 +157,7 @@ std::string bluetooth_command(std::string command)
     }
     else if (command.rfind("ini-rset", 0) == 0)
     {
-        if (wifi_init)
-        {
-            wifi_init_mutex.lock();
-            wifi_init = false;
-            wifi_init_mutex.unlock();
-        }
+        wifi_init = false;
     }
     else if (command.rfind("get-stat", 0) == 0)
     {
@@ -177,7 +168,7 @@ std::string bluetooth_command(std::string command)
         face_verified = true;
     }
 
-    return "";
+    return command;
 }
 
 void bluetooth_thread()
@@ -186,7 +177,7 @@ void bluetooth_thread()
         std::cout << "[BLUETOOTH] Thread starting." << std::endl;
     Bluetooth bluetooth;
     const int RETRY_COUNT = 3;
-    const long CHALLENGE_INTERVAL = 10000;
+    const long CHALLENGE_INTERVAL = 150000;
     long counter = 0;
 
     while (1)
@@ -222,6 +213,8 @@ void bluetooth_thread()
             counter = 0;
             bluetooth_triggered = false;
             bluetooth.bt_flush();
+            if (debug)
+                std::cout << "[BLUETOOTH] Flushed." << std::endl;
         }
 
         // We've gone through the interval without seeing any new packets, flag it
@@ -233,7 +226,7 @@ void bluetooth_thread()
         {
             counter++;
         }
-        usleep(1000); // We need to poll the bus often in order to clear the buffer
+        usleep(10); // We need to poll the bus often in order to clear the buffer
     }
 }
 
@@ -241,8 +234,6 @@ int main()
 {
     initialize_mmap();
 
-    config.set_value(config.BASE_SETTINGS, "base", "123");
-    config.set_value(config.BASE_SETTINGS, "token", "demo-token");
     std::string debug_setting = config.get_value(config.BASE_SETTINGS, "debug");
 
     if (debug_setting.length())

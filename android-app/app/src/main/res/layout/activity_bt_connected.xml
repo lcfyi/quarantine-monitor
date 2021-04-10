@@ -24,9 +24,10 @@
         android:text="Disconnect from Base Station"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView3"
-        app:layout_constraintVertical_bias="0.329" />
+        app:layout_constraintVertical_bias="0.188" />
 
     <Button
         android:id="@+id/main_menu_button"
@@ -39,6 +40,19 @@
         app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView3"
-        app:layout_constraintVertical_bias="0.591" />
+        app:layout_constraintVertical_bias="0.404" />
+
+    <Button
+        android:id="@+id/wifi_setup_button"
+        android:layout_width="190dp"
+        android:layout_height="71dp"
+        android:layout_marginTop="16dp"
+        android:text="Click to Setup Wifi"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView3"
+        app:layout_constraintVertical_bias="0.617" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

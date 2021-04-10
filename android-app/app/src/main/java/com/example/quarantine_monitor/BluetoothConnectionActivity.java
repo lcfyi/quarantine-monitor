@@ -81,7 +81,7 @@ public class BluetoothConnectionActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle extras = getIntent().getExtras();
-        if (extras.getString("SignUpWorkflow").equals("True")) {
+        if (extras != null && extras.getString("SignUpWorkflow").equals("True")) {
             signUpFlag = true;
         }
 
@@ -101,6 +101,7 @@ public class BluetoothConnectionActivity extends AppCompatActivity {
         } else {
             Intent bluetoothDisconnectionActivityIntent = new Intent(BluetoothConnectionActivity.this, BluetoothDisconnectionActivity.class);
             startActivity(bluetoothDisconnectionActivityIntent);
+            finish();
         }
     }
 
@@ -154,17 +155,20 @@ public class BluetoothConnectionActivity extends AppCompatActivity {
             if (BluetoothDevice.ACTION_ACL_CONNECTED.equals(action)) {
                 Toast.makeText(getApplicationContext(), "Device is now Connected", Toast.LENGTH_SHORT).show();
                 if (signUpFlag) {
-                    Intent facialVerificationActivityIntent = new Intent(BluetoothConnectionActivity.this, DetectorActivity.class);
-                    facialVerificationActivityIntent.putExtra("SignUpWorkflow", "False");
-                    startActivity(facialVerificationActivityIntent);
+                    Intent wifiSetupActivityIntent = new Intent(BluetoothConnectionActivity.this, WifiAndBluetoothSetupActivity.class);
+                    wifiSetupActivityIntent.putExtra("SignUpWorkflow", "True");
+                    startActivity(wifiSetupActivityIntent);
                 } else {
                     Intent bluetoothDisconnectionActivityIntent = new Intent(BluetoothConnectionActivity.this, BluetoothDisconnectionActivity.class);
+                    bluetoothDisconnectionActivityIntent.putExtra("SignUpWorkflow", "False");
                     startActivity(bluetoothDisconnectionActivityIntent);
                 }
 
             } else if (BluetoothDevice.ACTION_ACL_DISCONNECTED.equals(action)) {
+                isBTConnected.disconnect();
+
                 NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext(), "notify_001");
-                Intent ii = new Intent(getApplicationContext(), BluetoothConnectionActivity.class);
+                Intent ii = new Intent(getApplicationContext(), MainActivity.class);
                 PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, ii, 0);
                 Bitmap licon = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher_round);
 
@@ -270,7 +274,16 @@ public class BluetoothConnectionActivity extends AppCompatActivity {
         }
     }
 
-//    private void connect() {
+    @Override
+    public void onBackPressed() {
+        if(!signUpFlag) {
+            super.onBackPressed();
+        }
+        else {
+            // do nothing
+        }
+    }
+    //    private void connect() {
 //        try {
 //            BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 //            BluetoothDevice device = bluetoothAdapter.getRemoteDevice(deviceAddress);

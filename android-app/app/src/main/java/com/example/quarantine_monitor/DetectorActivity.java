@@ -43,6 +43,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.mlkit.vision.common.InputImage;
@@ -144,6 +150,7 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
   private String TAG = "facialDetection";
   private String user_label = "";
   private boolean signUpWorkflow = false;
+  private boolean testIncoming = true;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -171,7 +178,10 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
     faceDetector = detector;
 
     Bundle extras = getIntent().getExtras();
-    if(extras.getString("SignUpWorkflow").equals("True")){
+    if(extras != null && extras.getString("TestWorkflow").equals("True")){
+      testIncoming = true;
+    }
+    if(extras != null && extras.getString("SignUpWorkflow").equals("True")){
       showConfirmationDialogue("Register facial profile", "Please press the '+' button to" +
               "add your facial profile to your phone. ", 1);
       signUpWorkflow = true;
@@ -616,8 +626,12 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
         mappedRecognitions.add(result);
 
         if(verified && !signUpWorkflow){
-          //TODO: add connection to de1 to send boolean
-          showConfirmationDialogue("Identity verified", "Returning back to home page now.", 3);
+          if(testIncoming){
+            getTests();
+          }
+          else{
+            showConfirmationDialogue("Identity verified", "Returning back to home page now.", 3);
+          }
         }
 
       }
@@ -644,6 +658,7 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
             .setPositiveButton("OK", new DialogInterface.OnClickListener() {
               public void onClick(DialogInterface dialog, int id) {
                 Intent homePageIntent = new Intent(DetectorActivity.this, MainActivity.class);
+                homePageIntent.putExtra("SignUpWorkflow", "False");
                 switch(event){
                   case 1: Log.d(TAG, "Need to register face, show explanation");
                     dialog.dismiss();
@@ -729,6 +744,29 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
       e.printStackTrace();
     }
 
+  }
+
+  private void getTests(){
+    RequestQueue queue = Volley.newRequestQueue(this);
+    String URL = "https://qmonitor-306302.wl.r.appspot.com//tests/?userid="+UserInfoHelper.getUserId()+"&status=0";
+
+    JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, URL, null, new Response.Listener<JSONObject>() {
+      @Override
+      public void onResponse(JSONObject response) {
+        Log.d(TAG, response.toString());
+        UserInfoHelper.setFvResult(true);
+        showConfirmationDialogue("Identity verified", "Returning back to home page now.", 3);
+      }
+    }, new Response.ErrorListener() {
+      @Override
+      public void onErrorResponse(VolleyError error) {
+        Log.d(TAG, error.toString());
+        showConfirmationDialogue("Identity verified", "Returning back to home page now.", 3);
+      }
+    });
+
+    // Add the request to the RequestQueue
+    queue.add(jsonObjectRequest);
   }
 
 
