@@ -234,8 +234,6 @@ int main()
 {
     initialize_mmap();
 
-    config.set_value(config.BASE_SETTINGS, "base", "123");
-    config.set_value(config.BASE_SETTINGS, "token", "demo-token");
     std::string debug_setting = config.get_value(config.BASE_SETTINGS, "debug");
 
     if (debug_setting.length())

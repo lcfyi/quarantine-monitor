@@ -1,6 +1,23 @@
 #include "uart.h"
 
-#define SLEEP_TIME 20
+#define SLEEP_TIME 0
+
+std::mutex bus_mutex;
+
+char get_addr(char *addr)
+{
+    bus_mutex.lock();
+    char c = (*((volatile unsigned char *)(addr)));
+    bus_mutex.unlock();
+    return c;
+}
+
+void set_addr(char *addr, char value)
+{
+    bus_mutex.lock();
+    (*((volatile unsigned char *)(addr))) = value;
+    bus_mutex.unlock();
+}
 
 UART::UART(int line_control_reg,
            int divisor_latch_lsb,
@@ -23,33 +40,33 @@ void UART::init(int baud_rate)
 {
     // We assume the mmap is defined properly here
     // Gain access to the baud rate registers
-    ACCESS_ADDR(TRANSLATE_ADDR(_line_control_reg)) = 0x80;
+    set_addr(TRANSLATE_ADDR(_line_control_reg), 0x80);
 
     int divisor_latch_rate = 50000000 / (baud_rate * 16);
-    ACCESS_ADDR(TRANSLATE_ADDR(_divisor_latch_lsb)) = divisor_latch_rate & 0xff;
-    ACCESS_ADDR(TRANSLATE_ADDR(_divisor_latch_msb)) = (divisor_latch_rate >> 8) & 0xff;
+    set_addr(TRANSLATE_ADDR(_divisor_latch_lsb), divisor_latch_rate & 0xff);
+    set_addr(TRANSLATE_ADDR(_divisor_latch_msb), (divisor_latch_rate >> 8) & 0xff);
 
     // Set bit 7 of line control register back to 0
-    ACCESS_ADDR(TRANSLATE_ADDR(_line_control_reg)) = 0x00;
+    set_addr(TRANSLATE_ADDR(_line_control_reg), 0x00);
 
     // Program other bits in that reg for 8 bit data, 1 stop bit, no parity
-    ACCESS_ADDR(TRANSLATE_ADDR(_line_control_reg)) = 0x03;
+    set_addr(TRANSLATE_ADDR(_line_control_reg), 0x03);
 
     // Reset the Fifos in the FiFo control reg by settings bits 1 & 2
-    ACCESS_ADDR(TRANSLATE_ADDR(_fifo_control_reg)) = 0x06;
+    set_addr(TRANSLATE_ADDR(_fifo_control_reg), 0x06);
 
     // Clear all bits in the FiFo control regs
-    ACCESS_ADDR(TRANSLATE_ADDR(_fifo_control_reg)) = 0x00;
+    set_addr(TRANSLATE_ADDR(_fifo_control_reg), 0x00);
 }
 
 char UART::put_char(char c)
 {
-    while (((ACCESS_ADDR(TRANSLATE_ADDR(_line_status_reg))) & 0x20) != 0x20)
+    while (((get_addr(TRANSLATE_ADDR(_line_status_reg))) & 0x20) != 0x20)
     {
         usleep(SLEEP_TIME);
     }
 
-    ACCESS_ADDR(TRANSLATE_ADDR(_transmitter_fifo)) = c;
+    set_addr(TRANSLATE_ADDR(_transmitter_fifo), c);
 
     return c;
 }
@@ -62,16 +79,19 @@ char UART::get_char(long timeout)
         usleep(SLEEP_TIME);
     }
 
-    if (cycles == timeout) {
+    if (cycles == timeout)
+    {
         return 0;
-    } else {
-        return ACCESS_ADDR(TRANSLATE_ADDR(_receiver_fifo));
+    }
+    else
+    {
+        return get_addr(TRANSLATE_ADDR(_receiver_fifo));
     }
 }
 
 bool UART::test_for_data()
 {
-    return (ACCESS_ADDR(TRANSLATE_ADDR(_line_status_reg)) & 0x1) == 0x1;
+    return (get_addr(TRANSLATE_ADDR(_line_status_reg)) & 0x1) == 0x1;
 }
 
 void UART::flush(bool print_to_stdout)
@@ -79,7 +99,7 @@ void UART::flush(bool print_to_stdout)
     while (test_for_data())
     {
         usleep(SLEEP_TIME);
-        char read = ACCESS_ADDR(TRANSLATE_ADDR(_receiver_fifo));
+        char read = get_addr(TRANSLATE_ADDR(_receiver_fifo));
         if (print_to_stdout)
         {
             printf("%c", read);
@@ -119,9 +139,12 @@ std::string UART::read_until_char(char c)
     {
         usleep(SLEEP_TIME);
         read_char = get_char();
-        if (!read_char) {
+        if (!read_char)
+        {
             tries++;
-        } else if (read_char != c) {
+        }
+        else if (read_char != c)
+        {
             read += read_char;
         }
     } while (read_char != c && tries < RETRY_COUNT);
