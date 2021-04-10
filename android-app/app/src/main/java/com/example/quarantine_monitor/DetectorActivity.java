@@ -178,10 +178,10 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
     faceDetector = detector;
 
     Bundle extras = getIntent().getExtras();
-    if(extras.getString("TestWorkflow").equals("True")){
+    if(extras != null && extras.getString("TestWorkflow").equals("True")){
       testIncoming = true;
     }
-    if(extras.getString("SignUpWorkflow").equals("True")){
+    if(extras != null && extras.getString("SignUpWorkflow").equals("True")){
       showConfirmationDialogue("Register facial profile", "Please press the '+' button to" +
               "add your facial profile to your phone. ", 1);
       signUpWorkflow = true;
