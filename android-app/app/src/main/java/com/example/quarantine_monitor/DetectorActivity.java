@@ -151,6 +151,7 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
   private String user_label = "";
   private boolean signUpWorkflow = false;
   private boolean testIncoming = true;
+  private boolean alreadyAcked = false;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -625,11 +626,13 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
         result.setCrop(crop);
         mappedRecognitions.add(result);
 
-        if(verified && !signUpWorkflow){
+        if(verified && !signUpWorkflow && !alreadyAcked){
           if(testIncoming){
+            alreadyAcked = true;
             getTests();
           }
           else{
+            alreadyAcked = true;
             showConfirmationDialogue("Identity verified", "Returning back to home page now.", 3);
           }
         }
