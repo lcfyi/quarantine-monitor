@@ -146,7 +146,8 @@ public class SignUpActivity extends AppCompatActivity implements LocationListene
         Integer baseStationId = 0;
 
         try{
-            baseStationId = Integer.parseInt(baseStationIdString);
+            UserInfoHelper.setBaseStationId(Integer.parseInt(baseStationIdString));
+            baseStationId = UserInfoHelper.getBaseStationId();
         }
         catch(NumberFormatException e){
             Toast.makeText(this,"Base Station ID input is not a number", Toast.LENGTH_SHORT).show();

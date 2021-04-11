@@ -3,6 +3,7 @@ package com.example.quarantine_monitor;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Log;
@@ -39,6 +40,7 @@ public class WifiAndBluetoothSetupActivity extends AppCompatActivity {
     private final String setFlagForFacialVerification = "set-face";
     private final String setWifi = "ini-rset";
     private final String getWifiStatus = "get-stat";
+    private final String setBaseStationId = "set-base";
     private final String newline = "\n";
 
     private BufferedReader in = null;
@@ -66,74 +68,92 @@ public class WifiAndBluetoothSetupActivity extends AppCompatActivity {
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                submitWifiInfo();
+                new submitWifiInfo().execute();
             }
         });
     }
 
-    private void submitWifiInfo() {
-//        String wifi = wifiName.getText().toString();
-//        String pw = wifiPW.getText().toString();
+    private class submitWifiInfo extends AsyncTask<Void, Void, Void> {
+        String wifi, pw;
 
-        String wifi = "TELUS2742";
-        String pw = "3pxdm9h5dd";
+        @Override
+        protected Void doInBackground(Void... voids) {
+                    wifi = wifiName.getText().toString();
+                    pw = wifiPW.getText().toString();
 
-        if(wifi.matches("") || pw.matches("")) {
-            Toast.makeText(this, "Please enter your wifi name and password", Toast.LENGTH_LONG).show();
-            return;
+//            wifi = "TELUS2742";
+//            pw = "3pxdm9h5dd";
+
+            runOnUiThread(new Runnable() {
+                public void run() {
+                    if(wifi.matches("") || pw.matches("")) {
+                        Toast.makeText(getApplicationContext(), "Please enter your wifi name and password", Toast.LENGTH_LONG).show();
+                    }
+                    Toast.makeText(getApplicationContext(), "Connecting to your Wifi.\nPlease Wait...", Toast.LENGTH_LONG).show();
+                }
+            });
+            return null;
         }
-        else {
-            Toast.makeText(this, "Connecting to your Wifi.\nPlease Wait...", Toast.LENGTH_LONG).show();
-        }
-        if(BTSocket != null) {
-            try {
-                connectWithServer();
-                BTSocket.getOutputStream().write((setWifiNameCommand + " " + wifi + newline).getBytes());
-                SystemClock.sleep(1500);
-                flush();
-                BTSocket.getOutputStream().write((setWifiPWCommand + " " + pw + newline).getBytes());
-                SystemClock.sleep(1500);
-                flush();
-                BTSocket.getOutputStream().write((setServerAddrCommand + " " + serverAddr + newline).getBytes());
-                SystemClock.sleep(1500);
-                flush();
-                BTSocket.getOutputStream().write((setWifi + newline).getBytes());
-                SystemClock.sleep(10000);
-                flush();
 
-                BTSocket.getOutputStream().write((getWifiStatus + newline).getBytes());
-                String response = readFromInputPort();
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+                    wifi = wifiName.getText().toString();
+                    pw = wifiPW.getText().toString();
 
-                Log.i(TAG, "response is: " + response);
+//            wifi = "TELUS2742";
+//            pw = "3pxdm9h5dd";
 
-                if(response.equals("1")) {
-                    Toast.makeText(this, "Connection Successful", Toast.LENGTH_LONG).show();
-                    if(signUpFlag){
-                        Intent facialVerificationActivityIntent = new Intent(WifiAndBluetoothSetupActivity.this, DetectorActivity.class);
-                        facialVerificationActivityIntent.putExtra("SignUpWorkflow", "True");
-                        facialVerificationActivityIntent.putExtra("TestWorkflow", "False");
-                        startActivity(facialVerificationActivityIntent);
+            if(BTSocket != null) {
+                try {
+                    connectWithServer();
+                    BTSocket.getOutputStream().write((setWifiNameCommand + " " + wifi + newline).getBytes());
+                    SystemClock.sleep(1500);
+                    flush();
+                    BTSocket.getOutputStream().write((setWifiPWCommand + " " + pw + newline).getBytes());
+                    SystemClock.sleep(1500);
+                    flush();
+                    BTSocket.getOutputStream().write((setServerAddrCommand + " " + serverAddr + newline).getBytes());
+                    SystemClock.sleep(1500);
+                    flush();
+                    BTSocket.getOutputStream().write((setWifi + newline).getBytes());
+                    SystemClock.sleep(10000);
+                    flush();
+
+                    BTSocket.getOutputStream().write((getWifiStatus + newline).getBytes());
+                    SystemClock.sleep(1000);
+                    String response = readFromInputPort();
+                    Log.i(TAG, "response is: " + response);
+
+                    if(response.equals("1")) {
+                        Toast.makeText(getApplicationContext(), "Connection Successful", Toast.LENGTH_SHORT).show();
+                        BTSocket.getOutputStream().write((setBaseStationId + " " + UserInfoHelper.getBaseStationId().toString() + newline).getBytes());
+                        if(signUpFlag){
+                            Intent facialVerificationActivityIntent = new Intent(WifiAndBluetoothSetupActivity.this, DetectorActivity.class);
+                            facialVerificationActivityIntent.putExtra("SignUpWorkflow", "True");
+                            facialVerificationActivityIntent.putExtra("TestWorkflow", "False");
+                            startActivity(facialVerificationActivityIntent);
+                        }
+                        else {
+                            Intent mainActivityIntent = new Intent(WifiAndBluetoothSetupActivity.this, MainActivity.class);
+                            mainActivityIntent.putExtra("SignUpWorkflow", "False");
+                            startActivity(mainActivityIntent);
+                        }
                     }
                     else {
-                        Intent mainActivityIntent = new Intent(WifiAndBluetoothSetupActivity.this, MainActivity.class);
-                        mainActivityIntent.putExtra("SignUpWorkflow", "False");
-                        startActivity(mainActivityIntent);
+                        Toast.makeText(getApplicationContext(), "Connection Did not happen.\nPlease make sure you entered the wifi credentials correctly", Toast.LENGTH_LONG).show();
+//                        Intent mainActivityIntent = new Intent(WifiAndBluetoothSetupActivity.this, WifiAndBluetoothSetupActivity.class);
+//                        if(signUpFlag){
+//                            mainActivityIntent.putExtra("SignUpWorkflow", "True");
+//                        }
+//                        else {
+//                            mainActivityIntent.putExtra("SignUpWorkflow", "False");
+//                        }
                     }
+                } catch (IOException e) {
+                    Toast.makeText(getApplicationContext(), "SOMETHING WENT WRONG WHILE SETTING WIFI", Toast.LENGTH_LONG).show();
+                    e.printStackTrace();
                 }
-                else {
-                    Toast.makeText(this, "Connection Did not happen.\nPlease make sure you entered the wifi credentials correctly", Toast.LENGTH_LONG).show();
-                    Intent mainActivityIntent = new Intent(WifiAndBluetoothSetupActivity.this, WifiAndBluetoothSetupActivity.class);
-                    if(signUpFlag){
-                        mainActivityIntent.putExtra("SignUpWorkflow", "True");
-                    }
-                    else {
-                        mainActivityIntent.putExtra("SignUpWorkflow", "False");
-                    }
-                    startActivity(mainActivityIntent);
-                }
-            } catch (IOException e) {
-                Toast.makeText(this, "SOMETHING WENT WRONG WHILE SETTING WIFI", Toast.LENGTH_LONG).show();
-                e.printStackTrace();
             }
         }
     }
@@ -144,7 +164,6 @@ public class WifiAndBluetoothSetupActivity extends AppCompatActivity {
             int charsRead = 0;
             char[] buffer = new char[FLUSH_BUFFER_SIZE];
 
-            //flush the other 4 BT commands which I sent
             in.read(buffer);
 
         } catch (IOException e) {
@@ -158,20 +177,10 @@ public class WifiAndBluetoothSetupActivity extends AppCompatActivity {
             int charsRead = 0;
             char[] buffer = new char[BUFFER_SIZE];
 
-            //flush the other 4 BT commands which I sent
-//            while ((charsRead = in.read(buffer)) > 0) {
-//                message += new String(buffer).substring(0, charsRead);
-//            }
-
             in.read(buffer);
             message += new String(buffer);
-//
-//            try{
-//                in.close();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
 
+            Log.i(TAG, "readFromInputPort: mesage is "+message);
             return message;
         } catch (IOException e) {
             return "Error receiving response:  " + e.getMessage();

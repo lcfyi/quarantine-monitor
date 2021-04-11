@@ -21,8 +21,13 @@ public class UserInfoHelper {
     private static long endTime;
     public static LinkedHashMap<String, ActiveUserStats> stats = new LinkedHashMap<>();
     private static Boolean fvResult = false;
+    private static Integer baseStationId = 0;
 
     private static final String cookieFileName = "config.txt";
+
+    // to keep track of the user's base station id
+    public static Integer getBaseStationId() {return baseStationId;}
+    public static void setBaseStationId(Integer id) {baseStationId = id;}
 
     public static Boolean getFvResult() {return fvResult;}
     public static void setFvResult(Boolean result){

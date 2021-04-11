@@ -79,5 +79,19 @@
         app:layout_constraintTop_toBottomOf="@+id/input_wifiPassword"
         app:layout_constraintVertical_bias="0.15" />
 
+    <TextView
+        android:id="@+id/wifisetupwarning"
+        android:layout_width="317dp"
+        android:layout_height="133dp"
+        android:layout_marginBottom="92dp"
+        android:text="NOTE: it takes approximately\n30 seconds to 1 minute for the wifi to connect.\nPlease be patient and wait for a confirmation pop-up"
+        android:textAlignment="center"
+        android:textSize="18dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/buttonWifiInfoSubmit"
+        app:layout_constraintVertical_bias="1.0" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
