@@ -18,11 +18,13 @@ import androidx.viewpager.widget.PagerAdapter;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.MarkerView;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.IValueFormatter;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
@@ -30,6 +32,7 @@ import com.github.mikephil.charting.listener.ChartTouchListener;
 import com.github.mikephil.charting.listener.OnChartGestureListener;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.renderer.XAxisRenderer;
+import com.github.mikephil.charting.utils.MPPointF;
 import com.github.mikephil.charting.utils.Transformer;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.google.android.gms.maps.GoogleMap;
@@ -169,6 +172,8 @@ public class PagerDataAdapter extends PagerAdapter implements OnChartGestureList
         set.setFillDrawable(drawable);
         set.setDrawCircleHole(false);
         set.setDrawValues(false);
+        set.setHighlightLineWidth(3);
+        set.setDrawHorizontalHighlightIndicator(false);
 
         ArrayList<ILineDataSet> dataSets = new ArrayList<>();
         dataSets.add(set);
@@ -188,9 +193,13 @@ public class PagerDataAdapter extends PagerAdapter implements OnChartGestureList
         long starttime = model.unixStartTime;
 
         // Round to nearest midnight and convert to minutes unit
-        starttime = new Date(starttime - starttime % (24*60*60*1000)).getTime() / 60000;
-        endtime = new Date(endtime - endtime % (24*60*60*1000)).getTime() / 60000;
+        starttime = new Date(starttime - starttime % (24*60*60*1000)).getTime() / 60000l;
+        endtime = new Date(endtime - endtime % (24*60*60*1000)).getTime() / 60000l;
 
+        // Hot fix for crash when account created very recently in the past
+        if (starttime >= endtime) {
+            endtime += 24*60;
+        }
 
         // Creates slider below the card
         RangeSlider slider = view.findViewById(R.id.time_slider);
@@ -215,7 +224,10 @@ public class PagerDataAdapter extends PagerAdapter implements OnChartGestureList
         chart_test.getAxisLeft().setEnabled(false);
         chart_test.getAxisRight().setEnabled(false);
 
-        chart_test.setExtraOffsets(0f,0f,0f,40f);
+        chart_test.setExtraOffsets(5f,0f,5f,40f);
+
+        GraphMarkerView mv = new GraphMarkerView(context, R.layout.custom_marker_view_layout);
+        chart_test.setMarkerView(mv);
 
         xAxis.setLabelRotationAngle(60f);
         xAxis.setAxisMinimum(starttime-720f);
@@ -251,7 +263,8 @@ public class PagerDataAdapter extends PagerAdapter implements OnChartGestureList
     public void onChartTranslate(MotionEvent me, float dX, float dY) { }
 
     @Override
-    public void onValueSelected(Entry e, Highlight h) { }
+    public void onValueSelected(Entry e, Highlight h) {
+    }
 
     @Override
     public void onNothingSelected() { }
@@ -261,7 +274,7 @@ public class PagerDataAdapter extends PagerAdapter implements OnChartGestureList
         @Override
         public void onValueChange(@NonNull RangeSlider slider, float value, boolean fromUser) {
             ArrayList<Float> values = (ArrayList) slider.getValues();
-            chart_test.getXAxis().setAxisMinimum(values.get(0)-720f);
+            chart_test.getXAxis().setAxisMinimum(values.get(0)-480f);
             chart_test.getXAxis().setAxisMaximum(values.get(1)+720f);
             chart_test.moveViewToAnimated(values.get(0), 0.5f, YAxis.AxisDependency.LEFT, 500);
             chart_test.notifyDataSetChanged();
@@ -279,7 +292,7 @@ public class PagerDataAdapter extends PagerAdapter implements OnChartGestureList
         float granularity = 24*60;
         int labelCount = 0;
 
-        if (totalXVisible < 72*60) {
+        if (totalXVisible < 48*60) {
             granularity = 60;
             chart_test_format_hours = true;
             labelCount = 8;
@@ -311,6 +324,46 @@ public class PagerDataAdapter extends PagerAdapter implements OnChartGestureList
 
         }
     }
+
+    // Formats the data values in the line graph
+    class GraphMarkerView extends MarkerView {
+
+        private TextView tvContent;
+
+        public GraphMarkerView(Context context, int layoutResource) {
+            super(context, layoutResource);
+
+            // find your layout components
+            tvContent = (TextView) findViewById(R.id.tvContent);
+        }
+
+        // callbacks everytime the MarkerView is redrawn, can be used to update the
+        // content (user-interface)
+        @Override
+        public void refreshContent(Entry e, Highlight highlight) {
+            Date date = new Date((long)e.getX()*60000);
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd h:mm a", Locale.ENGLISH);
+            tvContent.setText(sdf.format(date));
+
+            // this will perform necessary layouting
+            super.refreshContent(e, highlight);
+        }
+
+        private MPPointF mOffset;
+
+        @Override
+        public MPPointF getOffset() {
+
+            if(mOffset == null) {
+                // center the marker horizontally and vertically
+                mOffset = new MPPointF(-(getWidth() / 2), -getHeight());
+            }
+
+            return mOffset;
+        }
+    }
 }
+
+
 
 

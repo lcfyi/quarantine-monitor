@@ -44,18 +44,20 @@ router.post("/", async (req, res) => {
 
                 let station = await Station.findById(req.headers.base);
 
+                let jsonObj = JSON.parse(json);
+
                 // Get the sequence number and verify that it is one plus the previous one
-                if (req.body.h === station.seqnum) {
+                if (jsonObj.h === station.seqnum) {
                     station.seqnum += 1;
                     station.save();
 
                     let user = await User.findById(station.users[0]) // Relies on station object having associated user added by front end
 
-                    user.status = (req.body.b === 1);
+                    user.status = (jsonObj.s.b === 1);
                     user.save();
                     
                     // If the f flag is set to 1, we signal the test sent within 10 minutes to be successful
-                    if (req.body.f !== undefined) {
+                    if (jsonObj.s.f !== undefined) {
 
                         const now = new Date().getTime();
                         let test = await Test.findOne({"stationid": station.stationid, "status": 0, "time" : {$gte: now - 600000}});
@@ -67,7 +69,7 @@ router.post("/", async (req, res) => {
                     }
                     
                     // Signal that the accelerometer has moved to the admin
-                    if (req.body.a === 0) {
+                    if (jsonObj.s.a === 0) {
                         const admin = await User.findById(station.admin);
 
                         const body = "User " + test.userid + " connected to station " + test.stationid + " flagged for base station movement. (Unix Time: " + test.time + ")";
