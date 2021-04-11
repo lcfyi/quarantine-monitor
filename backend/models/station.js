@@ -3,7 +3,9 @@ const mongoose = require("mongoose");
 //Defines the schema for a station
 const stationSchema = new mongoose.Schema({
     _id: String,
-    users: [],
+    user: {
+        type: String
+    },
     baseCoords: [Number],
     seqnum: {
         type: Number

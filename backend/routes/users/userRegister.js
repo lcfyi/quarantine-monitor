@@ -45,7 +45,7 @@ router.post("/", async (req, res) => {
 				logger("User created");
 
 				let station = await Station.findById(req.body.stationid);
-				station.users.push(user._id);
+				station.user = user._id;
 				await station.save();
 
 				res.status(201).send({"_id": user._id, "admin": user.admin, "endTime": user.endTime});

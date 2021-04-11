@@ -51,7 +51,7 @@ router.post("/", async (req, res) => {
                     station.seqnum += 1;
                     station.save();
 
-                    let user = await User.findById(station.users[0]) // Relies on station object having associated user added by front end
+                    let user = await User.findById(station.user) // Relies on station object having associated user added by front end
 
                     user.status = (jsonObj.s.b === 1);
                     user.save();
@@ -81,7 +81,7 @@ router.post("/", async (req, res) => {
         } 
         res.send("ERROR");
     } catch (e) {
-        res.send("ERROR");
+        res.send("ERROR" + e.message);
     }
 });
 
@@ -108,7 +108,7 @@ router.post("/create", async (req, res) => {
     try {
         const station = new Station({
             _id: req.body.stationid,
-            users: [],
+            user: "",
             baseCoords: [],
             seqnum: 0,
             admin: "606533bc0a874e090c8ddbfc"
@@ -146,45 +146,6 @@ router.put("/:stationid/location", async (req, res) => {
 	} catch (err) {
 		res.status(400).send(err.message);
 	}
-});
-
-/*
- *	GET request for users for a specific station.
- */
-router.get("/:stationid/users", getStation, (req, res) => {
-	res.json(res.station.users);
-});
-
-/*
- *	POST request for users for a specific station which accepts userid.
- */
-router.post("/:stationid/users", async (req, res) => {
-    try {
-        let station = await Station.findById(req.params.stationid);
-        if (!station.users.includes(req.body.userid)) {
-            station.users.push(req.body.userid);
-            await station.save();
-        }
-        res.status(201).send("Successfully added member");
-    } catch (err) {
-        res.status(400).send(err.message);
-    }  
-});
-
-/*
- *	DELETE request for users for a specific station which accepts userid.
- */
-router.delete("/:stationid/users", async (req, res) => {
-    try {
-        let station = await Station.findById(req.params.stationid);
-        if (station.users.includes(req.body.userid)) {
-            station.users.pull(req.body.userid);
-            await station.save();
-        }
-        res.status(200).send("Successfully removed member");
-    } catch (err) {
-        res.status(400).send(err.message);
-    }  
 });
 
 module.exports = router;
