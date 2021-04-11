@@ -20,7 +20,7 @@ async function getUser(req, res, next) {
 	let user;
 	try {
 		user = await User.findById(req.params.userid)
-        .select('username deviceToken stationid lastCoords locationMap admin status availability scheduledTests endTime');
+        .select('username deviceToken stationid lastCoords locationMap admin status availability scheduledTests endTime startTime');
 
         if (user == null)
             throw "Not Found";
@@ -36,6 +36,19 @@ async function getUser(req, res, next) {
  */
 router.get("/:userid", getUser, (req, res) => {
 	res.json(res.user);
+});
+
+/*
+ *	GET request to return list of active users.
+ */
+ router.get("/:userid/active", async (req, res) => {
+	try {
+		const now = new Date();
+        let users = await User.find({"admin": false, "endTime": { $gt: now.getTime()}}).select('_id lastCoords startTime endTime');
+		res.status(200).json(users);
+	} catch (err) {
+		res.status(404).json([]);
+	}
 });
 
 /*
@@ -98,15 +111,6 @@ router.get("/:userid/station", getUser, async (req, res) => {
 });
 
 /*
- *	DELETE request to delete a user.
- */
-router.delete("/:userid", getUser, (req, res) => {
-	res.user.remove();
-	res.send("Deleted user");
-	logger("Deleted user");
-});
-
-/*
  *	UPDATE request on fields of user
  */
 router.put("/:userid", async (req, res) => {
@@ -119,7 +123,7 @@ router.put("/:userid", async (req, res) => {
         if (req.body.coordinates != null) {
 			user.lastCoords = req.body.coordinates;
             let currentUnix = new Date().getTime().toString();
-            let locMapEntry = JSON.parse("{\"time\":" + currentUnix + ",\"coordinates\": [" + req.body.coordinates.toString() + "]}");
+            let locMapEntry = JSON.parse("{\"time\":" + currentUnix + ",\"coordinates\": [" + req.body.coordinates.toString() + "], \"status\": " + user.status + "}");
             user.locationMap.push(locMapEntry);
         }
 
@@ -137,9 +141,9 @@ router.put("/:userid", async (req, res) => {
 		}
 
 		await user.save();
-		res.status(200).send("Successfully updated user details");
+		res.status(200).json({"message": "Successfully updated user details"});
 	} catch (err) {
-		res.status(400).send(err.message);
+		res.status(400).json(err.message);
 	}
 });
 

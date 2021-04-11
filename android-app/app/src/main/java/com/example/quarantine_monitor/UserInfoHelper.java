@@ -9,6 +9,7 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 
 /*
     Manages global information about the user
@@ -16,8 +17,9 @@ import java.util.Arrays;
 public class UserInfoHelper {
     private static String userId;
     private static Double[] coordinates = new Double[2];
-    private static Boolean admin;
+    private static Boolean admin = false;
     private static long endTime;
+    public static LinkedHashMap<String, ActiveUserStats> stats = new LinkedHashMap<>();
     private static Boolean fvResult = false;
 
     private static final String cookieFileName = "config.txt";

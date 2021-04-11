@@ -178,10 +178,10 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
     faceDetector = detector;
 
     Bundle extras = getIntent().getExtras();
-    if(extras.getString("TestWorkflow").equals("True")){
+    if(extras != null && extras.getString("TestWorkflow").equals("True")){
       testIncoming = true;
     }
-    if(extras.getString("SignUpWorkflow").equals("True")){
+    if(extras != null && extras.getString("SignUpWorkflow").equals("True")){
       showConfirmationDialogue("Register facial profile", "Please press the '+' button to" +
               "add your facial profile to your phone. ", 1);
       signUpWorkflow = true;
@@ -658,6 +658,7 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
             .setPositiveButton("OK", new DialogInterface.OnClickListener() {
               public void onClick(DialogInterface dialog, int id) {
                 Intent homePageIntent = new Intent(DetectorActivity.this, MainActivity.class);
+                homePageIntent.putExtra("SignUpWorkflow", "False");
                 switch(event){
                   case 1: Log.d(TAG, "Need to register face, show explanation");
                     dialog.dismiss();

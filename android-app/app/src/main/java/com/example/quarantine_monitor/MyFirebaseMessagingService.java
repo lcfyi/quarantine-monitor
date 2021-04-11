@@ -73,7 +73,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService{
                 break;
             case KEY_ALERT_ADMIN:
                 super.onMessageReceived(message);
-                Intent hpi = new Intent(getApplicationContext(), MainActivity.class); //TODO: link to admin page
+                Intent hpi = new Intent(getApplicationContext(), AdminMainActivity.class);
                 sendNotification(message, hpi);
                 break;
             default:

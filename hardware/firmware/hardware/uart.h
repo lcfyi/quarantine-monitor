@@ -4,10 +4,12 @@
 #include <string>
 #include <stdio.h>
 #include <unistd.h>
+#include <mutex>
 #include "../utils/mmap.h"
 
-#define TIMEOUT_CYCLES 10000000
+#define TIMEOUT_CYCLES 7000
 
+extern std::mutex bus_mutex;
 class UART
 {
 protected:

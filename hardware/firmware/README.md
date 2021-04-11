@@ -69,6 +69,14 @@ tolerance=1000
 
 `get-stat\n` - Returns the integer status of the WiFi module's connection to the server address (either `0` for failure or `1` for success)
 
+`set-debug <0 or 1>\n` - Enables or disables the debug setting
+
+`set-base <base id>\n` - Sets the wifi base ID. Remember to `ini-rset` after setting this.
+
+`set-token <token>\n` - Sets the wifi token that's sent to the server in the header. Remember to `ini-rset` after setting this.
+
+`set-accel <number>\n` - Sets the tolerance for the accelerometer
+
 In order to maintain the Bluetooth connection, the DE1 will require the BT device to send a packet (of any data) every 10 seconds as a keep-alive. The DE1 will flag the BT connection as broken beyond this, and reset on new data.
 
 ### Communication Spec

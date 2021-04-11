@@ -40,7 +40,8 @@ function randomizedTimes(availability){
 
 /*
  *	Main looping algorithm to submit new tests and handle previous ones.
- *  Occasionally handle
+ *  The following algorithm will run 10 minutes
+ *  NOTE: For the sake of the project demo this has been disabled in place of test endpoints
  */
 async function handleTests(test, userid) {
     try {
@@ -58,9 +59,9 @@ async function handleTests(test, userid) {
             sendPushNotification(admin.deviceToken, {"key": NOTIF_TYPE.ALERT_ADMIN, "title": "Test Failure", "body": body});
         }
             
-        // Find all non-admin users who are currently flagged as following quarantine, and still supposed to be quarantined
+        // Find all non-admin users who are still supposed to be quarantined
         const now = new Date();
-        var users = await User.find({"admin": false, "status": true, "endTime": { $gt: now.getTime()}});
+        var users = await User.find({"admin": false, "endTime": { $gt: now.getTime()}});
         if (users == null) {
             return;
         }
@@ -99,10 +100,8 @@ async function handleTests(test, userid) {
                      "body": "Please complete the facial verification test within 10 minutes"});
             }
 
-            // Collect user's location every hour (or 6th iteration)
-            // TODO: in 1 minute loop, any signing tokens which are unmatched I collect the location every iteration for that user in
-            //       addition wtih the regular location tracking here
-            if (currentSlot % 6 == 0) {
+            // Collect user's location every hour (or 6th iteration) or if they are flagged as having broken quarantine
+            if (currentSlot % 6 == 0 || user.status == false) {
                 sendPushNotification(user.deviceToken, {"key": NOTIF_TYPE.REQUEST_LOCATION});
             }
         }

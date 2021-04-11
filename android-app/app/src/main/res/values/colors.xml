@@ -13,6 +13,9 @@
     <color name="mellow_apricot">#FFBF69</color>
     <color name="orange_peel">#FF9F1C</color>
     <color name="persian_green">#2A9D8F</color>
+    <color name="persian_green_translucent">#E62A9D8F</color>
+    <color name="persian_green_24">#3D2A9D8F</color>
+    <color name="persian_green_54">#8A2A9D8F</color>
     <color name="tfe_color_primary">#ffa800</color>
     <color name="tfe_color_primary_dark">#ff6f00</color>
     <color name="tfe_color_accent">#425066</color>

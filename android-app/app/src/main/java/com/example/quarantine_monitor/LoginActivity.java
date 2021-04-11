@@ -148,15 +148,22 @@ public class LoginActivity extends AppCompatActivity {
                                 // Create the cookie file to store user login state
                                 UserInfoHelper.createCookieFile(getApplicationContext());
 
-                                // redirecting user away from homepage and to the bluetooth page
-//                                Intent homePageIntent = new Intent(LoginActivity.this, MainActivity.class);
-//                                startActivity(homePageIntent);
+                                if (UserInfoHelper.getAdmin()) {
+                                    Intent adminPageIntent = new Intent(LoginActivity.this, AdminMainActivity.class);
+                                    startActivity(adminPageIntent);
+                                } else {
+                                    // redirecting user away from homepage and to the bluetooth page
+//                                  Intent homePageIntent = new Intent(LoginActivity.this, MainActivity.class);
+//                                  startActivity(homePageIntent);
 
-                                // directing user to the bluetooth page
-                                Intent BTIntent = new Intent(LoginActivity.this, BluetoothConnectionActivity.class);
-                                BTIntent.putExtra("SignUpWorkflow", "False");
-                                startActivity(BTIntent);
-                                finish();
+                                    // directing user to the bluetooth page
+                                    Intent BTIntent = new Intent(LoginActivity.this, BluetoothConnectionActivity.class);
+                                    BTIntent.putExtra("SignUpWorkflow", "False");
+                                    startActivity(BTIntent);
+                                    finish();
+                                }
+                                
+
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
