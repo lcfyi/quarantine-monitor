@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.example.quarantine_monitor">
 
     <uses-permission android:name="android.permission.CAMERA" />
@@ -69,6 +70,10 @@
             android:name=".BluetoothDisconnectionActivity"
             android:label="BluetoothDisconnectionActivity">
         </activity>
+        <activity
+            android:name=".WifiAndBluetoothSetupActivity"
+            android:label="WifiAndBluetoothSetupActivity">
+        </activity>
         <service
             android:name=".MyFirebaseMessagingService"
             android:exported="false">
@@ -82,7 +87,7 @@
         </service>
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="${MAPS_API_KEY}" />
+            android:value="MAPS_API_KEY=AIzaSyBVGB6GkjqXpHBBNjF7Zosj_eQ7X2VLRNM" />
         <receiver android:name=".MyBroadcastReceiver" android:enabled="true" android:exported="true">
             <intent-filter>
                 <category android:name="android.intent.category.DEFAULT"/>

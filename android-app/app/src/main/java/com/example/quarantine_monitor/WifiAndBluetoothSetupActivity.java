@@ -22,6 +22,8 @@ import java.nio.Buffer;
 import java.util.Arrays;
 
 public class WifiAndBluetoothSetupActivity extends AppCompatActivity {
+    public static final int BUFFER_SIZE = 1;
+
     boolean signUpFlag = false;
     private EditText wifiName = null;
     private EditText wifiPW = null;
@@ -34,7 +36,7 @@ public class WifiAndBluetoothSetupActivity extends AppCompatActivity {
     private BluetoothConnectionRFS rfsBTDevice = BluetoothConnectionRFS.getInstance();
     private BluetoothConnection BTConnection = BluetoothConnection.getInstance();
 
-    private final String serverAddr = "https://d.lc.fyi";
+    private final String serverAddr = "http://143.198.73.4";
     private final String ping = "ping";
     private final String setWifiNameCommand = "set-ssid";
     private final String setWifiPWCommand = "set-pass";
@@ -44,7 +46,9 @@ public class WifiAndBluetoothSetupActivity extends AppCompatActivity {
     private final String getWifiStatus = "get-stat";
     private final String newline = "\n";
 
-    byte[] buffer = new byte[1024];
+    private BufferedReader in = null;
+
+    byte[] buffer = new byte[2];
     int len = -1;
 
     String TAG = "wifi & bluetooth setup";
@@ -152,13 +156,13 @@ public class WifiAndBluetoothSetupActivity extends AppCompatActivity {
 //                break;
 //        }
 
-        String wifi = wifiName.getText().toString();
-        String pw = wifiPW.getText().toString();
+//        String wifi = wifiName.getText().toString();
+//        String pw = wifiPW.getText().toString();
 
         submitButton.setEnabled(false);
 
-//        String wifi = "TELUS2742";
-//        String pw = "3pxdm9h5dd";
+        String wifi = "TELUS2742";
+        String pw = "3pxdm9h5dd";
 
         if(wifi.matches("") || pw.matches("")) {
             Toast.makeText(this, "Please enter your wifi name and password", Toast.LENGTH_LONG).show();
@@ -176,10 +180,14 @@ public class WifiAndBluetoothSetupActivity extends AppCompatActivity {
                 BTSocket.getOutputStream().write((setServerAddrCommand + " " + serverAddr + newline).getBytes());
                 SystemClock.sleep(1500);
                 BTSocket.getOutputStream().write((setWifi + newline).getBytes());
-                SystemClock.sleep(10000);
+                connectWithServer();
+                Log.i(TAG, "line 185");
+                String response = readFromInputPort();
+
+                Log.i(TAG, "response is: " + response);
 
                 long startTime = System.currentTimeMillis();
-                BTSocket.getOutputStream().write((getWifiStatus + newline).getBytes());
+//                BTSocket.getOutputStream().write((getWifiStatus + newline).getBytes());
                 //noinspection InfiniteLoopStatement
                 while (len == -1 && (System.currentTimeMillis()-startTime)<10000) {
                     len = BTSocket.getInputStream().read(buffer);
@@ -190,7 +198,8 @@ public class WifiAndBluetoothSetupActivity extends AppCompatActivity {
                 if(len > 1) {
                     Toast.makeText(this, "Connection Successful", Toast.LENGTH_LONG).show();
                     submitButton.setEnabled(true);
-                    setupPinging();
+                    //todo - turn this back on
+//                    setupPinging();
                     if(signUpFlag){
                         Intent facialVerificationActivityIntent = new Intent(WifiAndBluetoothSetupActivity.this, DetectorActivity.class);
                         facialVerificationActivityIntent.putExtra("SignUpWorkflow", "True");;
@@ -210,6 +219,51 @@ public class WifiAndBluetoothSetupActivity extends AppCompatActivity {
                 Toast.makeText(this, "SOMETHING WENT WRONG WHILE SETTING WIFI", Toast.LENGTH_LONG).show();
                 e.printStackTrace();
             }
+        }
+    }
+
+    private String readFromInputPort() {
+        try {
+            String message = "";
+            int charsRead = 0;
+            char[] buffer = new char[BUFFER_SIZE];
+            char[] buffer1 = new char[BUFFER_SIZE];
+
+            while(true) {
+                while(in.read(buffer) )
+
+            }
+
+
+            //flush the other 4 BT commands which I sent
+            while ((charsRead = in.read(buffer)) > 0) {
+                message += new String(buffer).substring(0, charsRead);
+            }
+
+            BTSocket.getOutputStream().write((getWifiStatus + newline).getBytes());
+            while (in.read(buffer1) != 0) {
+                message += new String(buffer1).substring(0, charsRead);
+            }
+
+            try{
+                in.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return message;
+        } catch (IOException e) {
+            return "Error receiving response:  " + e.getMessage();
+        }
+    }
+
+    private void connectWithServer() {
+        try {
+            if (BTSocket != null) {
+                in = new BufferedReader(new InputStreamReader(BTSocket.getInputStream()));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
