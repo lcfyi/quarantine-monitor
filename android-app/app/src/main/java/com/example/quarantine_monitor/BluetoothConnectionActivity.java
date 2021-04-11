@@ -17,6 +17,7 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.service.controls.Control;
 import android.view.View;
 import android.widget.AdapterView;
@@ -70,10 +71,15 @@ public class BluetoothConnectionActivity extends AppCompatActivity {
     BluetoothSocket btSocket = null;
 
     private boolean signUpFlag = false;
+    private final String setFlagForFacialVerification = "set-face";
+    private final String ping = "ping";
+    private final String newline = "\n";
+    String TAG = "bluetooth connection";
 
 //    private boolean ConnectSuccess = false;
 
     // singleton class to keep track of bluetooth connection
+    private BluetoothThreadHelper BTThreadHelper = BluetoothThreadHelper.getInstance();
     BluetoothConnection isBTConnected = BluetoothConnection.getInstance();
     BluetoothConnectionRFS rfsBTConnection = BluetoothConnectionRFS.getInstance();
 
@@ -267,11 +273,18 @@ public class BluetoothConnectionActivity extends AppCompatActivity {
             if (!isBTConnected.isConnected()) {
                 Toast.makeText(getApplicationContext(), "Connection Failed", Toast.LENGTH_SHORT).show();
             }
+            else {
+                setupPinging();
+            }
 //            else {
 ////                Toast.makeText(getApplicationContext(), "Connected. Please do not disconnect", Toast.LENGTH_SHORT).show();
 //                isBTConnected.connect();
 //            }
         }
+    }
+
+    private void setupPinging() {
+        BTThreadHelper.createThread();
     }
 
     @Override
@@ -283,64 +296,4 @@ public class BluetoothConnectionActivity extends AppCompatActivity {
             // do nothing
         }
     }
-    //    private void connect() {
-//        try {
-//            BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-//            BluetoothDevice device = bluetoothAdapter.getRemoteDevice(deviceAddress);
-//            SerialSocket socket = new SerialSocket(getActivity().getApplicationContext(), device);
-//            service.connect(socket);
-//        } catch (Exception e) {
-//            onSerialConnectError(e);
-//        }
-//    }
-//
-//    public String getLocalBluetoothName(){
-//        if(BA == null){
-//            BA = BluetoothAdapter.getDefaultAdapter();
-//        }
-//        String name = BA.getName();
-//        if(name == null){
-//            System.out.println("Name is null!");
-//            name = BA.getAddress();
-//        }
-//        return name;
-//    }
-
-//    public void getPairedDevices(){
-//        pairedDevices = BA.getBondedDevices();
-//
-//        pairedDevices_ArrayAdapter = new ArrayAdapter<String>(this, R.layout.activity_connect);
-//        if(pairedDevices.size()>0){
-//            for(BluetoothDevice device : pairedDevices){
-//                pairedDevices_ArrayAdapter.add(device.getName()+"\n"+device.getAddress());
-//            }
-//        }
-//        pairedDevices_ListView = findViewById(R.id.PDlistview);
-//        pairedDevices_ListView.setAdapter(pairedDevices_ArrayAdapter);
-////        pairedDevices_ListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-////            @Override
-////            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-////                String i = ((TextView) view).getText().toString();
-////                String address = i.substring(i.length() - 17);
-////                deviceToConnectTo = BA.getRemoteDevice(address);
-//////                connectToDevice(deviceToConnectTo);
-////            }
-////        });
-//    }
-//
-////    public void connectToDevice(BluetoothDevice device){
-////        try {
-////            bluetoothSocket = device.createRfcommSocketToServiceRecord(MY_UUID);
-////            BA.cancelDiscovery();
-////        } catch (IOException e){}
-////
-////        try{
-////            bluetoothSocket.connect();
-////        } catch (IOException e){
-////            Toast.makeText(getApplicationContext(), "Error Connecting To Device",       Toast.LENGTH_SHORT).show();
-////            try{
-////                bluetoothSocket.close();
-////            } catch (IOException exception){}
-////        }
-////    }
 }
