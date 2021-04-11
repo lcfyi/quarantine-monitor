@@ -4,6 +4,7 @@ const Station = require("../models/station");
 const user = require("../models/user");
 const User = require("../models/user");
 const Test = require("../models/test");
+const crypto = require("crypto");
 
 /*
  *	Helper function to get a station by stationid.
@@ -82,6 +83,7 @@ router.post("/", async (req, res) => {
         res.send("ERROR");
     } catch (e) {
         res.send("ERROR" + e.message);
+        console.error(e);
     }
 });
 
