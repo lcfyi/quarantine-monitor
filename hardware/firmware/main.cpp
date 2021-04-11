@@ -21,6 +21,7 @@ bool debug = false;
 bool accelerometer_triggered = false;
 bool face_verified = false;
 bool bluetooth_triggered = false;
+bool accel_changed = false;
 
 /**
  * Deal with the wrap-around values from the accelerometer.
@@ -54,6 +55,17 @@ void accelerometer_thread()
     while (1)
     {
         Accelerometer::Data curr = accelerometer.get_data();
+        if (accel_changed)
+        {
+            std::string at_setting = config.get_value(config.ACCELEROMETER_SETTINGS, "tolerance");
+            if (at_setting.length())
+            {
+                at = std::stoi(at_setting);
+            }
+            if (debug)
+                std::cout << "[ACCEL] Accelerometer value set at: " << at << std::endl;
+            accel_changed = false;
+        }
 
         accelerometer_triggered = accelerometer_triggered || accelerometer_compare(curr.x, last.x, at) || accelerometer_compare(curr.y, last.y, at) || accelerometer_compare(curr.z, last.z, at);
 
@@ -142,18 +154,33 @@ std::string bluetooth_command(std::string command)
 
     if (command.rfind("set-ssid", 0) == 0)
     { // Returns position of the found value
+        if (command.length() < 9)
+        {
+            return "Invalid command parameters!\n";
+        }
         std::string ssid = command.substr(9);
         config.set_value(config.WIFI_SETTINGS, "ssid", ssid);
+        return "Successfully set ssid to: " + ssid + "\n";
     }
     else if (command.rfind("set-pass", 0) == 0)
     {
+        if (command.length() < 9)
+        {
+            return "Invalid command parameters!\n";
+        }
         std::string password = command.substr(9);
         config.set_value(config.WIFI_SETTINGS, "password", password);
+        return "Successfully set wifi password to: " + password + "\n";
     }
     else if (command.rfind("set-addr", 0) == 0)
     {
+        if (command.length() < 9)
+        {
+            return "Invalid command parameters!\n";
+        }
         std::string addr = command.substr(9);
         config.set_value(config.SERVER_SETTINGS, "addr", addr);
+        return "Sucessfully set server address to: " + addr + "\n";
     }
     else if (command.rfind("ini-rset", 0) == 0)
     {
@@ -166,6 +193,72 @@ std::string bluetooth_command(std::string command)
     else if (command.rfind("set-face", 0) == 0)
     {
         face_verified = true;
+    }
+    else if (command.rfind("set-debug", 0) == 0)
+    {
+        if (command.length() < 10)
+        {
+            return "Invalid command parameters!\n";
+        }
+        std::string value = command.substr(10);
+        if (value == "1")
+        {
+            config.set_value(config.BASE_SETTINGS, "debug", value);
+            debug = 1;
+        }
+        else if (value == "0")
+        {
+            config.set_value(config.BASE_SETTINGS, "debug", value);
+            debug = 0;
+        }
+        else
+        {
+            return "Invalid debug value: should be 0 or 1.";
+        }
+        return "Set debug value to: " + value + "\n";
+    }
+    else if (command.rfind("set-base", 0) == 0)
+    {
+        if (command.length() < 9)
+        {
+            return "Invalid command parameters!\n";
+        }
+        std::string base = command.substr(9);
+        config.set_value(config.BASE_SETTINGS, "base", base);
+        return "Successfully set base ID to: " + base + "\n";
+    }
+    else if (command.rfind("set-token", 0) == 0)
+    {
+        if (command.length() < 10)
+        {
+            return "Invalid command parameters!\n";
+        }
+        std::string token = command.substr(10);
+        config.set_value(config.BASE_SETTINGS, "token", token);
+
+        return "Successfully set base token to: " + token + "\n";
+    }
+    else if (command.rfind("set-accel", 0) == 0)
+    {
+        if (command.length() < 10)
+        {
+            return "Invalid command parameters!\n";
+        }
+        std::string tolerance = command.substr(10);
+        for (char const &c : tolerance)
+        {
+            if (!std::isdigit(c))
+            {
+                return "Not a valid number!\n";
+            }
+        }
+        if (!tolerance.length())
+        {
+            return "Not a valid number!\n";
+        }
+        config.set_value(config.ACCELEROMETER_SETTINGS, "tolerance", tolerance);
+        accel_changed = false;
+        return "Successfully set accelerometer tolerance to: " + tolerance + "\n";
     }
 
     return command;

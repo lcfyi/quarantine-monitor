@@ -50,6 +50,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService{
     final private static int KEY_REQUEST_LOC = 0;
     final private static int KEY_VERIFY_IDEN = 1;
     final private static int KEY_ALERT_ADMIN = 2;
+    final private static int KEY_ALERT_BASE_MOVED = 3;
     Handler mHandler;
 
     @Override
@@ -72,6 +73,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService{
                 sendNotification(message, fvi);
                 break;
             case KEY_ALERT_ADMIN:
+            case KEY_ALERT_BASE_MOVED:
                 super.onMessageReceived(message);
                 Intent hpi = new Intent(getApplicationContext(), AdminMainActivity.class);
                 sendNotification(message, hpi);

@@ -5,6 +5,9 @@ const stationSchema = new mongoose.Schema({
     _id: String,
     users: [],
     baseCoords: [Number],
+    seqnum: {
+        type: Number
+    },
     admin: {
         type: String
     }
