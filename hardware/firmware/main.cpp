@@ -21,7 +21,8 @@ bool debug = false;
 bool accelerometer_triggered = false;
 bool face_verified = false;
 bool bluetooth_triggered = false;
-bool accel_changed = false;
+bool accel_changed = true;
+bool wifi_interval_changed = true;
 
 /**
  * Deal with the wrap-around values from the accelerometer.
@@ -38,17 +39,7 @@ void accelerometer_thread()
 
     Accelerometer accelerometer;
 
-    std::string at_setting = config.get_value(config.ACCELEROMETER_SETTINGS, "tolerance");
-
     int at = 10;
-
-    if (at_setting.length())
-    {
-        at = std::stoi(at_setting);
-    }
-
-    if (debug)
-        std::cout << "[ACCEL] Accelerometer value set at: " << at << std::endl;
 
     Accelerometer::Data last = accelerometer.get_data();
 
@@ -80,6 +71,8 @@ void wifi_thread()
         std::cout << "[WIFI] Thread starting." << std::endl;
 
     WiFi wifi;
+
+    int interval = 1;
     long counter = 0;
     std::string SERVER_OK = "OK";
 
@@ -132,7 +125,7 @@ void wifi_thread()
             accelerometer_triggered = false;
             picosha2::hash256_hex_string(payload, checksum);
             counter++;
-            while (true)
+            while (true && wifi_init)
             {
                 std::string resp = wifi.POST(payload + ";" + checksum);
                 if (debug)
@@ -143,7 +136,22 @@ void wifi_thread()
                 usleep(100000); // 100ms
             }
         }
-        usleep(1000000); // 1000ms
+
+        if (wifi_interval_changed)
+        {
+            std::string interval_setting = config.get_value(config.WIFI_SETTINGS, "interval");
+
+            if (interval_setting.length())
+            {
+                interval = std::stoi(interval_setting);
+            }
+
+            if (debug)
+                std::cout << "[WIFI] Interval set at: " << interval << std::endl;
+            wifi_interval_changed = false;
+        }
+
+        usleep(1000000 * interval); // 1000ms
     }
 }
 
@@ -259,6 +267,28 @@ std::string bluetooth_command(std::string command)
         config.set_value(config.ACCELEROMETER_SETTINGS, "tolerance", tolerance);
         accel_changed = true;
         return "Successfully set accelerometer tolerance to: " + tolerance + "\n";
+    }
+    else if (command.rfind("set-inter", 0) == 0)
+    {
+        if (command.length() < 10)
+        {
+            return "Invalid command parameters!\n";
+        }
+        std::string interval = command.substr(10);
+        for (char const &c : interval)
+        {
+            if (!std::isdigit(c))
+            {
+                return "Not a valid number!\n";
+            }
+        }
+        if (!interval.length())
+        {
+            return "Not a valid number!\n";
+        }
+        config.set_value(config.WIFI_SETTINGS, "interval", interval);
+        wifi_interval_changed = true;
+        return "Successfully set wifi interval to: " + interval + "\n";
     }
 
     return command;

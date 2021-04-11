@@ -116,6 +116,9 @@ public class WifiAndBluetoothSetupActivity extends AppCompatActivity {
                     BTSocket.getOutputStream().write((setServerAddrCommand + " " + serverAddr + newline).getBytes());
                     SystemClock.sleep(1500);
                     flush();
+                    BTSocket.getOutputStream().write((setBaseStationId + " " + UserInfoHelper.getBaseStationId().toString() + newline).getBytes());
+                    SystemClock.sleep(1500);
+                    flush();
                     BTSocket.getOutputStream().write((setWifi + newline).getBytes());
                     SystemClock.sleep(10000);
                     flush();
@@ -127,7 +130,6 @@ public class WifiAndBluetoothSetupActivity extends AppCompatActivity {
 
                     if(response.equals("1")) {
                         Toast.makeText(getApplicationContext(), "Connection Successful", Toast.LENGTH_SHORT).show();
-                        BTSocket.getOutputStream().write((setBaseStationId + " " + UserInfoHelper.getBaseStationId().toString() + newline).getBytes());
                         if(signUpFlag){
                             Intent facialVerificationActivityIntent = new Intent(WifiAndBluetoothSetupActivity.this, DetectorActivity.class);
                             facialVerificationActivityIntent.putExtra("SignUpWorkflow", "True");
