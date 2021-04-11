@@ -125,7 +125,7 @@ void wifi_thread()
             accelerometer_triggered = false;
             picosha2::hash256_hex_string(payload, checksum);
             counter++;
-            while (true)
+            while (true && wifi_init)
             {
                 std::string resp = wifi.POST(payload + ";" + checksum);
                 if (debug)
