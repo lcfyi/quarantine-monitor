@@ -60,6 +60,7 @@ public class SignUpActivity extends AppCompatActivity implements LocationListene
     final private static String TAG = "SignUpActivity";
     private EditText usernameText;
     private EditText passwordText;
+    private EditText baseStationIdText;
     private Button signUpButton;
     private LocationManager locationManager;
     private Spinner startTimeSpinner;
@@ -79,6 +80,7 @@ public class SignUpActivity extends AppCompatActivity implements LocationListene
         });
         usernameText = (EditText) findViewById(R.id.input_username);
         passwordText = (EditText) findViewById(R.id.input_password);
+        baseStationIdText = (EditText) findViewById(R.id.input_baseStationId);
         startTimeSpinner = (Spinner) findViewById(R.id.startTime_spinner);
         endTimeSpinner = (Spinner) findViewById(R.id.endTime_spinner);
         dateFormat = new SimpleDateFormat("HH:mm");
@@ -140,6 +142,16 @@ public class SignUpActivity extends AppCompatActivity implements LocationListene
 
         String startTimeString = startTimeSpinner.getSelectedItem().toString();
         String endTimeString = endTimeSpinner.getSelectedItem().toString();
+        String baseStationIdString = baseStationIdText.getText().toString();
+        Integer baseStationId = 0;
+
+        try{
+            baseStationId = Integer.parseInt(baseStationIdString);
+        }
+        catch(NumberFormatException e){
+            Toast.makeText(this,"Base Station ID input is not a number", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         JSONArray coordinatesArray = new JSONArray();
         coordinatesArray.put(coordinates[0]);
@@ -180,14 +192,14 @@ public class SignUpActivity extends AppCompatActivity implements LocationListene
                     userInfo.put("username", username);
                     userInfo.put("password", password);
                     userInfo.put("coordinates", coordinatesArray);
+                    userInfo.put("stationid", baseStationId);
+                    userInfo.put("availability", setTime(startTime, endTime));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
                 Log.d(TAG, userInfo.toString());
 
-                Date finalStartTime = startTime;
-                Date finalEndTime = endTime;
                 JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, URL, userInfo, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -196,7 +208,10 @@ public class SignUpActivity extends AppCompatActivity implements LocationListene
                             UserInfoHelper.setUserId(response.get("_id").toString());
                             UserInfoHelper.setEndtime((long) response.get("endTime"));
                             UserInfoHelper.setAdmin((Boolean) response.get("admin"));
-                            setTime(finalStartTime, finalEndTime, response.get("_id").toString());
+
+                            Intent bluetoothIntent = new Intent(SignUpActivity.this, BluetoothConnectionActivity.class);
+                            bluetoothIntent.putExtra("SignUpWorkflow", "True");
+                            startActivity(bluetoothIntent);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -229,7 +244,7 @@ public class SignUpActivity extends AppCompatActivity implements LocationListene
         }
     }
 
-    private void setTime(Date startTime, Date endTime, String userId){
+    private JSONArray setTime(Date startTime, Date endTime){
 
         TimeZone tz = TimeZone.getDefault();
         Calendar cal = GregorianCalendar.getInstance(tz);
@@ -262,33 +277,6 @@ public class SignUpActivity extends AppCompatActivity implements LocationListene
         timeArray.put(start);
         timeArray.put(end);
 
-        String URL = "https://qmonitor-306302.wl.r.appspot.com/users/" + userId;
-        JSONObject userInfo = new JSONObject();
-        try{
-            userInfo.put("availability", timeArray);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        Log.d(TAG, userInfo.toString());
-
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PUT, URL, userInfo, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                Log.d(TAG, response.toString());
-                Intent bluetoothIntent = new Intent(SignUpActivity.this, BluetoothConnectionActivity.class);
-                bluetoothIntent.putExtra("SignUpWorkflow", "True");
-                startActivity(bluetoothIntent);
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d(TAG, error.toString());
-                Toast.makeText(SignUpActivity.this,"Error inputting time", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        // Add the request to the RequestQueue
-        queue.add(jsonObjectRequest);
+        return timeArray;
     }
 }
