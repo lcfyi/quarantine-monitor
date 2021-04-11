@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const Station = require("../models/station");
-const user = require("../models/user");
 const User = require("../models/user");
 const Test = require("../models/test");
 const crypto = require("crypto");
