@@ -107,7 +107,7 @@ public class LoginActivity extends AppCompatActivity {
                 || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermission(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_BACKGROUND_LOCATION},
                     REQUEST_PERMISSION_LOCATION);
-            Toast.makeText(getApplicationContext(), "ERROR AT LOGINNN", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Please make sure you turned on location services in settings", Toast.LENGTH_SHORT).show();
 
             return;
         }
