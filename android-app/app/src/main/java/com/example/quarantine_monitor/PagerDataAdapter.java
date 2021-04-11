@@ -188,9 +188,13 @@ public class PagerDataAdapter extends PagerAdapter implements OnChartGestureList
         long starttime = model.unixStartTime;
 
         // Round to nearest midnight and convert to minutes unit
-        starttime = new Date(starttime - starttime % (24*60*60*1000)).getTime() / 60000;
-        endtime = new Date(endtime - endtime % (24*60*60*1000)).getTime() / 60000;
+        starttime = new Date(starttime - starttime % (24*60*60*1000)).getTime() / 60000l;
+        endtime = new Date(endtime - endtime % (24*60*60*1000)).getTime() / 60000l;
 
+        // Hot fix for crash when account created very recently in the past
+        if (starttime >= endtime) {
+            endtime += 24*60;
+        }
 
         // Creates slider below the card
         RangeSlider slider = view.findViewById(R.id.time_slider);
