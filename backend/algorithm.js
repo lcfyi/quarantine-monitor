@@ -40,7 +40,8 @@ function randomizedTimes(availability){
 
 /*
  *	Main looping algorithm to submit new tests and handle previous ones.
- *  Occasionally handle
+ *  The following algorithm will run 10 minutes
+ *  NOTE: For the sake of the project demo this has been disabled in place of test endpoints
  */
 async function handleTests(test, userid) {
     try {

@@ -172,4 +172,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         // Add the request to the RequestQueue
         VolleyQueue.getInstance(MapsActivity.this.getApplicationContext()).addToRequestQueue(jsonObjectRequest);
     }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        return false;
+    }
 }
