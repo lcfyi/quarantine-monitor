@@ -14,7 +14,7 @@ router.post("/", async (req, res) => {
 	try {
 		let hashData = passwordHelper.saltHashPassword(req.body.password);
         let currentUnix = new Date().getTime();
-        let locMapEntry = JSON.parse("{\"time\":" + currentUnix.toString() + ",\"coordinates\": [" + req.body.coordinates.toString() + "]}");
+        let locMapEntry = JSON.parse("{\"time\":" + currentUnix.toString() + ",\"coordinates\": [" + req.body.coordinates.toString() + "], \"status\": true}");
         const user = new User({
 			username: req.body.username,
 			deviceToken: "",
@@ -22,10 +22,11 @@ router.post("/", async (req, res) => {
 			salt: hashData.salt,
             stationid: "",
             lastCoords: req.body.coordinates,
+			startTime: currentUnix,
 			endTime: currentUnix + 1209600000, // 2 weeks after user created
             locationMap: [locMapEntry],
 			admin: false,
-			status: false,
+			status: true,
 			availability: [24, 85], 
 			scheduledTests: algorithm.randomizedTimes([24, 85]) 
 		});

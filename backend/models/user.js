@@ -25,6 +25,9 @@ const userSchema = new mongoose.Schema({
     },
     availability: [Number],
     scheduledTests: [Number],
+    startTime: {
+        type: Number
+    },
     endTime: {
         type: Number
     },
@@ -32,6 +35,9 @@ const userSchema = new mongoose.Schema({
     locationMap: [{
         time: {
             type: Number
+        },
+        status: {
+            type: Boolean
         },
         coordinates: [Number]
     }]
