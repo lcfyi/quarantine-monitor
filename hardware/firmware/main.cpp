@@ -257,7 +257,7 @@ std::string bluetooth_command(std::string command)
             return "Not a valid number!\n";
         }
         config.set_value(config.ACCELEROMETER_SETTINGS, "tolerance", tolerance);
-        accel_changed = false;
+        accel_changed = true;
         return "Successfully set accelerometer tolerance to: " + tolerance + "\n";
     }
 

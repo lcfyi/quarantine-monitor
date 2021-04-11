@@ -37,6 +37,7 @@ public class BluetoothDisconnectionActivity extends AppCompatActivity {
 
     boolean signUpFlag = false;
 
+    BluetoothThreadHelper BTThreadHelper = BluetoothThreadHelper.getInstance();
     BluetoothConnectionRFS rfsBTDevice = BluetoothConnectionRFS.getInstance();
     BluetoothConnection BTConnection = BluetoothConnection.getInstance();
 
@@ -90,6 +91,8 @@ public class BluetoothDisconnectionActivity extends AppCompatActivity {
     }
 
     public void BTdisconnect() {
+        BTThreadHelper.reset();
+        BTThreadHelper.destroyThread();
         try {
             BTInputStream = BTSocket.getInputStream();
             BTOutputStream = BTSocket.getOutputStream();
