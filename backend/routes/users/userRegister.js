@@ -3,12 +3,13 @@ const logger = debug("app:error");
 const express = require("express");
 const router = express.Router();
 const User = require("../../models/user");
+const Station = require("../../models/station");
 const passwordHelper = require("./passwordHelper");
 const algorithm = require("../../algorithm");
 
 /*
  *	POST request to register a user. 
- *  Takes in username, password, and current location and returns user object.
+ *  Takes in username, password, and current location, availability, and stationid and returns user object.
  */
 router.post("/", async (req, res) => {
 	try {
@@ -20,16 +21,18 @@ router.post("/", async (req, res) => {
 			deviceToken: "",
 			password: hashData.passwordHash,
 			salt: hashData.salt,
-            stationid: "",
+            stationid: req.body.stationid,
             lastCoords: req.body.coordinates,
 			startTime: currentUnix,
 			endTime: currentUnix + 1209600000, // 2 weeks after user created
             locationMap: [locMapEntry],
 			admin: false,
 			status: true,
-			availability: [24, 85], 
-			scheduledTests: algorithm.randomizedTimes([24, 85]) 
+			availability: req.body.availability, 
+			scheduledTests: algorithm.randomizedTimes(req.body.availability) 
 		});
+
+
 
         // Only create user if username does not exist, else return 400
 		User.countDocuments({ "username": req.body.username }, async function (err, count) {
@@ -40,6 +43,11 @@ router.post("/", async (req, res) => {
 			} else {
 				await user.save();
 				logger("User created");
+
+				let station = await Station.findById(req.body.stationid);
+				station.users.push(user._id);
+				await station.save();
+
 				res.status(201).send({"_id": user._id, "admin": user.admin, "endTime": user.endTime});
 			}
 

@@ -34,32 +34,6 @@ router.get("/", async (req, res) => {
 	}
 });
 
-/*
- *	POST request on status of test
- *  Requires userid, stationid, status, and time
- */
- router.post("/update", async (req, res) => {
-	try {
-
-        if (req.body.stationid == null) {
-            throw "Not Found";
-        }
-
-        let test = await Test.findOne({"stationid": req.body.stationid, "time" : {$gte: req.body.time - 600000}});
-        
-        console.log(test);
-        if (test == null) {
-            throw "Not Found"
-        }
-
-        test.status = 1;
-		await test.save();
-		res.status(200).send("Successfully updated test status");
-	} catch (err) {
-		res.status(400).send(err.message);
-	}
-});
-
 
 
 module.exports = router;
