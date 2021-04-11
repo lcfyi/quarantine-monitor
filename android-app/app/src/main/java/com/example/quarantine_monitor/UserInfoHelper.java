@@ -17,7 +17,7 @@ import java.util.LinkedHashMap;
 public class UserInfoHelper {
     private static String userId;
     private static Double[] coordinates = new Double[2];
-    private static Boolean admin;
+    private static Boolean admin = false;
     private static long endTime;
     public static LinkedHashMap<String, ActiveUserStats> stats = new LinkedHashMap<>();
     private static Boolean fvResult = false;

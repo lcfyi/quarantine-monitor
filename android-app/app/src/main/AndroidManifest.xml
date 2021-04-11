@@ -50,15 +50,16 @@
         </activity>
         <activity
             android:name=".AdminMainActivity"
-            android:label="AdminMainActivity">
+            android:label="AdminMainActivity"
+            android:theme="@style/Theme.Quarantine_monitor">
         </activity>
         <activity
             android:name=".StatisticsActivity"
             android:label="StatisticsActivity">
         </activity>
         <activity
-            android:name=".NotificationLogActivity"
-            android:label="NotificationLogActivity">
+            android:name=".MapsActivity"
+            android:label="MapsActivity">
         </activity>
         <activity
             android:name=".DetectorActivity"
@@ -79,6 +80,9 @@
             android:name=".BackgroundLocationService"
             >
         </service>
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="${MAPS_API_KEY}" />
         <receiver android:name=".MyBroadcastReceiver" android:enabled="true" android:exported="true">
             <intent-filter>
                 <category android:name="android.intent.category.DEFAULT"/>

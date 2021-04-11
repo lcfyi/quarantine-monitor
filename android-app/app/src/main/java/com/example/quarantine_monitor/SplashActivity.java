@@ -48,6 +48,7 @@ public class SplashActivity extends AppCompatActivity {
                                 if (UserInfoHelper.getAdmin()) {
                                     Intent adminPageIntent = new Intent(SplashActivity.this, AdminMainActivity.class);
                                     startActivity(adminPageIntent);
+                                    finish();
                                 } else {
                                     Intent homePageIntent = new Intent(SplashActivity.this, MainActivity.class);
                                     startActivity(homePageIntent);
