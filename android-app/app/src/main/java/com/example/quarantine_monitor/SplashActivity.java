@@ -50,8 +50,9 @@ public class SplashActivity extends AppCompatActivity {
                                     startActivity(adminPageIntent);
                                     finish();
                                 } else {
-                                    Intent homePageIntent = new Intent(SplashActivity.this, MainActivity.class);
-                                    startActivity(homePageIntent);
+                                    Intent BTIntent = new Intent(SplashActivity.this, BluetoothConnectionActivity.class);
+                                    BTIntent.putExtra("SignUpWorkflow", "False");
+                                    startActivity(BTIntent);
                                     finish();
                                 }
                             } catch (JSONException e) {

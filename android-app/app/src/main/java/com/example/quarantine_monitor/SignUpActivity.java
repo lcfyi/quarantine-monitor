@@ -182,6 +182,8 @@ public class SignUpActivity extends AppCompatActivity implements LocationListene
 
             if(endTime.getHours() - startTime.getHours() < 1){
                 Toast.makeText(this,"Start time must occur before End time", Toast.LENGTH_SHORT).show();
+            } else if (endTime.getTime() - startTime.getTime() < 10*60*6000) {
+                Toast.makeText(this, "Availability range must be atleast 10 hours", Toast.LENGTH_SHORT).show();
             }
             else{
                 String URL = "https://qmonitor-306302.wl.r.appspot.com/users";

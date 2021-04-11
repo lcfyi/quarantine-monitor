@@ -40,7 +40,7 @@ router.post("/", async (req, res) => {
         if (crypto.createHash("SHA256").update(json).digest("hex") === checksum) {
 
             // Confirm that the header contains base and token
-            if (req.headers.base !== undefined && req.headers.token !== undefined) {
+            if (req.headers.base !== undefined) {
 
                 let station = await Station.findById(req.headers.base);
 

@@ -77,6 +77,8 @@ tolerance=1000
 
 `set-accel <number>\n` - Sets the tolerance for the accelerometer
 
+`set-inter <number>\n` - Sets the wifi interval (in seconds).
+
 In order to maintain the Bluetooth connection, the DE1 will require the BT device to send a packet (of any data) every 10 seconds as a keep-alive. The DE1 will flag the BT connection as broken beyond this, and reset on new data.
 
 ### Communication Spec
