@@ -150,7 +150,7 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
   private String TAG = "facialDetection";
   private String user_label = "";
   private boolean signUpWorkflow = false;
-  private boolean testIncoming = true;
+  private boolean testIncoming = false;
   private boolean alreadyAcked = false;
 
   @Override
@@ -173,7 +173,8 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
                     .setClassificationMode(FaceDetectorOptions.CLASSIFICATION_MODE_NONE)
                     .build();
 
-
+    alreadyAcked = false;
+    testIncoming = false;
     FaceDetector detector = FaceDetection.getClient(options);
 
     faceDetector = detector;
