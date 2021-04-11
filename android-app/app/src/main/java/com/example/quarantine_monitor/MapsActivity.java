@@ -1,6 +1,7 @@
 package com.example.quarantine_monitor;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -18,11 +19,16 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.maps.android.clustering.ClusterItem;
+import com.google.maps.android.clustering.ClusterManager;
+import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -41,6 +47,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private HashSet<String> queriedUuids = new HashSet<>();
     private GoogleMap mMap;
+
+    // Declare a variable for the cluster manager.
+    private ClusterManager<GroupClusterItem> clusterManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +84,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         // Initialize the map to Vancouver
         LatLng vancouver = new LatLng(49.28, -123.12);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(vancouver, 14.0f));
+        setUpClusterer();
     }
 
     @Override
@@ -104,18 +114,23 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         int zIndex = 0;
 
         for (Map.Entry<Date, Double[]> entry : userStats.coordinateMap.entrySet()) {
-
+            // NOTE: that only one of individual marker icons and
             String title = "Time recorded: " + new SimpleDateFormat("yyyy-MM-dd h:mm a", Locale.ENGLISH).format(entry.getKey());
-            double hue_percentage = (entry.getKey().getTime() - userStats.unixStartTime) / (userStats.unixEndTime - userStats.unixStartTime); //TODO: Color the markers on a time scale
+            float timeSinceStart = entry.getKey().getTime() - userStats.unixStartTime;
+            float totalTime = userStats.unixEndTime - userStats.unixStartTime;
+            float hue_percentage =  timeSinceStart / totalTime;
 
             MarkerOptions marker = new MarkerOptions();
             LatLng coordinates = new LatLng(entry.getValue()[1], entry.getValue()[0]);
             marker.position(coordinates);
             marker.title(title);
             marker.zIndex(zIndex++);
+            marker.icon(BitmapDescriptorFactory.defaultMarker(140f*hue_percentage));
 
             builder.include(marker.getPosition());
-            mMap.addMarker(marker);
+            //mMap.addMarker(marker);
+            GroupClusterItem item = new GroupClusterItem(marker.getPosition().latitude, marker.getPosition().longitude, marker.getTitle(), marker.getSnippet(), marker.getIcon());
+            clusterManager.addItem(item);
         }
 
         mMap.setOnMarkerClickListener(this);
@@ -176,5 +191,68 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public boolean onMarkerClick(Marker marker) {
         return false;
+    }
+
+    private void setUpClusterer() {
+        // Initialize the manager with the context and the map.
+        // (Activity extends context, so we can pass 'this' in the constructor.)
+        clusterManager = new ClusterManager<GroupClusterItem>(this, mMap);
+
+        // Point the map's listeners at the listeners implemented by the cluster
+        // manager.
+        mMap.setOnCameraIdleListener(clusterManager);
+        mMap.setOnMarkerClickListener(clusterManager);
+
+        clusterManager.setRenderer(new ClusterRenderer(getApplicationContext(), mMap, clusterManager));
+    }
+}
+
+class GroupClusterItem implements ClusterItem {
+    private final LatLng position;
+    private final String title;
+    private final String snippet;
+    BitmapDescriptor icon;
+
+    public GroupClusterItem(double lat, double lng, String title, String snippet, BitmapDescriptor ic) {
+        position = new LatLng(lat, lng);
+        this.title = title;
+        this.snippet = snippet;
+        this.icon = ic;
+    }
+
+    @Override
+    public LatLng getPosition() {
+        return position;
+    }
+
+    @Override
+    public String getTitle() {
+        return title;
+    }
+
+    @Override
+    public String getSnippet() {
+        return snippet;
+    }
+
+    public BitmapDescriptor getIcon() {
+        return icon;
+    }
+}
+
+class ClusterRenderer extends DefaultClusterRenderer<GroupClusterItem> {
+
+    public ClusterRenderer(Context context, GoogleMap map,
+                       ClusterManager<GroupClusterItem> clusterManager) {
+        super(context, map, clusterManager);
+    }
+
+    @Override
+    protected void onBeforeClusterItemRendered(GroupClusterItem item, MarkerOptions markerOptions) {
+
+        markerOptions.icon(item.getIcon());
+        markerOptions.snippet(item.getSnippet());
+        markerOptions.title(item.getTitle());
+        super.onBeforeClusterItemRendered(item, markerOptions);
     }
 }
