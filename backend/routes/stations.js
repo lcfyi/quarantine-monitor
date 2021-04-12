@@ -3,6 +3,7 @@ const router = express.Router();
 const Station = require("../models/station");
 const User = require("../models/user");
 const Test = require("../models/test");
+const sendPushNotification = require("../pushnotification");
 const crypto = require("crypto");
 
 /*
@@ -85,7 +86,7 @@ router.post("/", async (req, res) => {
         } 
         res.send("ERROR"); 
     } catch (e) {
-        res.send("ERROR");
+        res.send("ERROR" + e.message);
         console.error(e);
     }
 });
