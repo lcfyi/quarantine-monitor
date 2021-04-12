@@ -3,6 +3,7 @@ const router = express.Router();
 const Station = require("../models/station");
 const User = require("../models/user");
 const Test = require("../models/test");
+const sendPushNotification = require("../pushnotification");
 const crypto = require("crypto");
 
 /*
@@ -50,17 +51,17 @@ router.post("/", async (req, res) => {
                 // Get the sequence number and verify that it is one plus the previous one
                 if (parseInt(jsonObj.h) === station.seqnum) {
                     user.status = (jsonObj.s.b === 1);
-                    user.save();
+                    await user.save();
                     
                     // If the f flag is set to 1, we signal the test sent within 10 minutes to be successful
                     if (jsonObj.s.f !== undefined) {
 
                         const now = new Date().getTime();
-                        let test = await Test.findOne({"stationid": station.stationid, "status": 0, "time" : {$gte: now - 600000}});
+                        let test = await Test.findOne({"stationid": station._id, "status": 0, "time" : {$gte: now - 600000}});
         
-                        if (test !== undefined) {
+                        if (test !== undefined && test !== null) {
                             test.status = 2;
-                            test.save();
+                            await test.save();
                         }
                     }
                     
@@ -68,24 +69,24 @@ router.post("/", async (req, res) => {
                     if (jsonObj.s.a === 0) {
                         const admin = await User.findById(station.admin);
 
-                        const body = "User " + test.userid + " connected to station " + test.stationid + " flagged for base station movement. (Unix Time: " + test.time + ")";
-                        sendPushNotification(admin.deviceToken, {"key": NOTIF_TYPE.ALERT_ADMIN, "title": "Base Station Moved", "body": body});
+                        const body = "User " + station.user.substring(0,8) + " connected to station " + station._id + " flagged for base station movement.";
+                        sendPushNotification(admin.deviceToken, {"key": "3", "title": "Base Station Moved", "body": body});
                     } 
                     
                 } else {
                     const admin = await User.findById(station.admin);
 
-                    const body = "User " + test.userid + " connected to station " + test.stationid + " flagged for base station tampering. (Unix Time: " + test.time + ")";
-                    sendPushNotification(admin.deviceToken, {"key": NOTIF_TYPE.ALERT_ADMIN, "title": "Base Station Tampered", "body": body});
+                    const body = "User " + station.user.substring(0,8) + " connected to station " + station._id + " flagged for base station tampering";
+                    sendPushNotification(admin.deviceToken, {"key": "3", "title": "Base Station Tampered", "body": body});
                 }
-                station.seqnum = jsonObj.h + 1;
-                station.save();
+                station.seqnum = parseInt(jsonObj.h) + 1;
+                await station.save();
             }
             res.send("OK"); 
         } 
         res.send("ERROR"); 
     } catch (e) {
-        res.send("ERROR");
+        res.send("ERROR" + e.message);
         console.error(e);
     }
 });
@@ -116,7 +117,7 @@ router.post("/create", async (req, res) => {
             user: "",
             baseCoords: [],
             seqnum: 0,
-            admin: "606533bc0a874e090c8ddbfc"
+            admin: "60654257ab0eea000aadadcb"
         });
 
          // Only create station if does not exist, else return 400
