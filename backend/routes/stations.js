@@ -70,14 +70,14 @@ router.post("/", async (req, res) => {
                         const admin = await User.findById(station.admin);
 
                         const body = "User " + station.user + " connected to station " + station._id + " flagged for base station movement.";
-                        sendPushNotification(admin.deviceToken, {"key": 3, "title": "Base Station Moved", "body": body});
+                        sendPushNotification(admin.deviceToken, {"key": "3", "title": "Base Station Moved", "body": body});
                     } 
                     
                 } else {
                     const admin = await User.findById(station.admin);
 
                     const body = "User " + station.user + " connected to station " + station._id + " flagged for base station tampering";
-                    sendPushNotification(admin.deviceToken, {"key": 3, "title": "Base Station Tampered", "body": body});
+                    sendPushNotification(admin.deviceToken, {"key": "3", "title": "Base Station Tampered", "body": body});
                 }
                 station.seqnum = parseInt(jsonObj.h) + 1;
                 station.save();
