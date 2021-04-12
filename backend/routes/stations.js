@@ -45,6 +45,7 @@ router.post("/", async (req, res) => {
 
                 let station = await Station.findById(req.headers.base);
                 let user = await User.findById(station.user) // Relies on station object having associated user added by front end
+                let admin = undefined;
 
                 let jsonObj = JSON.parse(json);
 
@@ -59,7 +60,7 @@ router.post("/", async (req, res) => {
                         const now = new Date().getTime();
                         let test = await Test.findOne({"stationid": station._id, "status": 0, "time" : {$gte: now - 600000}});
         
-                        if (test !== undefined && test !== null) {
+                        if (test) {
                             test.status = 2;
                             await test.save();
                         }
@@ -67,24 +68,37 @@ router.post("/", async (req, res) => {
                     
                     // Signal that the accelerometer has moved to the admin
                     if (jsonObj.s.a === 0) {
-                        const admin = await User.findById(station.admin);
+                        if (!admin) {
+                            admin = await User.findById(station.admin);
+                        }
 
                         const body = "User " + station.user.substring(0,8) + " connected to station " + station._id + " flagged for base station movement.";
                         sendPushNotification(admin.deviceToken, {"key": "3", "title": "Base Station Moved", "body": body});
-                    } 
+                    }
+
+                    if (jsonObj.s.b === 0) {
+                        if (!admin) {
+                            admin = await User.findById(station.admin);
+                        }
+
+                        const body = "User " + station.user.substring(0,8) + " connected to station " + station._id + " flagged for a broken Bluetooth connection.";
+                        sendPushNotification(admin.deviceToken, {"key": "3", "title": "Base Station Bluetooth Broken", "body": body});
+                    }
                     
                 } else {
-                    const admin = await User.findById(station.admin);
+                    if (!admin) {
+                        admin = await User.findById(station.admin);
+                    }
 
-                    const body = "User " + station.user.substring(0,8) + " connected to station " + station._id + " flagged for base station tampering";
+                    const body = "User " + station.user.substring(0,8) + " connected to station " + station._id + " flagged for base station tampering. Got " + jsonObj.h + " but expected " + station.seqnum;
                     sendPushNotification(admin.deviceToken, {"key": "3", "title": "Base Station Tampered", "body": body});
                 }
                 station.seqnum = parseInt(jsonObj.h) + 1;
                 await station.save();
             }
-            res.send("OK"); 
+            return res.send("OK");
         } 
-        res.send("ERROR"); 
+        return res.send("ERROR");
     } catch (e) {
         res.send("ERROR" + e.message);
         console.error(e);
