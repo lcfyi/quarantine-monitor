@@ -71,7 +71,7 @@ void wifi_thread()
         std::cout << "[WIFI] Thread starting." << std::endl;
 
     WiFi wifi;
-
+    const int TOTAL_RETRIES_BEFORE_REINIT = 5;
     int interval = 1;
     long counter = 0;
     std::string SERVER_OK = "OK";
@@ -125,6 +125,8 @@ void wifi_thread()
             accelerometer_triggered = false;
             picosha2::hash256_hex_string(payload, checksum);
             counter++;
+            int retry_count = 0;
+
             while (true && wifi_init)
             {
                 std::string resp = wifi.POST(payload + ";" + checksum);
@@ -132,7 +134,14 @@ void wifi_thread()
                     std::cout << "[WIFI] POST response: " << resp << std::endl;
                 if (resp == SERVER_OK)
                     break;
-
+                if (retry_count >= TOTAL_RETRIES_BEFORE_REINIT)
+                {
+                    if (debug)
+                        std::cout << "[WIFI] Too many errors, resetting..." << std::endl;
+                    wifi_init = false;
+                    break;
+                }
+                retry_count++;
                 usleep(100000); // 100ms
             }
         }
