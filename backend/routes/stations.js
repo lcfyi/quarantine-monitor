@@ -70,16 +70,16 @@ router.post("/", async (req, res) => {
                         const admin = await User.findById(station.admin);
 
                         const body = "User " + station.user + " connected to station " + station._id + " flagged for base station movement.";
-                        sendPushNotification(admin.deviceToken, {"key": NOTIF_TYPE.ALERT_ADMIN, "title": "Base Station Moved", "body": body});
+                        sendPushNotification(admin.deviceToken, {"key": 3, "title": "Base Station Moved", "body": body});
                     } 
                     
                 } else {
                     const admin = await User.findById(station.admin);
 
                     const body = "User " + station.user + " connected to station " + station._id + " flagged for base station tampering";
-                    sendPushNotification(admin.deviceToken, {"key": NOTIF_TYPE.ALERT_ADMIN, "title": "Base Station Tampered", "body": body});
+                    sendPushNotification(admin.deviceToken, {"key": 3, "title": "Base Station Tampered", "body": body});
                 }
-                station.seqnum = jsonObj.h + 1;
+                station.seqnum = parseInt(jsonObj.h) + 1;
                 station.save();
             }
             res.send("OK"); 
@@ -117,7 +117,7 @@ router.post("/create", async (req, res) => {
             user: "",
             baseCoords: [],
             seqnum: 0,
-            admin: "606533bc0a874e090c8ddbfc"
+            admin: "60654257ab0eea000aadadcb"
         });
 
          // Only create station if does not exist, else return 400
