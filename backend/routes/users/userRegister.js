@@ -18,7 +18,7 @@ router.post("/", async (req, res) => {
         let locMapEntry = JSON.parse("{\"time\":" + currentUnix.toString() + ",\"coordinates\": [" + req.body.coordinates.toString() + "], \"status\": true}");
         const user = new User({
 			username: req.body.username,
-			deviceToken: "",
+			deviceToken: req.body.token,
 			password: hashData.passwordHash,
 			salt: hashData.salt,
             stationid: req.body.stationid,
