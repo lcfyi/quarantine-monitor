@@ -51,6 +51,7 @@ router.post("/", async (req, res) => {
 
                 // Get the sequence number and verify that it is one plus the previous one
                 if (parseInt(jsonObj.h) === station.seqnum) {
+                    let previousStatus = user.status;
                     user.status = (jsonObj.s.b === 1);
                     await user.save();
                     
@@ -59,13 +60,13 @@ router.post("/", async (req, res) => {
 
                         const now = new Date().getTime();
                         let test = await Test.findOne({"stationid": station._id, "status": 0, "time" : {$gte: now - 600000}});
-        
+
                         if (test) {
                             test.status = 2;
                             await test.save();
                         }
                     }
-                    
+
                     // Signal that the accelerometer has moved to the admin
                     if (jsonObj.s.a === 0) {
                         if (!admin) {
@@ -76,7 +77,7 @@ router.post("/", async (req, res) => {
                         sendPushNotification(admin.deviceToken, {"key": "3", "title": "Base Station Moved", "body": body});
                     }
 
-                    if (jsonObj.s.b === 0) {
+                    if (previousStatus && jsonObj.s.b === 0) {
                         if (!admin) {
                             admin = await User.findById(station.admin);
                         }
@@ -84,7 +85,7 @@ router.post("/", async (req, res) => {
                         const body = "User " + station.user.substring(0,8) + " connected to station " + station._id + " flagged for a broken Bluetooth connection.";
                         sendPushNotification(admin.deviceToken, {"key": "3", "title": "Base Station Bluetooth Broken", "body": body});
                     }
-                    
+
                 } else {
                     if (!admin) {
                         admin = await User.findById(station.admin);
