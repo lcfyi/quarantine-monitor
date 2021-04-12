@@ -5,67 +5,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/wifiBluetoothTitle"
-        android:layout_width="308dp"
-        android:layout_height="97dp"
-        android:text="Please submit your wifi information below to connect the base to wifi."
-        android:textAlignment="center"
-        android:textSize="20dp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/input_wifiName"
+    <ImageView
+        android:id="@+id/header"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="28dp"
+        android:src="@drawable/ic_launcher"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.946"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <!--    <TextView-->
-<!--        android:id="@+id/wifiName"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:text="Enter Wifi Name Below"-->
-<!--        app:layout_constraintBottom_toTopOf="@+id/input_wifiName"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintHorizontal_bias="0.087"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toTopOf="parent"-->
-<!--        app:layout_constraintVertical_bias="0.545" />-->
-
-    <!--    <TextView-->
-<!--        android:id="@+id/wifiPassword"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginTop="21dp"-->
-<!--        android:layout_marginBottom="26dp"-->
-<!--        android:text="Enter Wifi Password Below"-->
-<!--        app:layout_constraintBottom_toTopOf="@+id/input_wifiPassword"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintHorizontal_bias="0.094"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toBottomOf="@+id/input_wifiName"-->
-<!--        app:layout_constraintVertical_bias="1.0" />-->
-
-    <EditText
-        android:id="@+id/input_wifiName"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginTop="64dp"
-        android:hint="Enter Wifi Name Here"
-        android:textAlignment="center"
-        app:layout_constraintBottom_toTopOf="@+id/input_wifiPassword"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.924"
-        tools:layout_editor_absoluteX="0dp" />
-
-    <EditText
-        android:id="@+id/input_wifiPassword"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:hint="Enter Wifi Password Here"
-        android:textAlignment="center"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.499"
-        tools:layout_editor_absoluteX="16dp" />
 
     <Button
         android:id="@+id/buttonWifiInfoSubmit"
@@ -77,21 +26,58 @@
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/input_wifiPassword"
-        app:layout_constraintVertical_bias="0.15" />
+        app:layout_constraintVertical_bias="0.072" />
+
+    <EditText
+        android:id="@+id/input_wifiPassword"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:hint="Enter Wifi Password Here"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.563"
+        tools:layout_editor_absoluteX="0dp" />
+
+    <EditText
+        android:id="@+id/input_wifiName"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="64dp"
+        android:hint="Enter Wifi Name Here"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toTopOf="@+id/input_wifiPassword"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.922"
+        tools:layout_editor_absoluteX="0dp" />
+
+    <TextView
+        android:id="@+id/wifiBluetoothTitle"
+        android:layout_width="308dp"
+        android:layout_height="97dp"
+        android:text="Please submit your wifi information below to connect the base to wifi."
+        android:textAlignment="center"
+        android:textSize="20dp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/input_wifiName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.37" />
 
     <TextView
         android:id="@+id/wifisetupwarning"
-        android:layout_width="317dp"
-        android:layout_height="133dp"
-        android:layout_marginBottom="92dp"
+        android:layout_width="319dp"
+        android:layout_height="121dp"
         android:text="NOTE: it takes approximately\n30 seconds to 1 minute for the wifi to connect.\nPlease be patient and wait for a confirmation pop-up"
         android:textAlignment="center"
         android:textSize="18dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/input_wifiName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/buttonWifiInfoSubmit"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintTop_toBottomOf="@+id/wifiBluetoothTitle"
+        app:layout_constraintVertical_bias="0.254" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
