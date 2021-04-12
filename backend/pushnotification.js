@@ -8,8 +8,8 @@ admin.initializeApp({
 // Helper function to send a message to a device. The silent variable determines whether to send
 // the data as a silent payload or as a notification
 function sendPushNotification(deviceToken, payload) {
-    if (deviceToken === "") {
-        throw "Invalid Token";
+    if (!deviceToken) {
+        return;
     }
 
     var message = { "token": deviceToken }
