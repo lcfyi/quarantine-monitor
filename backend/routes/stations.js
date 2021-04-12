@@ -59,7 +59,7 @@ router.post("/", async (req, res) => {
                         const now = new Date().getTime();
                         let test = await Test.findOne({"stationid": station._id, "status": 0, "time" : {$gte: now - 600000}});
         
-                        if (test !== undefined) {
+                        if (test !== undefined && test !== null) {
                             test.status = 2;
                             await test.save();
                         }
