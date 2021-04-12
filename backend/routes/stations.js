@@ -68,14 +68,14 @@ router.post("/", async (req, res) => {
                     if (jsonObj.s.a === 0) {
                         const admin = await User.findById(station.admin);
 
-                        const body = "User " + test.userid + " connected to station " + test.stationid + " flagged for base station movement. (Unix Time: " + test.time + ")";
+                        const body = "User " + station.user + " connected to station " + station._id + " flagged for base station movement.";
                         sendPushNotification(admin.deviceToken, {"key": NOTIF_TYPE.ALERT_ADMIN, "title": "Base Station Moved", "body": body});
                     } 
                     
                 } else {
                     const admin = await User.findById(station.admin);
 
-                    const body = "User " + test.userid + " connected to station " + test.stationid + " flagged for base station tampering. (Unix Time: " + test.time + ")";
+                    const body = "User " + station.user + " connected to station " + station._id + " flagged for base station tampering";
                     sendPushNotification(admin.deviceToken, {"key": NOTIF_TYPE.ALERT_ADMIN, "title": "Base Station Tampered", "body": body});
                 }
                 station.seqnum = jsonObj.h + 1;
