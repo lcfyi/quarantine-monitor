@@ -52,6 +52,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.gson.Gson;
 import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.face.Face;
 import com.google.mlkit.vision.face.FaceDetection;
@@ -64,6 +65,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import com.example.quarantine_monitor.customview.OverlayView;
@@ -589,7 +591,7 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
 //          }
 
           float conf = result.getDistance();
-          if (conf < 1.0f) {
+          if (conf < 1.0f && (1-conf) > 0.3f) {
 
             confidence = conf;
             label = result.getTitle();
@@ -698,22 +700,37 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
 
         facialProfile = new JSONObject(facialProfileString);
 
-        Float distance = Float.parseFloat(facialProfile.getString("distance"));
-        Float top = Float.parseFloat(facialProfile.getString("top"));
-        Float bottom = Float.parseFloat(facialProfile.getString("bottom"));
-        Float left = Float.parseFloat(facialProfile.getString("left"));
-        Float right = Float.parseFloat(facialProfile.getString("right"));
+        String recObjString = facialProfile.getString("recognition");
+
+        Gson gson = new Gson();
+        SimilarityClassifier.Recognition recognition = gson.fromJson(recObjString, SimilarityClassifier.Recognition.class);
+
         float[][] embedExtra = new float[1][192];
-        Log.d(TAG, facialProfile.get("embedExtra").toString());
+        Log.d(TAG, facialProfile.get("recognition").toString());
+        Log.d(TAG, recognition.toString());
 
 
-        SimilarityClassifier.Recognition rec = detector.createRecognition(facialProfile.getString("label"),
-                distance, left, top, right, bottom, embedExtra);
+        // SimilarityClassifier.Recognition rec = detector.createRecognition(facialProfile.getString("label"),
+             //   distance, left, top, right, bottom, embedExtra);
 
-        Log.d(TAG, rec.toString());
+        // Log.d(TAG, rec.toString());
         user_label = facialProfile.getString("label");
+        int i = 0;
+        //convert arraylist into float array
+        ArrayList<ArrayList<Double>> floatList = (ArrayList<ArrayList<Double>>) recognition.getExtra();
+        for(Double d : (floatList.get(0))){
+          float f = d.floatValue();
+          Log.d(TAG, String.valueOf(f));
+          embedExtra[0][i++] = f;
+        }
 
-        detector.register(facialProfile.getString("label"), rec);
+        Log.d(TAG, embedExtra.toString());
+
+        recognition.setExtra(embedExtra);
+
+        Log.d(TAG, recognition.toString());
+
+        detector.register(facialProfile.getString("label"), recognition);
         Log.d(TAG, facialProfile.toString());
         Log.d(TAG, "successfully stored object");
       }catch(Exception e){
@@ -726,14 +743,14 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
   public void writeToFile(Context context, String label, SimilarityClassifier.Recognition recognition){
     File dir = new File(context.getFilesDir(), "facial_verification.ser");
     JSONObject facialProfile = new JSONObject();
+    Gson gson = new Gson();
+
+    //turn extra into json string
+    String recObject = gson.toJson(recognition);
+
     try {
       facialProfile.put("label", label);
-      facialProfile.put("distance", recognition.getDistance());
-      facialProfile.put("top", recognition.getTop());
-      facialProfile.put("bottom", recognition.getBottom());
-      facialProfile.put("left", recognition.getLeft());
-      facialProfile.put("right", recognition.getRight());
-      facialProfile.put("embedExtra", recognition.getExtra());
+      facialProfile.put("recognition", recObject);
 
       String facialProfileSerialized = facialProfile.toString();
 
