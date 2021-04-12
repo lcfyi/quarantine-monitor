@@ -43,15 +43,14 @@ router.post("/", async (req, res) => {
             if (req.headers.base !== undefined) {
 
                 let station = await Station.findById(req.headers.base);
+                let user = await User.findById(station.user) // Relies on station object having associated user added by front end
 
                 let jsonObj = JSON.parse(json);
 
                 // Get the sequence number and verify that it is one plus the previous one
-                if (jsonObj.h === station.seqnum) {
-                    station.seqnum += 1;
+                if (parseInt(jsonObj.h) === station.seqnum) {
+                    station.seqnum = jsonObj.h + 1;
                     station.save();
-
-                    let user = await User.findById(station.user) // Relies on station object having associated user added by front end
 
                     user.status = (jsonObj.s.b === 1);
                     user.save();
@@ -75,13 +74,19 @@ router.post("/", async (req, res) => {
                         const body = "User " + test.userid + " connected to station " + test.stationid + " flagged for base station movement. (Unix Time: " + test.time + ")";
                         sendPushNotification(admin.deviceToken, {"key": NOTIF_TYPE.ALERT_ADMIN, "title": "Base Station Moved", "body": body});
                     } 
-                    res.send("OK");
-                } 
+                    
+                } else {
+                    const admin = await User.findById(station.admin);
+
+                    const body = "User " + test.userid + " connected to station " + test.stationid + " flagged for base station tampering. (Unix Time: " + test.time + ")";
+                    sendPushNotification(admin.deviceToken, {"key": NOTIF_TYPE.ALERT_ADMIN, "title": "Base Station Tampered", "body": body});
+                }
             }
+            res.send("OK"); 
         } 
-        res.send("ERROR");
+        res.send("ERROR"); 
     } catch (e) {
-        res.send("ERROR" + e.message);
+        res.send("ERROR");
         console.error(e);
     }
 });
