@@ -47,6 +47,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -74,6 +75,7 @@ import com.example.quarantine_monitor.tflite.SimilarityClassifier;
 import com.example.quarantine_monitor.tflite.TFLiteObjectDetectionAPIModel;
 import com.example.quarantine_monitor.tracking.MultiBoxTracker;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 
@@ -752,13 +754,15 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
 
   private void getTests(){
     RequestQueue queue = Volley.newRequestQueue(this);
-    String URL = "https://qmonitor-306302.wl.r.appspot.com//tests/?userid="+UserInfoHelper.getUserId()+"&status=0";
+    String URL = "https://qmonitor-306302.wl.r.appspot.com/tests/?userid="+UserInfoHelper.getUserId()+"&status=0";
 
-    JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, URL, null, new Response.Listener<JSONObject>() {
+    JsonArrayRequest jsonObjectRequest = new JsonArrayRequest(Request.Method.GET, URL, null, new Response.Listener<JSONArray>() {
       @Override
-      public void onResponse(JSONObject response) {
+      public void onResponse(JSONArray response) {
         Log.d(TAG, response.toString());
-        UserInfoHelper.setFvResult(true);
+        if (response.length() > 0) {
+          UserInfoHelper.setFvResult(true);
+        }
         showConfirmationDialogue("Identity verified", "Returning back to home page now.", 3);
       }
     }, new Response.ErrorListener() {

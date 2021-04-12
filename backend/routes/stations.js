@@ -60,7 +60,7 @@ router.post("/", async (req, res) => {
                         let test = await Test.findOne({"stationid": station._id, "status": 0, "time" : {$gte: now - 600000}});
         
                         if (test !== undefined && test !== null) {
-                            test.status = 2;
+                            test.status = 1;
                             await test.save();
                         }
                     }
@@ -82,9 +82,9 @@ router.post("/", async (req, res) => {
                 station.seqnum = parseInt(jsonObj.h) + 1;
                 await station.save();
             }
-            res.send("OK"); 
+            return res.send("OK"); 
         } 
-        res.send("ERROR"); 
+        return res.send("ERROR"); 
     } catch (e) {
         res.send("ERROR" + e.message);
         console.error(e);
