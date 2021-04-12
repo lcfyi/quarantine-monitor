@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const Station = require("../models/station");
-const user = require("../models/user");
 const User = require("../models/user");
 const Test = require("../models/test");
+const crypto = require("crypto");
 
 /*
  *	Helper function to get a station by stationid.
@@ -43,16 +43,12 @@ router.post("/", async (req, res) => {
             if (req.headers.base !== undefined) {
 
                 let station = await Station.findById(req.headers.base);
+                let user = await User.findById(station.user) // Relies on station object having associated user added by front end
 
                 let jsonObj = JSON.parse(json);
 
                 // Get the sequence number and verify that it is one plus the previous one
-                if (jsonObj.h === station.seqnum) {
-                    station.seqnum += 1;
-                    station.save();
-
-                    let user = await User.findById(station.users[0]) // Relies on station object having associated user added by front end
-
+                if (parseInt(jsonObj.h) === station.seqnum) {
                     user.status = (jsonObj.s.b === 1);
                     user.save();
                     
@@ -75,13 +71,22 @@ router.post("/", async (req, res) => {
                         const body = "User " + test.userid + " connected to station " + test.stationid + " flagged for base station movement. (Unix Time: " + test.time + ")";
                         sendPushNotification(admin.deviceToken, {"key": NOTIF_TYPE.ALERT_ADMIN, "title": "Base Station Moved", "body": body});
                     } 
-                    res.send("OK");
-                } 
+                    
+                } else {
+                    const admin = await User.findById(station.admin);
+
+                    const body = "User " + test.userid + " connected to station " + test.stationid + " flagged for base station tampering. (Unix Time: " + test.time + ")";
+                    sendPushNotification(admin.deviceToken, {"key": NOTIF_TYPE.ALERT_ADMIN, "title": "Base Station Tampered", "body": body});
+                }
+                station.seqnum = jsonObj.h + 1;
+                station.save();
             }
+            res.send("OK"); 
         } 
-        res.send("ERROR");
+        res.send("ERROR"); 
     } catch (e) {
         res.send("ERROR");
+        console.error(e);
     }
 });
 
@@ -108,7 +113,7 @@ router.post("/create", async (req, res) => {
     try {
         const station = new Station({
             _id: req.body.stationid,
-            users: [],
+            user: "",
             baseCoords: [],
             seqnum: 0,
             admin: "606533bc0a874e090c8ddbfc"
@@ -146,45 +151,6 @@ router.put("/:stationid/location", async (req, res) => {
 	} catch (err) {
 		res.status(400).send(err.message);
 	}
-});
-
-/*
- *	GET request for users for a specific station.
- */
-router.get("/:stationid/users", getStation, (req, res) => {
-	res.json(res.station.users);
-});
-
-/*
- *	POST request for users for a specific station which accepts userid.
- */
-router.post("/:stationid/users", async (req, res) => {
-    try {
-        let station = await Station.findById(req.params.stationid);
-        if (!station.users.includes(req.body.userid)) {
-            station.users.push(req.body.userid);
-            await station.save();
-        }
-        res.status(201).send("Successfully added member");
-    } catch (err) {
-        res.status(400).send(err.message);
-    }  
-});
-
-/*
- *	DELETE request for users for a specific station which accepts userid.
- */
-router.delete("/:stationid/users", async (req, res) => {
-    try {
-        let station = await Station.findById(req.params.stationid);
-        if (station.users.includes(req.body.userid)) {
-            station.users.pull(req.body.userid);
-            await station.save();
-        }
-        res.status(200).send("Successfully removed member");
-    } catch (err) {
-        res.status(400).send(err.message);
-    }  
 });
 
 module.exports = router;

@@ -22,7 +22,4 @@ The database connected to the app is stored on a MongoDB Atlas cluster.
 | **DELETE /stations/:stationid/** | Deletes station with id `stationid` and returns "Deleted Station" on success and 404 on failure. |
 | **GET /stations/:stationid/** | Accepts param `stationid` and returns the station object containing keys `users`, and `baseCoords` on success and 404 on failure.|
 | **PUT /stations/:stationid/location** | Updates the location of the base station with id `stationid`. Takes in key `coordinates` (array) and returns 200 on success and 404 on failure.|
-| **GET /stations/:stationid/users** | Returns list of users connected to station with id `stationid` on success and 404 on failure.|
-| **POST /stations/:stationid/users** | Adds a user to the list of users connected to station with id `stationid`. Takes in key `userid` in the body and returns "Successfully added member" (201) on success and 400 on failure.|
-| **DELETE /stations/:stationid/users** | Removes a user from the list of users connected to station with id `stationid`. Takes in key `userid` in the body and returns "Successfully removed member" (200) on success and 400 on failure.|
 | **GET /tests** | Returns list of all tests in the database with 404 on failure. The status indicates Sent (0), Passed (1), Failed (2), Incomplete(3). Accepts optional query parameters of `userid` and `status` and `range`. |
