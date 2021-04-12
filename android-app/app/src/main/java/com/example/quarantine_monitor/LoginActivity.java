@@ -1,9 +1,6 @@
 package com.example.quarantine_monitor;
 
 import android.Manifest;
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -11,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,13 +17,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -40,6 +34,7 @@ public class LoginActivity extends AppCompatActivity {
     final private static String TAG = "LoginActivity";
     public String user_Id;
     private Button loginButton;
+    private ImageButton infoButton;
     private EditText usernameText;
     private EditText passwordText;
     private TextView signUpLink;
@@ -88,6 +83,14 @@ public class LoginActivity extends AppCompatActivity {
                 Intent signUpPageIntent = new Intent(LoginActivity.this, SignUpActivity.class);
                 startActivity(signUpPageIntent);
                 finish();
+            }
+        });
+
+        infoButton = (ImageButton) findViewById(R.id.infoButton);
+        infoButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(LoginActivity.this, Info.class));
             }
         });
     }

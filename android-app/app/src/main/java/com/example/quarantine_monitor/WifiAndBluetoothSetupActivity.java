@@ -45,6 +45,8 @@ public class WifiAndBluetoothSetupActivity extends AppCompatActivity {
     private final String setAccelSensitivity = "set-accel";
     private final String accelSensitivity = "70";
     private final String wifiInterval = "5";
+    private final int shortDelay = 1500;
+    private final int longDelay = 10000;
     private final String newline = "\n";
 
     private BufferedReader in = null;
@@ -112,29 +114,29 @@ public class WifiAndBluetoothSetupActivity extends AppCompatActivity {
                 try {
                     connectWithServer();
                     BTSocket.getOutputStream().write((setWifiNameCommand + " " + wifi + newline).getBytes());
-                    SystemClock.sleep(1500);
+                    SystemClock.sleep(shortDelay);
                     flush();
                     BTSocket.getOutputStream().write((setWifiPWCommand + " " + pw + newline).getBytes());
-                    SystemClock.sleep(1500);
+                    SystemClock.sleep(shortDelay);
                     flush();
                     BTSocket.getOutputStream().write((setServerAddrCommand + " " + serverAddr + newline).getBytes());
-                    SystemClock.sleep(1500);
+                    SystemClock.sleep(shortDelay);
                     flush();
                     BTSocket.getOutputStream().write((setBaseStationId + " " + UserInfoHelper.getBaseStationId().toString() + newline).getBytes());
-                    SystemClock.sleep(1500);
+                    SystemClock.sleep(shortDelay);
                     flush();
                     BTSocket.getOutputStream().write((setWifiInterval + " " + wifiInterval + newline).getBytes());
-                    SystemClock.sleep(1500);
+                    SystemClock.sleep(shortDelay);
                     flush();
                     BTSocket.getOutputStream().write((setAccelSensitivity + " " + accelSensitivity + newline).getBytes());
-                    SystemClock.sleep(1500);
+                    SystemClock.sleep(shortDelay);
                     flush();
                     BTSocket.getOutputStream().write((setWifi + newline).getBytes());
-                    SystemClock.sleep(10000);
+                    SystemClock.sleep(longDelay);
                     flush();
 
                     BTSocket.getOutputStream().write((getWifiStatus + newline).getBytes());
-                    SystemClock.sleep(1000);
+                    SystemClock.sleep(shortDelay);
                     String response = readFromInputPort();
                     Log.i(TAG, "response is: " + response);
 
