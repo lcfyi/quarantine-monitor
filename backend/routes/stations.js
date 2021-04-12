@@ -51,7 +51,7 @@ router.post("/", async (req, res) => {
                 // Get the sequence number and verify that it is one plus the previous one
                 if (parseInt(jsonObj.h) === station.seqnum) {
                     user.status = (jsonObj.s.b === 1);
-                    user.save();
+                    await user.save();
                     
                     // If the f flag is set to 1, we signal the test sent within 10 minutes to be successful
                     if (jsonObj.s.f !== undefined) {
@@ -61,7 +61,7 @@ router.post("/", async (req, res) => {
         
                         if (test !== undefined) {
                             test.status = 2;
-                            test.save();
+                            await test.save();
                         }
                     }
                     
@@ -69,18 +69,18 @@ router.post("/", async (req, res) => {
                     if (jsonObj.s.a === 0) {
                         const admin = await User.findById(station.admin);
 
-                        const body = "User " + station.user + " connected to station " + station._id + " flagged for base station movement.";
+                        const body = "User " + station.user.substring(0,8) + " connected to station " + station._id + " flagged for base station movement.";
                         sendPushNotification(admin.deviceToken, {"key": "3", "title": "Base Station Moved", "body": body});
                     } 
                     
                 } else {
                     const admin = await User.findById(station.admin);
 
-                    const body = "User " + station.user + " connected to station " + station._id + " flagged for base station tampering";
+                    const body = "User " + station.user.substring(0,8) + " connected to station " + station._id + " flagged for base station tampering";
                     sendPushNotification(admin.deviceToken, {"key": "3", "title": "Base Station Tampered", "body": body});
                 }
                 station.seqnum = parseInt(jsonObj.h) + 1;
-                station.save();
+                await station.save();
             }
             res.send("OK"); 
         } 
