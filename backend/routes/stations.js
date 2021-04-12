@@ -49,9 +49,6 @@ router.post("/", async (req, res) => {
 
                 // Get the sequence number and verify that it is one plus the previous one
                 if (parseInt(jsonObj.h) === station.seqnum) {
-                    station.seqnum = jsonObj.h + 1;
-                    station.save();
-
                     user.status = (jsonObj.s.b === 1);
                     user.save();
                     
@@ -81,6 +78,8 @@ router.post("/", async (req, res) => {
                     const body = "User " + test.userid + " connected to station " + test.stationid + " flagged for base station tampering. (Unix Time: " + test.time + ")";
                     sendPushNotification(admin.deviceToken, {"key": NOTIF_TYPE.ALERT_ADMIN, "title": "Base Station Tampered", "body": body});
                 }
+                station.seqnum = jsonObj.h + 1;
+                station.save();
             }
             res.send("OK"); 
         } 
