@@ -5,16 +5,23 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.viewpager.widget.PagerAdapter;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.Legend;
@@ -41,6 +48,10 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.material.slider.LabelFormatter;
 import com.google.android.material.slider.RangeSlider;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -73,7 +84,7 @@ public class PagerDataAdapter extends PagerAdapter implements OnChartGestureList
 
     @Override
     public int getCount() {
-        return 2;
+        return 3;
     }
 
     @Override
@@ -91,8 +102,10 @@ public class PagerDataAdapter extends PagerAdapter implements OnChartGestureList
         // Calls the create function for each individual
         if (position == INDEX_TEST_PERCENTAGE) {
             view = createTestPercentageCard(layoutInflater.inflate(R.layout.card_testsuccessrate, container, false));
-        } else {
+        } else if (position == 1) {
             view = createTimeGraph(layoutInflater.inflate(R.layout.card_test_graph, container, false));
+        } else {
+            view = createDemoButtonsView(layoutInflater.inflate((R.layout.card_demo_buttons), container, false));
         }
 
         container.addView(view);
@@ -361,6 +374,59 @@ public class PagerDataAdapter extends PagerAdapter implements OnChartGestureList
 
             return mOffset;
         }
+    }
+
+    // Creates view containing demo buttons
+    private View createDemoButtonsView(View view) {
+
+        Button button_sendtest = (Button) view.findViewById(R.id.button_sendtest);
+        Button button_sendtest2 = (Button) view.findViewById(R.id.button_sendtest2);
+        Button button_location = (Button) view.findViewById(R.id.button_location);
+
+        button_sendtest.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                String url = "https://qmonitor-306302.wl.r.appspot.com/users/" + model.uuid + "/sendtest";
+                blankVolleyRequest(url, "Sent test request");
+            }
+        });
+
+        button_sendtest2.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                String url = "https://qmonitor-306302.wl.r.appspot.com/users/" + model.uuid + "/sendtest2";
+                blankVolleyRequest(url, "Flag test as incomplete");
+            }
+        });
+
+        button_location.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                String url = "https://qmonitor-306302.wl.r.appspot.com/users/" + model.uuid + "/requestlocation";
+                blankVolleyRequest(url, "Requested user location");
+            }
+        });
+
+        return view;
+    }
+
+    private void blankVolleyRequest(String url, String successMessage) {
+
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, new JSONArray(),
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        Toast.makeText(context, successMessage, Toast.LENGTH_SHORT);
+                        chart_test.notifyDataSetChanged();
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+            }
+        });
+
+        // Add the request to the RequestQueue
+        VolleyQueue.getInstance(context).addToRequestQueue(jsonArrayRequest);
     }
 }
 

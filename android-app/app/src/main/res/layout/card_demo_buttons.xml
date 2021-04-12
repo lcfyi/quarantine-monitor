@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/text_success_rate"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_vertical"
+    android:orientation="vertical">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp"
+        app:cardBackgroundColor="@color/persian_green_translucent"
+        app:cardCornerRadius="40dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="450dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/text_account_created"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="10dp"
+                android:fontFamily="sans-serif-black"
+                android:gravity="center"
+                android:text="Demo buttons for triggering backend behaviour"
+                android:textColor="#FFFFFF"
+                android:textSize="24sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_marginTop="30dp"
+                android:orientation="vertical">
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/button_sendtest"
+                    style="@style/Widget.AppCompat.Button.Small"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginRight="30dp"
+                    android:layout_marginBottom="40dp"
+                    android:backgroundTint="#E91E63"
+                    android:text="Send Verification Test" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/button_sendtest2"
+                    style="@style/Widget.AppCompat.Button.Small"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginRight="30dp"
+                    android:layout_marginBottom="40dp"
+                    android:backgroundTint="#9C27B0"
+                    android:text="Mark Tests Incomplete" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/button_location"
+                    style="@style/Widget.AppCompat.Button.Small"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginRight="30dp"
+                    android:backgroundTint="#F44336"
+                    android:text="Request User Location" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <pl.droidsonroids.gif.GifImageView
+        android:id="@+id/swipeGif"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:src="@drawable/swipe"
+        android:layout_marginTop="20dp"
+        android:layout_gravity="center_horizontal|top"
+        />
+
+</LinearLayout>
