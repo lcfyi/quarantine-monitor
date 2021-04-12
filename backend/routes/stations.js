@@ -101,7 +101,7 @@ router.post("/", async (req, res) => {
         } 
         return res.send("ERROR");
     } catch (e) {
-        res.send("ERROR" + e.message);
+        res.send(("ERROR: " + e).replace(/(\r\n|\n|\r)/gm, ".."));
         console.error(e);
     }
 });
