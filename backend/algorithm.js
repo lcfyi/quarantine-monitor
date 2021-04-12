@@ -55,7 +55,7 @@ async function handleTests(test, userid) {
             console.log(test.adminid);
             const admin = await User.findById(test.adminid)
             // Alert admin of the test of failure
-            const body = "User " + test.userid + " connected to station " + test.stationid + " failed to complete a verification test. (Unix Time: " + test.time + ")";
+            const body = "User " + test.userid.substring(0,8) + " connected to station " + test.stationid + " failed to complete a verification test. (Unix Time: " + test.time + ")";
             sendPushNotification(admin.deviceToken, {"key": NOTIF_TYPE.ALERT_ADMIN, "title": "Test Failure", "body": body});
         }
             
