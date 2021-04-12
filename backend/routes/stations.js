@@ -97,15 +97,9 @@ router.post("/", async (req, res) => {
                 station.seqnum = parseInt(jsonObj.h) + 1;
                 await station.save();
             }
-<<<<<<< HEAD
-            return res.send("OK"); 
-        } 
-        return res.send("ERROR"); 
-=======
             return res.send("OK");
         } 
         return res.send("ERROR");
->>>>>>> 9e981bda70d656e822ddb0105423c37780816041
     } catch (e) {
         res.send(("ERROR: " + e).replace(/(\r\n|\n|\r)/gm, ".."));
         console.error(e);
