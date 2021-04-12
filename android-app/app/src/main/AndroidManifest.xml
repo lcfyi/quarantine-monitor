@@ -74,6 +74,11 @@
             android:name=".WifiAndBluetoothSetupActivity"
             android:label="WifiAndBluetoothSetupActivity">
         </activity>
+        <activity
+            android:name=".Info"
+            android:label="Info"
+            android:theme="@style/PopTheme">
+        </activity>
         <service
             android:name=".MyFirebaseMessagingService"
             android:exported="false">
