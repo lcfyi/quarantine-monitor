@@ -29,6 +29,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -67,6 +70,7 @@ public class SignUpActivity extends AppCompatActivity implements LocationListene
     private Spinner endTimeSpinner;
     private SimpleDateFormat dateFormat;
     private boolean disableBackButton = false;
+    private String token;
 
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -78,6 +82,25 @@ public class SignUpActivity extends AppCompatActivity implements LocationListene
             @Override
             public void onClick(View v){signUp();}
         });
+
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(new OnCompleteListener<String>() {
+                    @Override
+                    public void onComplete(@NonNull Task<String> task) {
+                        if (!task.isSuccessful()) {
+                            Log.w(TAG, "Fetching FCM registration token failed", task.getException());
+                            return;
+                        }
+
+                        // Get new FCM registration token
+                        token = task.getResult();
+
+                        // Log and toast
+                        Log.d(TAG, token);
+
+                    }
+                });
+
         usernameText = (EditText) findViewById(R.id.input_username);
         passwordText = (EditText) findViewById(R.id.input_password);
         baseStationIdText = (EditText) findViewById(R.id.input_baseStationId);
@@ -197,6 +220,9 @@ public class SignUpActivity extends AppCompatActivity implements LocationListene
                     userInfo.put("coordinates", coordinatesArray);
                     userInfo.put("stationid", baseStationId);
                     userInfo.put("availability", setTime(startTime, endTime));
+
+                    // Possible race condition but token should be retrieved before this statement
+                    userInfo.put("token", token);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -211,6 +237,8 @@ public class SignUpActivity extends AppCompatActivity implements LocationListene
                             UserInfoHelper.setUserId(response.get("_id").toString());
                             UserInfoHelper.setEndtime((long) response.get("endTime"));
                             UserInfoHelper.setAdmin((Boolean) response.get("admin"));
+
+                            UserInfoHelper.createCookieFile(getApplicationContext());
 
                             Intent bluetoothIntent = new Intent(SignUpActivity.this, BluetoothConnectionActivity.class);
                             bluetoothIntent.putExtra("SignUpWorkflow", "True");
