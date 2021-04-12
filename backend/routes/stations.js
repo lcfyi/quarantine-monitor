@@ -57,7 +57,7 @@ router.post("/", async (req, res) => {
                     if (jsonObj.s.f !== undefined) {
 
                         const now = new Date().getTime();
-                        let test = await Test.findOne({"stationid": station.stationid, "status": 0, "time" : {$gte: now - 600000}});
+                        let test = await Test.findOne({"stationid": station._id, "status": 0, "time" : {$gte: now - 600000}});
         
                         if (test !== undefined) {
                             test.status = 2;
