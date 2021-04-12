@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.service.controls.Control;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -92,7 +93,6 @@ public class BluetoothConnectionActivity extends AppCompatActivity {
         }
 
         setContentView(R.layout.activity_connect);
-
         if (!isBTConnected.isConnected()) {
             Context context = this;
 

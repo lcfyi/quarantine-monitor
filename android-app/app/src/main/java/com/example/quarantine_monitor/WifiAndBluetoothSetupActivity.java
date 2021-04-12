@@ -20,7 +20,7 @@ import java.io.InputStreamReader;
 
 public class WifiAndBluetoothSetupActivity extends AppCompatActivity {
     public static final int BUFFER_SIZE = 1;
-    public static final int FLUSH_BUFFER_SIZE = 100;
+    public static final int FLUSH_BUFFER_SIZE = 300;
 
     boolean signUpFlag = false;
     private EditText wifiName = null;
@@ -32,7 +32,7 @@ public class WifiAndBluetoothSetupActivity extends AppCompatActivity {
     private BluetoothConnectionRFS rfsBTDevice = BluetoothConnectionRFS.getInstance();
     private BluetoothConnection BTConnection = BluetoothConnection.getInstance();
 
-    private final String serverAddr = "http://143.198.73.4";
+    private final String serverAddr = "http://qmonitor-306302.wl.r.appspot.com/stations";
     private final String ping = "ping";
     private final String setWifiNameCommand = "set-ssid";
     private final String setWifiPWCommand = "set-pass";
@@ -41,6 +41,10 @@ public class WifiAndBluetoothSetupActivity extends AppCompatActivity {
     private final String setWifi = "ini-rset";
     private final String getWifiStatus = "get-stat";
     private final String setBaseStationId = "set-base";
+    private final String setWifiInterval = "set-inter";
+    private final String setAccelSensitivity = "set-accel";
+    private final String accelSensitivity = "70";
+    private final String wifiInterval = "5";
     private final String newline = "\n";
 
     private BufferedReader in = null;
@@ -117,6 +121,12 @@ public class WifiAndBluetoothSetupActivity extends AppCompatActivity {
                     SystemClock.sleep(1500);
                     flush();
                     BTSocket.getOutputStream().write((setBaseStationId + " " + UserInfoHelper.getBaseStationId().toString() + newline).getBytes());
+                    SystemClock.sleep(1500);
+                    flush();
+                    BTSocket.getOutputStream().write((setWifiInterval + " " + wifiInterval + newline).getBytes());
+                    SystemClock.sleep(1500);
+                    flush();
+                    BTSocket.getOutputStream().write((setAccelSensitivity + " " + accelSensitivity + newline).getBytes());
                     SystemClock.sleep(1500);
                     flush();
                     BTSocket.getOutputStream().write((setWifi + newline).getBytes());

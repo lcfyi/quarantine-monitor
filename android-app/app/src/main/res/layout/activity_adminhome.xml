@@ -8,12 +8,13 @@
     tools:context=".MainActivity">
 
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
         android:orientation="vertical"
-        tools:layout_editor_absoluteX="106dp"
-        tools:layout_editor_absoluteY="196dp">
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="0dp">
 
         <androidx.cardview.widget.CardView
             android:id="@+id/quarantine_counter"
