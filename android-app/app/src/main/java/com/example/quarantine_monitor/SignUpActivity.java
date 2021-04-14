@@ -158,6 +158,9 @@ public class SignUpActivity extends AppCompatActivity implements LocationListene
         }
     }
 
+    /*
+     * @desc: this function handles the signup request based on info inputted by user
+     * */
     private void signUp(){
         Log.d(TAG, "signup pressed");
         String username = usernameText.getText().toString();
@@ -262,6 +265,9 @@ public class SignUpActivity extends AppCompatActivity implements LocationListene
         }
     }
 
+    /*
+     * @desc: this function allows the back button only to go to the login page
+     * */
     @Override
     public void onBackPressed(){
         // if user presses back button before pressing signup button
@@ -275,6 +281,10 @@ public class SignUpActivity extends AppCompatActivity implements LocationListene
         }
     }
 
+    /*
+     * @desc: this function converts the user availability into UTC and then into
+     * the required number format for the database
+     * */
     private JSONArray setTime(Date startTime, Date endTime){
 
         TimeZone tz = TimeZone.getDefault();

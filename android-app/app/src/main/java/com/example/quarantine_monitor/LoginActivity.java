@@ -117,6 +117,9 @@ public class LoginActivity extends AppCompatActivity {
         login();
     }
 
+    /*
+     * @desc: this function submits a volley request to login the user based on credentials given
+     * */
     public void login(){
         String username = usernameText.getText().toString();
         String password = passwordText.getText().toString();
