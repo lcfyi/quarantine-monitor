@@ -1,7 +1,7 @@
 const sendPushNotification = require("./pushnotification");
 const User = require("./models/user");
 const Station = require("./models/station");
-const Test = require("./models/test");
+const Test = require("./models/testModel");
 
 const TEST_STATUS = {"SENT": 0, "INCOMPLETE": 3};
 const NOTIF_TYPE = {"REQUEST_LOCATION": "0", "VERIFY_IDENTITY": "1", "ALERT_ADMIN": "2"};

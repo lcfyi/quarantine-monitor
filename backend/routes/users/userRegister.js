@@ -9,7 +9,7 @@ const algorithm = require("../../algorithm");
 
 /*
  *	POST request to register a user. 
- *  Takes in username, password, and current location, availability, and stationid and returns user object.
+ *  Takes in username, password, and current location, availability, and stationid, and token and returns user object.
  */
 router.post("/", async (req, res) => {
 	try {
@@ -31,7 +31,6 @@ router.post("/", async (req, res) => {
 			availability: req.body.availability, 
 			scheduledTests: algorithm.randomizedTimes(req.body.availability) 
 		});
-
 
 
         // Only create user if username does not exist, else return 400

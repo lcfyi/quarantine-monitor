@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Station = require("../models/station");
 const User = require("../models/user");
-const Test = require("../models/test");
+const Test = require("../models/testModel");
 const sendPushNotification = require("../pushnotification");
 const crypto = require("crypto");
 
@@ -108,29 +108,31 @@ router.post("/", async (req, res) => {
 
 /*
  *	GET request for a specific station.
+ *  NOTE: ONLY USED FOR EASE OF USE WHILE TESTING
  */
-router.get("/:stationid", getStation, (req, res) => {
+/*router.get("/:stationid", getStation, (req, res) => {
 	res.json(res.station);
-});
+});*/
 
 /*
  *	DELETE request to delete a station.
+ *  NOTE: ONLY USED FOR EASE OF USE WHILE TESTING
  */
-router.delete("/:stationid", getStation, (req, res) => {
+/*router.delete("/:stationid", getStation, (req, res) => {
 	res.station.remove();
 	res.send("Deleted station");
-});
+});*/
 
 /*
  *	POST request to create a station. 
  *  Takes in stationid, and creates the station.
+ *  NOTE: ONLY USED FOR EASE OF USE WHILE TESTING
  */
-router.post("/create", async (req, res) => {
+/*router.post("/create", async (req, res) => {
     try {
         const station = new Station({
             _id: req.body.stationid,
             user: "",
-            baseCoords: [],
             seqnum: 0,
             admin: "60654257ab0eea000aadadcb"
         });
@@ -149,24 +151,6 @@ router.post("/create", async (req, res) => {
     } catch (err) {
         res.status(400).send(err.message);
     }
-});
-
-/*
- *	UPDATE request on base station location
- */
-router.put("/:stationid/location", async (req, res) => {
-	try {
-		let station = await Station.findById(req.params.stationid);
-        
-		if (req.body.coordinates != null) {
-			station.baseCoords = req.body.coordinates;
-        }
-
-		await station.save();
-		res.status(200).send("Successfully updated station location");
-	} catch (err) {
-		res.status(400).send(err.message);
-	}
-});
+});*/
 
 module.exports = router;

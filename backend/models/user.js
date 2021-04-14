@@ -31,7 +31,7 @@ const userSchema = new mongoose.Schema({
     endTime: {
         type: Number
     },
-    lastCoords: [Number], //Change to last record
+    lastCoords: [Number],
     locationMap: [{
         time: {
             type: Number

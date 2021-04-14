@@ -1,3 +1,5 @@
 /.env
 /node_modules/
 /qmonitor-306302-firebase-adminsdk-jmcix-0745e8a0f9.json
+/coverage
+/globalConfig.json

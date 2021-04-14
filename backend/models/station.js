@@ -6,7 +6,6 @@ const stationSchema = new mongoose.Schema({
     user: {
         type: String
     },
-    baseCoords: [Number],
     seqnum: {
         type: Number
     },
