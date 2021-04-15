@@ -18,6 +18,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+// Class that handles wifi connection and other custom bluetooth commands
 public class WifiAndBluetoothSetupActivity extends AppCompatActivity {
     public static final int BUFFER_SIZE = 1;
     public static final int FLUSH_BUFFER_SIZE = 300;
@@ -32,6 +33,7 @@ public class WifiAndBluetoothSetupActivity extends AppCompatActivity {
     private BluetoothConnectionRFS rfsBTDevice = BluetoothConnectionRFS.getInstance();
     private BluetoothConnection BTConnection = BluetoothConnection.getInstance();
 
+    // bluetooth commands
     private final String serverAddr = "http://qmonitor-306302.wl.r.appspot.com/stations";
     private final String ping = "ping";
     private final String setWifiNameCommand = "set-ssid";
@@ -79,16 +81,14 @@ public class WifiAndBluetoothSetupActivity extends AppCompatActivity {
         });
     }
 
+    // Asynchronously submit wifi information along with other custom information
     private class submitWifiInfo extends AsyncTask<Void, Void, Void> {
         String wifi, pw;
 
         @Override
         protected Void doInBackground(Void... voids) {
-                    wifi = wifiName.getText().toString();
-                    pw = wifiPW.getText().toString();
-
-//            wifi = "TELUS2742";
-//            pw = "3pxdm9h5dd";
+                wifi = wifiName.getText().toString();
+                pw = wifiPW.getText().toString();
 
             runOnUiThread(new Runnable() {
                 public void run() {
@@ -104,11 +104,8 @@ public class WifiAndBluetoothSetupActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-                    wifi = wifiName.getText().toString();
-                    pw = wifiPW.getText().toString();
-
-//            wifi = "TELUS2742";
-//            pw = "3pxdm9h5dd";
+                wifi = wifiName.getText().toString();
+                pw = wifiPW.getText().toString();
 
             if(BTSocket != null) {
                 try {
@@ -165,13 +162,6 @@ public class WifiAndBluetoothSetupActivity extends AppCompatActivity {
                     }
                     else {
                         Toast.makeText(getApplicationContext(), "Connection Did not happen.\nPlease make sure you entered the wifi credentials correctly", Toast.LENGTH_LONG).show();
-//                        Intent mainActivityIntent = new Intent(WifiAndBluetoothSetupActivity.this, WifiAndBluetoothSetupActivity.class);
-//                        if(signUpFlag){
-//                            mainActivityIntent.putExtra("SignUpWorkflow", "True");
-//                        }
-//                        else {
-//                            mainActivityIntent.putExtra("SignUpWorkflow", "False");
-//                        }
                     }
                 } catch (IOException e) {
                     Toast.makeText(getApplicationContext(), "SOMETHING WENT WRONG WHILE SETTING WIFI", Toast.LENGTH_LONG).show();
@@ -181,6 +171,7 @@ public class WifiAndBluetoothSetupActivity extends AppCompatActivity {
         }
     }
 
+    // function that 'flushes' unnecessary De1 return messages
     private void flush() {
         try {
             String message = "";
@@ -194,6 +185,7 @@ public class WifiAndBluetoothSetupActivity extends AppCompatActivity {
         }
     }
 
+    // function that reads from the input buffer port
     private String readFromInputPort() {
         try {
             String message = "";
@@ -210,6 +202,7 @@ public class WifiAndBluetoothSetupActivity extends AppCompatActivity {
         }
     }
 
+    // function that attempts to read from the buffer
     private void connectWithServer() {
         try {
             if (BTSocket != null) {

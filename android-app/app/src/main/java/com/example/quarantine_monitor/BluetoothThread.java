@@ -8,6 +8,8 @@ import android.util.Log;
 
 import java.io.IOException;
 
+// Separate thread class to handle bluetooth pinging sent to the De1
+// Pinging is necessary to keep the connection alive
 public class BluetoothThread extends Thread {
     String TAG = "bluetooth thread";
     private BluetoothSocket BTSocket = null;
@@ -25,6 +27,8 @@ public class BluetoothThread extends Thread {
         running = false;
     }
 
+    // Send random pings at 2.5second intervals OR
+    // If facial verification is set, then send facial verification information instead of the ping
     @Override
     public void run() {
         while (!Thread.interrupted()) {
