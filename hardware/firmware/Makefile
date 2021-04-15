@@ -17,7 +17,7 @@ CPPSRCS                 = $(wildcard *.cpp) $(wildcard hardware/*.cpp) $(wildcar
 INCS                    =
  
 # Parameters for SCP upload. Set up SSH keys to bypass password prompt
-SCP_TARGET_IP           = 192.168.0.101
+SCP_TARGET_IP           = 192.168.0.101 # Replace this with your FPGA's address
 SCP_USER                = root
 SCP_TARGET_PATH         = /home/root
 SCP                     = scp
