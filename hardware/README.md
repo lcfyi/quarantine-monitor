@@ -1,6 +1,6 @@
 # Hardware
 
-**BIG CAVEAT**: A lot of the files generated that have been committed are artifacts from the build, thus they probably won't be compatible with your system. You'll have to take some time to prune them; I wanted to check it into VCS just because I have a working version at the moment.
+**BIG CAVEAT**: A lot of the files generated on the FPGA side that have been committed are artifacts from the build, thus they probably won't be compatible with your system. You'll have to take some time to prune them.
 
 ## Organization
 
