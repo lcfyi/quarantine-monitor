@@ -4,6 +4,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
+/*
+ *  This class stores information about active users which is populated for admins
+ *  and used throughout the admin dashboard
+ */
 public class ActiveUserStats {
     public String uuid = null;
     public String shortenedUuid = null;

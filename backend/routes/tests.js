@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const Test = require("../models/testModel");
 
-
 /*
  *	GET request for a specific tests.
  *  Can be queried by status, userid
