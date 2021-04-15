@@ -64,6 +64,6 @@
 
 ### Working on today
 
-- Will need a new task
+- Looking into other areas we could hardware accelerate if it does not seem plausible
 
 ### Roadblocks
