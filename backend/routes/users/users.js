@@ -99,18 +99,6 @@ router.get("/:userid/plotmap", getUser, (req, res) => {
 });
 
 /*
- *	GET request for user station. Returns the JSON object for the station.
- */
-router.get("/:userid/station", getUser, async (req, res) => {
-    try {
-		let station = await Station.find({"stationid": res.user.stationid});
-		res.status(200).json(station);
-	} catch (err) {
-		res.status(404).send("Station not found.");
-	}
-});
-
-/*
  *	UPDATE request on fields of user
  */
 router.put("/:userid", async (req, res) => {

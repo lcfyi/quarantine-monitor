@@ -13,7 +13,7 @@ describe('testing user registration', () => {
   beforeAll(async () => {
     mongoServer = new MongoMemoryServer();
     const mongoUri = await mongoServer.getUri();
-    await mongoose.connect(mongoUri, {}, (err) => {
+    await mongoose.connect(mongoUri, {useUnifiedTopology: true, useNewUrlParser: true}, (err) => {
         if (err) console.error(err);
     });
     
@@ -22,7 +22,7 @@ describe('testing user registration', () => {
         user: "",
         seqnum: 0,
         admin: "admin_uuid"
-    })
+    });
     await station.save();
   });
 

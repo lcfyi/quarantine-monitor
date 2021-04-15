@@ -5,7 +5,7 @@ const Test = require("../models/testModel");
 
 /*
  *	GET request for a specific tests.
- *  Can be queried by status, userid, range
+ *  Can be queried by status, userid
  *  Status can be 0 (Sent), 1 (Passed), 2 (Failed), 3 (Incomplete)
  */
 router.get("/", async (req, res) => {
@@ -20,13 +20,7 @@ router.get("/", async (req, res) => {
             query.status = req.query.status;
         }
 
-        if (req.query.range !== undefined) {
-            const now = new Date();
-            query.time = {$gte: now.getTime() - range*1000}
-        }
-
 		tests = await Test.find(query);
-        console.log(tests);
         if (tests != null)
             res.json(tests); 
 	} catch (err) {

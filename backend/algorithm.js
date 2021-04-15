@@ -66,7 +66,6 @@ async function handleTests(test, userid) {
             return;
         }
         for (var user of users) {
-            // TODO: remove test code
             if (user._id.toString() != userid) {
                 continue;
             }
@@ -93,7 +92,6 @@ async function handleTests(test, userid) {
                 await test.save();
 
                 // Send a push notification to user to trigger test
-                // TODO: set high priority?
                 sendPushNotification(user.deviceToken, 
                     {"key": NOTIF_TYPE.VERIFY_IDENTITY, 
                      "title": "Verify Identity", 

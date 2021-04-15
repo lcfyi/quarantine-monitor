@@ -9,19 +9,19 @@ const crypto = require("crypto");
 /*
  *	Helper function to get a station by stationid.
  */
-async function getStation(req, res, next) {
-	let station;
-	try {
-		station = await Station.findById(req.params.stationid);
+// async function getStation(req, res, next) {
+// 	let station;
+// 	try {
+// 		station = await Station.findById(req.params.stationid);
         
-        if (station == null)
-            throw "Not Found";
-	} catch (err) {
-		return res.status(404).send("Error 404: " + err.message);
-	}
-	res.station = station;
-	next();
-}
+//         if (station == null)
+//             throw "Not Found";
+// 	} catch (err) {
+// 		return res.status(404).send("Error 404: " + err.message);
+// 	}
+// 	res.station = station;
+// 	next();
+// }
 
 /*
  *  GET request used by De1 to test the connection
@@ -36,19 +36,17 @@ router.get("/", (req, res) => {
 router.post("/", async (req, res) => {
     try {
         let [json, checksum] = req.body.split(';');
-        
+
         // Determine if payload received is corrupted or not via the checksum
         if (crypto.createHash("SHA256").update(json).digest("hex") === checksum) {
-
+            
             // Confirm that the header contains base and token
             if (req.headers.base !== undefined) {
-
                 let station = await Station.findById(req.headers.base);
                 let user = await User.findById(station.user) // Relies on station object having associated user added by front end
                 let admin = undefined;
 
                 let jsonObj = JSON.parse(json);
-
                 // Get the sequence number and verify that it is one plus the previous one
                 if (parseInt(jsonObj.h) === station.seqnum) {
                     let previousStatus = user.status;
@@ -72,7 +70,6 @@ router.post("/", async (req, res) => {
                         if (!admin) {
                             admin = await User.findById(station.admin);
                         }
-
                         const body = "User " + station.user.substring(0,8) + " connected to station " + station._id + " flagged for base station movement.";
                         sendPushNotification(admin.deviceToken, {"key": "3", "title": "Base Station Moved", "body": body});
                     }
@@ -81,7 +78,7 @@ router.post("/", async (req, res) => {
                         if (!admin) {
                             admin = await User.findById(station.admin);
                         }
-
+                        
                         const body = "User " + station.user.substring(0,8) + " connected to station " + station._id + " flagged for a broken Bluetooth connection.";
                         sendPushNotification(admin.deviceToken, {"key": "3", "title": "Base Station Bluetooth Broken", "body": body});
                     }

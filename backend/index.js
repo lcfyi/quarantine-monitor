@@ -23,9 +23,4 @@ app.use("/tests", testsRouter);
 // Runs main loop to handle tests - DISABLED
 //setInterval(algorithm.handleTests(), 600000);
 
-// Default redirect
-app.get('/', async function(req, res) {
-    res.send('Hello World!');
-})
-
 module.exports = app;
