@@ -47,19 +47,6 @@ import java.util.UUID;
 import static android.bluetooth.BluetoothProfile.GATT;
 
 public class BluetoothConnectionActivity extends AppCompatActivity {
-//    BluetoothManager bluetoothManager;
-//    private BluetoothAdapter BA = null;
-//    private Set Devices;
-//
-//    private Set<BluetoothDevice> pairedDevices;
-//    private Set<BluetoothDevice> PD;
-//    private BluetoothDevice bluetoothDevice;
-//    private BluetoothSocket bluetoothSocket;
-//    private List<BluetoothDevice> connectedDevices;
-//    ArrayAdapter<String> pairedDevices_ArrayAdapter;
-
-//    private boolean isBtConnected = false;
-
     ListView devicelist;
     private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
@@ -76,8 +63,6 @@ public class BluetoothConnectionActivity extends AppCompatActivity {
     private final String ping = "ping";
     private final String newline = "\n";
     String TAG = "bluetooth connection";
-
-//    private boolean ConnectSuccess = false;
 
     // singleton class to keep track of bluetooth connection
     private BluetoothThreadHelper BTThreadHelper = BluetoothThreadHelper.getInstance();
@@ -99,6 +84,7 @@ public class BluetoothConnectionActivity extends AppCompatActivity {
             BA = BluetoothAdapter.getDefaultAdapter();
             pairedDevices();
 
+            // Intent Filter to keep track of bluetooth connection status
             IntentFilter filter = new IntentFilter();
             filter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
             filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED);
@@ -111,6 +97,7 @@ public class BluetoothConnectionActivity extends AppCompatActivity {
         }
     }
 
+    // function to get list of paired devices which the user can connect to
     private void pairedDevices() {
         Devices = BA.getBondedDevices();
         ArrayList list = new ArrayList();
@@ -130,6 +117,8 @@ public class BluetoothConnectionActivity extends AppCompatActivity {
         devicelist.setOnItemClickListener(myListListener);
     }
 
+    // onclick listener for bluetooth devices
+    // clicking on an item will attempt to connect to it
     private AdapterView.OnItemClickListener myListListener = new AdapterView.OnItemClickListener() {
 
         @RequiresApi(api = Build.VERSION_CODES.R)
@@ -151,6 +140,7 @@ public class BluetoothConnectionActivity extends AppCompatActivity {
         }
     };
 
+    // This function handles bluetooth-related push notifications
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         BluetoothDevice device;
 
@@ -211,6 +201,7 @@ public class BluetoothConnectionActivity extends AppCompatActivity {
         }
     };
 
+    // Function attempts to connect to the bluetooth serial socket
     private boolean bluetoothConnect() {
         try {
             rfsBTConnection.getBTSocket().connect();
@@ -221,6 +212,7 @@ public class BluetoothConnectionActivity extends AppCompatActivity {
         return false;
     }
 
+    // Function that runs asynchronously in the background to identify, retrieve and attempt to connect to the bluetooth socket
     private class ConnectBT extends AsyncTask<Void, Void, Void> {
         @Override
         protected void onPreExecute() {
@@ -276,17 +268,17 @@ public class BluetoothConnectionActivity extends AppCompatActivity {
             else {
                 setupPinging();
             }
-//            else {
-////                Toast.makeText(getApplicationContext(), "Connected. Please do not disconnect", Toast.LENGTH_SHORT).show();
-//                isBTConnected.connect();
-//            }
         }
     }
 
+    // Once bluetooth connection is established, it is necessary to keep it connected.
+    // This function calls the BluetoothThreadHelper class to create another thread to handle the pinging
+    // in the background
     private void setupPinging() {
         BTThreadHelper.createThread();
     }
 
+    // Prevents users from going back to the previous activity while registering their user profile for the first time
     @Override
     public void onBackPressed() {
         if(!signUpFlag) {

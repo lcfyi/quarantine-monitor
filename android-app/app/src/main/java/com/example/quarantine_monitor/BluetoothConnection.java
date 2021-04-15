@@ -1,5 +1,6 @@
 package com.example.quarantine_monitor;
 
+// Singleton class to keep track of the bluetooth connection status
 public class BluetoothConnection {
     private static BluetoothConnection single_instance = null;
 

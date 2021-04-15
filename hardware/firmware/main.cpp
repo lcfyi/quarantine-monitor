@@ -32,6 +32,11 @@ bool accelerometer_compare(int before, int after, int tolerance)
     return abs(before - after) > tolerance && abs(before - after + 65535) > tolerance && abs(before - after - 65535) > tolerance;
 }
 
+/**
+ * Accelerometer thread. Polls the on-board accelerometer for
+ * new data to compare to the previously recorded value. Will flag
+ * on parameters that exceed the tolerance threshold.
+ */
 void accelerometer_thread()
 {
     if (debug)
@@ -65,6 +70,18 @@ void accelerometer_thread()
     }
 }
 
+/**
+ * Wifi thread handler that conditionally POSTs the backend with
+ * new data every set interval (user-configured). It will fail and
+ * require a reset if the initial connection test (GET) did not return OK.
+ * 
+ * In addition, the handler will reset the wifi module if TOTAL_RETRIES_BEFORE_REINIT
+ * consecutive failures are detected. The handler will continue to retry the same
+ * packet until the backend returns an OK (which means it has verified the checksum).
+ * 
+ * The POST body follows this format:
+ *  <JSON string>;<SHA-256 checksum>
+ */
 void wifi_thread()
 {
     if (debug)
@@ -164,6 +181,9 @@ void wifi_thread()
     }
 }
 
+/**
+ * Bluetooth command handler. Self-explanatory.
+ */
 std::string bluetooth_command(std::string command)
 {
     if (debug)
@@ -303,6 +323,12 @@ std::string bluetooth_command(std::string command)
     return command;
 }
 
+/**
+ * Handler for the bluetooth thread, which polls the UART buffer for
+ * new data that comes in from the Avalon fabric. It should handle
+ * commands by calling bluetooth_command(string), and also update
+ * the global state variables on new bluetooth data.
+ */
 void bluetooth_thread()
 {
     if (debug)

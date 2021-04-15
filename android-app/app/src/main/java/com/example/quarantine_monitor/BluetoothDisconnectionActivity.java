@@ -2,27 +2,20 @@ package com.example.quarantine_monitor;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothSocket;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
-import com.example.quarantine_monitor.DisconnectBluetooth;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.List;
 
-import static android.bluetooth.BluetoothProfile.GATT;
-
+// This activity is responsible for handling bluetooth disconnection and wifi connection
 public class BluetoothDisconnectionActivity extends AppCompatActivity {
     boolean errorFound = false;
     Button disconnectButton;
@@ -51,10 +44,6 @@ public class BluetoothDisconnectionActivity extends AppCompatActivity {
         }
         setContentView(R.layout.activity_bt_connected);
 
-//        BTManager = (BluetoothManager) getSystemService(BLUETOOTH_SERVICE);
-//        List<BluetoothDevice> connected = BTManager.getConnectedDevices(GATT);
-//        Log.i("Connected Devices: ", connected.size() + "");
-
         BTDevice = rfsBTDevice.getBluetoothDevice();
         BTSocket = rfsBTDevice.getBTSocket();
 
@@ -79,17 +68,24 @@ public class BluetoothDisconnectionActivity extends AppCompatActivity {
 
     }
 
+    // New Intent created to go back to the home/main page
     public void goToMainMenu() {
         Intent mainMenuActivityIntent = new Intent(BluetoothDisconnectionActivity.this, MainActivity.class);
         startActivity(mainMenuActivityIntent);
         finish();
     }
 
+    // New Intent created to go to the wifi setup page
     public void goToWifiSetupActivity() {
         Intent wifiSetupActivityIntent = new Intent(BluetoothDisconnectionActivity.this, WifiAndBluetoothSetupActivity.class);
         startActivity(wifiSetupActivityIntent);
     }
 
+    // Function call to properly destroy the bluetooth connection
+    // It first destroys the bluetooth pinging thread
+    // It then destroys the Input Stream, Output Stream, and BT Socket 
+    // Last, if all is well, it moves to the next intent (either bluetooth menu or 
+    // facial verification page - depends on the user's workflow)
     public void BTdisconnect() {
         BTThreadHelper.reset();
         BTThreadHelper.destroyThread();
@@ -141,6 +137,7 @@ public class BluetoothDisconnectionActivity extends AppCompatActivity {
         }
     }
 
+    // Setting to prevent the user from going back to the previous menu during the signup process
     @Override
     public void onBackPressed(){
         // create a boolean to chec

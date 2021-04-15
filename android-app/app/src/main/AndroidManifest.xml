@@ -92,7 +92,7 @@
         </service>
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyBVGB6GkjqXpHBBNjF7Zosj_eQ7X2VLRNM" />
+            android:value="${API_KEY}" />
         <receiver android:name=".MyBroadcastReceiver" android:enabled="true" android:exported="true">
             <intent-filter>
                 <category android:name="android.intent.category.DEFAULT"/>

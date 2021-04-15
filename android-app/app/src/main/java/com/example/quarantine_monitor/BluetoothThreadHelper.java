@@ -1,5 +1,6 @@
 package com.example.quarantine_monitor;
 
+// Singleton class to keep track of the bluetooth pinging thread
 public class BluetoothThreadHelper {
     private static BluetoothThreadHelper single_instance = null;
     private volatile BluetoothThread btThread = new BluetoothThread();

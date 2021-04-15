@@ -3,6 +3,7 @@ package com.example.quarantine_monitor;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 
+// Singleton Class to keep track of the bluetooth device and bluetooth socket itself
 public class BluetoothConnectionRFS {
     private static BluetoothConnectionRFS single_instance = null;
 
